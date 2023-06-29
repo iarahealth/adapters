@@ -25,7 +25,6 @@ export class IaraSyncfusionAdapter
     private _documentEditor: DocumentEditor
   ) {
     super(_recognition);
-    console.log("this._documentEditor", this._documentEditor);
   }
 
   getUndoStackSize(): number {
