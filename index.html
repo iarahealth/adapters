@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Iara SDK Syncfusion Adapter</title>
+
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-base/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-buttons/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-inputs/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-popups/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-lists/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-navigations/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-splitbuttons/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-dropdowns/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+
+    <!-- EJ2 Document Editor theme -->
+    <link
+      href="https://cdn.syncfusion.com/ej2/22.1.34/ej2-documenteditor/styles/material.css"
+      rel="stylesheet"
+      type="text/css"
+      rel="nofollow"
+    />
+
+    <!-- EJ2 Document Editor dependent scripts -->
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-base/dist/global/ej2-base.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-data/dist/global/ej2-data.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-svg-base/dist/global/ej2-svg-base.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-file-utils/dist/global/ej2-file-utils.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-compression/dist/global/ej2-compression.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-pdf-export/dist/global/ej2-pdf-export.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-buttons/dist/global/ej2-buttons.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-popups/dist/global/ej2-popups.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-splitbuttons/dist/global/ej2-splitbuttons.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-inputs/dist/global/ej2-inputs.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-lists/dist/global/ej2-lists.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-navigations/dist/global/ej2-navigations.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-dropdowns/dist/global/ej2-dropdowns.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-calendars/dist/global/ej2-calendars.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-charts/dist/global/ej2-charts.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-office-chart/dist/global/ej2-office-chart.min.js"
+      type="text/javascript"
+    ></script>
+    <!-- EJ2 Document Editor script -->
+    <script
+      src="https://cdn.syncfusion.com/ej2/22.1.34/ej2-documenteditor/dist/global/ej2-documenteditor.min.js"
+      type="text/javascript"
+    ></script>
+    <script
+      src="https://cdn.syncfusion.com/ej2/syncfusion-helper.js"
+      type="text/javascript"
+    ></script>
+
+    <!-- Iara Speech SDK -->
+    <script src="https://cdn.iarahealth.com/sdk/javascript/latest/iara-speech.min.js"></script>
+  </head>
+
+  <body>
+    <div
+      style="
+        background: #ffb6b6;
+        border: 2px solid black;
+        padding: 0 5px 5px 15px;
+        width: 250px;
+      "
+    >
+      <h3>Dados de acesso:</h3>
+      <p>
+        userId:
+        <input type="text" id="userId" value="" />
+      </p>
+      <p>
+        apiToken:
+        <input type="text" id="apiToken" value="" />
+      </p>
+      <button id="btnSalvar">Salvar</button>
+    </div>
+
+    <div id="editor-container"></div>
+
+    <div>
+      <p>Status:</p>
+      <pre
+        id="saidaStatus"
+        style="background: #addeff; border: 1px solid black; padding: 10px"
+      ></pre>
+      <pre
+        id="console"
+        style="background: #f1f1f1; border: 1px solid black; padding: 20px"
+      >
+Status: ?</pre
+      >
+    </div>
+
+    <button id="btnStart">Iniciar</button>
+    <button id="btnStop">Parar</button>
+
+    <script type="module">
+      import { IaraSyncfusionAdapter } from "/dist/index.js";
+
+      window.onload = () => {
+        window.ej.documenteditor.DocumentEditorContainer.Inject(
+          window.ej.documenteditor.Toolbar
+        );
+        const editorContainer =
+          new window.ej.documenteditor.DocumentEditorContainer({
+            enableToolbar: true,
+            height: "800px",
+            serviceUrl:
+              "https://ej2services.syncfusion.com/production/web-services/api/documenteditor/",
+          });
+        editorContainer.appendTo("#editor-container");
+
+        // Elementos na página usados para gravar audio.
+        var botaoStart = document.getElementById("btnStart");
+        var botaoStop = document.getElementById("btnStop");
+        var elementoConsole = document.getElementById("console");
+        var elementoSaidaStatus = document.getElementById("saidaStatus");
+
+        // Informações de conexão aos serviços da Iara
+        var myUserId = document.getElementById("userId").value;
+        var myApiToken = document.getElementById("apiToken").value;
+
+        // Instancia o reconhecedor da Iara e informa que resultados intermediários
+        // de inferência devem ser emitidos.
+        var recognition = new IaraSpeechRecognition();
+        recognition.interimResults = true;
+
+        const syncfusionAdapter = new IaraSyncfusionAdapter(
+          recognition,
+          editorContainer.documentEditor
+        );
+
+        // Botão de Stop só é ativado quando o usuário clica no botão "Iniciar".
+        botaoStop.disabled = true;
+
+        // Define o botão que salva as credenciais e sua função
+        var botaoSalvar = document.getElementById("btnSalvar");
+        botaoSalvar.addEventListener("click", function () {
+          elementoSaidaStatus.innerHTML =
+            "Inicializando com base nas credenciais informadas...";
+          salvaCredenciaisDepoisInicializa();
+        });
+
+        function salvaCredenciaisDepoisInicializa() {
+          // Informações de conexão aos serviços da Iara
+          var myUserId = document.getElementById("userId").value;
+          var myApiToken = document.getElementById("apiToken").value;
+
+          // Inicializa o SDK, i.e. autenticação, checa o ALS, baixa modelo de voz, etc.
+          recognition
+            .init({
+              userId: myUserId,
+              apiToken: myApiToken,
+              forceConnection: true,
+              engine: "Iara Desktop",
+              useVAD: true,
+            })
+            .done(function (e) {
+              elementoConsole.innerHTML =
+                'Pronto para gravar. Pressione o botão "Iniciar".';
+
+              // O evento principal do reconhecimento de voz é o "onresult", chamado quando
+              // algum audio na entrada é reconhecido.
+              recognition.onresult = function (event) {
+                // O parâmetro "event" contem uma propriedade chamada "detail", que é um
+                // objeto IaraSpeechRecognitionResult. A propriedade "transcript" desse
+                // resultado contém o texto que a Iara reconheceu baseados no audio de entrada.
+                // Além disso, a propriedade "isFinal" do objeto "detail" informa se essa
+                // inferência é intermediária (isFinal=false) ou final (isFinal=true).
+                var text = event.detail.transcript.toLowerCase();
+                var intermediate = event.detail.isFinal == false;
+
+                elementoSaidaStatus.innerText = JSON.stringify(
+                  event.detail,
+                  null,
+                  4
+                );
+
+                if (intermediate == false) {
+                  console.log("Texto reconhecido:" + text);
+                } else {
+                  console.log("Texto INTERMEDIÁRIO reconhecido:" + text);
+                }
+              };
+
+              botaoStart.addEventListener("click", function () {
+                botaoStart.disabled = true;
+                botaoStop.disabled = false;
+                elementoConsole.innerHTML = "Preparando gravação...";
+
+                recognition.start(function () {
+                  elementoConsole.innerHTML =
+                    'Gravação em andamento (pressione "Parar" para finalizar).';
+                });
+              });
+
+              botaoStop.addEventListener("click", function () {
+                elementoConsole.innerHTML = "Gravação finalizada.";
+                botaoStart.disabled = false;
+                botaoStop.disabled = true;
+
+                recognition.stop();
+              });
+            })
+            .fail(function (e) {
+              // Algum problema aconteceu. O parâmetro "e" contem várias informações sobre o erro.
+              elementoConsole.innerHTML =
+                "Algum problema na inicialização da Iara: " +
+                e.detail.developerMessage;
+              console.error("Problema: " + e.detail.developerMessage);
+            })
+            .progress(function (e) {
+              // Esse método é invocado várias vezes pelo SDK ao longo de sua inicialização.
+              // Você pode usar ele para acompanhar os passos da inicialização, para informar
+              // ao seu usuário que seu modelo de voz está sendo baixado, por exemplo.
+              elementoConsole.innerHTML =
+                "A Iara está inicializando: " + e.detail.type;
+              console.log("Inicializando: " + e.detail.type);
+            });
+        }
+      };
+    </script>
+  </body>
+</html>
