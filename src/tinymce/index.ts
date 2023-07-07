@@ -1,38 +1,18 @@
-import type {
-  DocumentEditor,
-  Editor,
-  EditorHistory,
-} from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
-export class IaraSyncfusionAdapter
-  extends EditorAdapter
-  implements EditorAdapter
-{
+export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   private _initialUndoStackSize = 0;
 
-  private get _editorAPI(): Editor {
-    return this._editor.editor;
-  }
-
-  private get _editorHistory(): EditorHistory {
-    return this._editor.editorHistory;
+  private get _editorAPI() {
+    return this._editor.activeEditor;
   }
 
   getUndoStackSize(): number {
-    return this._editorHistory.undoStack?.length || 0;
+    return this._editorAPI.undoManager.data.length || 0;
   }
 
-  insertParagraph() {
-    this._editorAPI.insertText("\n");
-  }
-
-  insertText(text: string) {
-    this._editorAPI.insertText(text);
-  }
-
-  insertInference(inference: IaraInference) {
+  insertInference(inference: IaraInference): void {
     if (inference.isFirst) {
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
@@ -46,7 +26,7 @@ export class IaraSyncfusionAdapter
       .replace(/<\/div>$/, "");
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
 
-    this.insertText(firstLine);
+    this.insertText(`${firstLine}\n`);
 
     lines.forEach(line => {
       this.insertParagraph();
@@ -55,7 +35,15 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  insertParagraph() {
+    this._editorAPI.execCommand("mceInsertNewLine");
+  }
+
+  insertText(text: string) {
+    this._editorAPI.insertContent(text);
+  }
+
   undo() {
-    this._editorHistory.undo();
+    this._editorAPI.undoManager.undo();
   }
 }
