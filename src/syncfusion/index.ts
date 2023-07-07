@@ -1,8 +1,4 @@
-import type {
-  DocumentEditor,
-  Editor,
-  EditorHistory,
-} from "@syncfusion/ej2-documenteditor";
+import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
