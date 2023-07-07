@@ -36,7 +36,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   insertParagraph() {
-    this._editorAPI.execCommand("mceInsertNewLine");
+    this._editorAPI.execCommand("InsertParagraph");
   }
 
   insertText(text: string) {
