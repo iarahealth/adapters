@@ -1,4 +1,4 @@
-import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
+import type { Editor, EditorHistory, Selection } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
@@ -16,6 +16,10 @@ export class IaraSyncfusionAdapter
     return this._editor.editorHistory;
   }
 
+  private get _editorContent(): Selection {
+    return this._editor.selection;
+  }
+
   getUndoStackSize(): number {
     return this._editorHistory.undoStack?.length || 0;
   }
@@ -25,10 +29,38 @@ export class IaraSyncfusionAdapter
   }
 
   insertText(text: string) {
-    this._editorAPI.insertText(text);
+    this._editorAPI.insertText(text)
+  }
+
+  private textFormatter(nextText: string) {
+    let textFormatted = nextText
+    const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n']
+    // Precisou ser "any" por falta de declarações corretas no "@syncfusion/ej2-documenteditor"
+    const lastContent = this._editorContent.end.paragraph.lastChild as any
+    const previousText = lastContent.renderedElements[0]?.text
+
+    function upperText (text: string) {return text.charAt(0).toUpperCase() + text.slice(1)}
+
+    // Possui texto antes.
+    if (previousText) {
+      // Caso possua condições para ser captalizado.
+      if (upperCaseCondition.includes(previousText.substr(-1))) {
+        textFormatted = upperText(textFormatted)
+      }
+
+      // Adiciona espaco caso haja texto antes dele.
+      if (previousText.length > 0) {
+        textFormatted = ' '+textFormatted
+      }
+    }
+
+    return textFormatted
   }
 
   insertInference(inference: IaraInference) {
+    // caso nao saia nada da gravação, parar propagação.
+    if (!inference.transcript) return
+
     if (inference.isFirst) {
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
@@ -37,9 +69,12 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = inference.richTranscript
+    let text = inference.richTranscript
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
+    
+    text = this.textFormatter(text)
+
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
 
     this.insertText(firstLine);
@@ -49,6 +84,7 @@ export class IaraSyncfusionAdapter
       line = line.trim();
       if (line) this.insertText(line);
     });
+
   }
 
   undo() {
