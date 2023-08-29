@@ -16,7 +16,7 @@ export class IaraSyncfusionAdapter
     return this._editor.editorHistory;
   }
 
-  private get _editorContent(): Selection {
+  private get _editorSelection(): Selection {
     return this._editor.selection;
   }
 
@@ -29,26 +29,26 @@ export class IaraSyncfusionAdapter
   }
 
   insertText(text: string) {
-    this._editorAPI.insertText(text)
+    this._editorAPI.insertText(text);
   }
 
   private textFormatter(nextText: string) {
     let textFormatted = nextText
     const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n']
-    // Precisou ser "any" por falta de declarações corretas no "@syncfusion/ej2-documenteditor"
-    const lastContent = this._editorContent.end.paragraph.lastChild as any
+    // Needed to be "any" due to lack of correct declarations in"@syncfusion/ej2-documenteditor"
+    const lastContent = this._editorSelection.end.paragraph.lastChild as any
     const previousText = lastContent.renderedElements[0]?.text
 
     function upperText (text: string) {return text.charAt(0).toUpperCase() + text.slice(1)}
 
-    // Possui texto antes.
+    // It has text before it.
     if (previousText) {
       // Caso possua condições para ser captalizado.
       if (upperCaseCondition.includes(previousText.substr(-1))) {
         textFormatted = upperText(textFormatted)
       }
 
-      // Adiciona espaco caso haja texto antes dele.
+      // Adds space if there is text before it.
       if (previousText.length > 0) {
         textFormatted = ' '+textFormatted
       }
@@ -58,7 +58,7 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraInference) {
-    // caso nao saia nada da gravação, parar propagação.
+    // Skip inference insertion if transcript is empty.
     if (!inference.transcript) return
 
     if (inference.isFirst) {
