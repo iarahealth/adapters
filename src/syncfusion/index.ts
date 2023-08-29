@@ -43,12 +43,12 @@ export class IaraSyncfusionAdapter
 
     // It has text before it.
     if (previousText) {
-      // Caso possua condições para ser captalizado.
+      // Capitalized Filter
       if (upperCaseCondition.includes(previousText.substr(-1))) {
         textFormatted = upperText(textFormatted)
       }
 
-      // Adds space if there is text before it.
+      // Space Filter
       if (previousText.length > 0) {
         textFormatted = ' '+textFormatted
       }
