@@ -33,11 +33,12 @@ export class IaraSyncfusionAdapter
   }
 
   private textFormatter(nextText: string) {
-    let textFormatted = nextText
-    const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n']
-    // Needed to be "any" due to lack of correct declarations in"@syncfusion/ej2-documenteditor"
-    const lastContent = this._editorSelection.end.paragraph.lastChild as any
-    const previousText = lastContent.renderedElements[0]?.text
+    let textFormatted = nextText;
+    const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n'];
+
+    // Get previous content
+    this._editorSelection.selectParagraph();
+    let previousText: string = this._editorSelection.text;
 
     function upperText (text: string) {return text.charAt(0).toUpperCase() + text.slice(1)}
 
@@ -45,16 +46,16 @@ export class IaraSyncfusionAdapter
     if (previousText) {
       // Capitalized Filter
       if (upperCaseCondition.includes(previousText.substr(-1))) {
-        textFormatted = upperText(textFormatted)
+        textFormatted = upperText(textFormatted);
       }
 
       // Space Filter
       if (previousText.length > 0) {
-        textFormatted = ' '+textFormatted
+        textFormatted = ' '+textFormatted;
       }
     }
 
-    return textFormatted
+    return previousText + textFormatted;
   }
 
   insertInference(inference: IaraInference) {
