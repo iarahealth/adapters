@@ -51,6 +51,11 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  blockEditorWhileSpeaking (status: boolean) {
+    const wrapper = document.getElementById('iara-syncfusion-editor-container')
+    if (wrapper) status ? wrapper.style.cursor = 'not-allowed' : wrapper.style.cursor = 'auto'
+  }
+
   undo() {
     this._editorHistory.undo();
   }
