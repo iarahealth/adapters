@@ -18,7 +18,7 @@ export abstract class EditorAdapter {
   finishReport(): void {
     this._recognition.finishReport();
   }
-  protected _onReportChanged(content: string[]): Promise<void> {
-    return this._recognition.report.change(content[0], content[1]);
+  protected _onReportChanged(content: string): Promise<void> {
+    return this._recognition.report.change(content, "");
   }
 }

@@ -1,4 +1,9 @@
-import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
+import type {
+  Editor,
+  EditorHistory,
+  Selection,
+} from "@syncfusion/ej2-documenteditor";
+
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
@@ -7,13 +12,19 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _initialUndoStackSize = 0;
-
+  public spanSavingEditor = document.createElement("span");
+  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
   private get _editorAPI(): Editor {
     return this._editor.editor;
   }
 
   private get _editorHistory(): EditorHistory {
     return this._editor.editorHistory;
+  }
+
+  constructor(protected _editor: any, protected _recognition: any) {
+    super(_editor, _recognition);
+    this._editor.contentChange = this._onContentChange.bind(this);
   }
 
   getUndoStackSize(): number {
@@ -50,6 +61,43 @@ export class IaraSyncfusionAdapter
       if (line) this.insertText(line);
     });
   }
+
+  private async _onContentChange() {
+    const element = document.getElementById(
+      "iara-syncfusion-editor-container_editor"
+    );
+    if (element) {
+      this.spanSavingEditor.style.margin = "10px";
+      this.spanSavingEditor.style.fontSize = "14px";
+      this.spanSavingEditor.style.display = "flex";
+      this.spanSavingEditor.style.justifyContent = "end";
+      this.spanSavingEditor.innerText = "Salvando...";
+      element.appendChild(this.spanSavingEditor);
+    }
+    let contentText = await this._editor.documentEditor
+      .saveAsBlob("Txt")
+      .then(async (blob: Blob) => {
+        return await blob.text();
+      });
+    let contentSfdt = await this._editor.documentEditor
+      .saveAsBlob("Sfdt")
+      .then(async (blob: Blob) => {
+        return await blob.text();
+      });
+    console.log(contentSfdt, "QUISS");
+    this.debounceToSave(() => this._onReportChanged(contentText));
+  }
+
+  debounceToSave = (func: () => void) => {
+    if (!this.timeoutToSave) {
+      func();
+    }
+    clearTimeout(this.timeoutToSave);
+    this.timeoutToSave = setTimeout(() => {
+      this.timeoutToSave = undefined;
+      this.spanSavingEditor.innerText = "Salvo";
+    }, 3000);
+  };
 
   undo() {
     this._editorHistory.undo();
