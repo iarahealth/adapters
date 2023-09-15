@@ -32,44 +32,17 @@ export class IaraSyncfusionAdapter
     this._editorAPI.insertText(text);
   }
 
-  public setEditorContent(content: any) {
-    content = "<?xml version='1.0' encoding='utf - 8'?><!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN''http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'><html xmlns ='http://www.w3.org/1999/xhtml' xml:lang='en' lang ='en'><body><h1>The img element</h1><img src='https://www.w3schools.com/images/lamp.jpg' alt ='Lamp Image' width='500' height='600'/></body></html>";
-
-    this._editorAPI.delete();
-
-    let http: XMLHttpRequest = new XMLHttpRequest();
-    let response: any;
-
-    http.open('POST', '/api/documenteditor/LoadString');
-    http.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    http.responseType = 'json';
-    http.onreadystatechange = function () {
-      if ( http.readyState === 4 ) {
-        if ( http.status === 200 || http.status === 304 ) {
-          response = http.response;
-          return;
-        }
-        console.error('Falha na conversão sfdt');
-      }
-    };
-
-    this._editorAPI.paste(response);
-
-    let htmlContent: any = { content: content };
-    http.send(JSON.stringify(htmlContent));
-  }
-
   private textFormatter(nextText: string) {
     let textFormatted = nextText;
     const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n'];
-
-    // Get previous content
-    this._editorSelection.selectParagraph();
-    let previousText: string = this._editorSelection.text;
+    const previousText = this._editorSelection.text;
+    
+    // If previous text not exists.
+    if ( previousText.length == 0 ) this._editorSelection.selectCurrentWord();
 
     function upperText (text: string) {return text.charAt(0).toUpperCase() + text.slice(1)}
 
-    // It has text before it.
+    // It has text before it
     if (previousText) {
       // Capitalized Filter
       if (upperCaseCondition.includes(previousText.substr(-1))) {
@@ -77,12 +50,12 @@ export class IaraSyncfusionAdapter
       }
 
       // Space Filter
-      if (previousText.length > 0) {
+      if (previousText.length > 1) {
         textFormatted = ' '+textFormatted;
       }
     }
 
-    return previousText + textFormatted;
+    return previousText + textFormatted + ' ';
   }
 
   insertInference(inference: IaraInference) {
@@ -100,8 +73,8 @@ export class IaraSyncfusionAdapter
     let text = inference.richTranscript
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
-    
-    text = this.textFormatter(text)
+
+    text = this.textFormatter(text);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
 
@@ -112,9 +85,6 @@ export class IaraSyncfusionAdapter
       line = line.trim();
       if (line) this.insertText(line);
     });
-
-    this.setEditorContent(inference);
-
   }
 
   undo() {
