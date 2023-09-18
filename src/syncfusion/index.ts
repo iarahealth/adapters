@@ -32,13 +32,25 @@ export class IaraSyncfusionAdapter
     this._editorAPI.insertText(text);
   }
 
-  private textFormatter(nextText: string) {
-    let textFormatted = nextText;
+  private textFormatter(newText: string) {
+    let textFormatted = newText;
     const upperCaseCondition: Array<string> = ['.',':',';','?','!','\n'];
-    const previousText = this._editorSelection.text;
+    const previousText: string = this._editorSelection.text;
+    let nextText = ''
+
+    this._editorSelection.selectBookmark('Bookmark1');
+    nextText = this._editorSelection.text;
+
+    if ( nextText ) {
+      this._editorSelection.selectCurrentWord();
+      this._editorAPI.insertBookmark('Bookmark1');
+      this._editorSelection.clear();
+    }
     
     // If previous text not exists.
     if ( previousText.length == 0 ) this._editorSelection.selectCurrentWord();
+
+    
 
     function upperText (text: string) {return text.charAt(0).toUpperCase() + text.slice(1)}
 
@@ -54,6 +66,11 @@ export class IaraSyncfusionAdapter
         textFormatted = ' '+textFormatted;
       }
     }
+
+    // If has text after
+    // this._editorSelection.moveToNextCharacter();
+
+    console.log('nextText', nextText)
 
     return previousText + textFormatted + ' ';
   }
