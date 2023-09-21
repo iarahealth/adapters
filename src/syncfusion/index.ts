@@ -1,17 +1,14 @@
 import type { Editor, EditorHistory, Selection } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
-
-interface SelectionOffsets {
-  end: string; 
-  start: string;
-}
+import { IaraSyncfusionInferenceFormatter } from "./formatter";
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
   implements EditorAdapter
 {
   private _initialUndoStackSize = 0;
+  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -25,28 +22,9 @@ export class IaraSyncfusionAdapter
     return this._editor.selection;
   }
 
-  private _addTrailingSpaces(text: string) {    
-    const initialSelectionOffsets = {end: this._editorSelection.endOffset, start: this._editorSelection.startOffset};
-    const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
-    const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
-
-    const prefix = (wordBefore.length && !wordBefore.endsWith(' ')) ? ' ': '';
-    const suffix = (wordAfter.length && !wordAfter.startsWith(' ')) ? ' ': '';
-    return `${prefix}${text}${suffix}`;
-  }
-
-  private _getWordAfterSelection(selectionOffsets: SelectionOffsets): string {
-    this._editorSelection.extendToWordEnd();
-    const wordAfter = this._editorSelection.text.trimEnd();
-    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
-    return wordAfter;
-  }
-
-  private _getWordBeforeSelection(selectionOffsets: SelectionOffsets): string {
-    this._editorSelection.extendToWordStart();
-    const wordBefore = this._editorSelection.text.trimStart();
-    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
-    return wordBefore;
+  constructor(protected _editor: any, protected _recognition: any) {
+    super(_editor, _recognition);
+    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(this._editorSelection);
   }
 
   getUndoStackSize(): number {
@@ -71,10 +49,7 @@ export class IaraSyncfusionAdapter
       this.undo();
     }
 
-    let text = inference.richTranscript
-      .replace(/^<div>/, "")
-      .replace(/<\/div>$/, "");
-    text = this._addTrailingSpaces(text);
+    const text = this._inferenceFormatter.format(inference);
    
     let [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
