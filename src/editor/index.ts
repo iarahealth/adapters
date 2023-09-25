@@ -12,13 +12,14 @@ export abstract class EditorAdapter {
 
   abstract insertInference(inference: IaraInference): void;
 
-  beginReport(): void {
-    this._recognition.beginReport();
+  beginReport(currentReportId?: string): void {
+    if (currentReportId) return;
+    return this._recognition.beginReport();
   }
   finishReport(): void {
     this._recognition.finishReport();
   }
-  protected _onReportChanged(content: string): Promise<void> {
-    return this._recognition.report.change(content, "");
+  protected _onReportChanged(content: string, html: string): Promise<void> {
+    return this._recognition.report.change(content, html);
   }
 }

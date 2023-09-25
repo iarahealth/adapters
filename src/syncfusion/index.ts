@@ -1,8 +1,4 @@
-import type {
-  Editor,
-  EditorHistory,
-  Selection,
-} from "@syncfusion/ej2-documenteditor";
+import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
 
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
@@ -74,21 +70,35 @@ export class IaraSyncfusionAdapter
       this.spanSavingEditor.innerText = "Salvando...";
       element.appendChild(this.spanSavingEditor);
     }
-    let contentText = await this._editor.documentEditor
+    let contentText = await this._editor
       .saveAsBlob("Txt")
       .then(async (blob: Blob) => {
         return await blob.text();
       });
-    let contentSfdt = await this._editor.documentEditor
+    let contentSfdt = await this._editor
       .saveAsBlob("Sfdt")
       .then(async (blob: Blob) => {
         return await blob.text();
       });
-    console.log(contentSfdt, "QUISS");
-    this.debounceToSave(() => this._onReportChanged(contentText));
+
+    const response = fetch(
+      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        method: "POST",
+        body: contentSfdt,
+      }
+    );
+    const htmlContent = await response;
+    const html = await htmlContent.json();
+
+    this._debounceToSave(() => this._onReportChanged(contentText, html.html));
   }
 
-  debounceToSave = (func: () => void) => {
+  private _debounceToSave = (func: () => void) => {
     if (!this.timeoutToSave) {
       func();
     }
