@@ -1,6 +1,11 @@
-import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
+import {
+  type Editor,
+  type EditorHistory,
+} from "@syncfusion/ej2-documenteditor";
+
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
+import { toolBarSettings, toolbarButtonClick } from "./toolbarConfig";
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
@@ -8,12 +13,22 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
 
+  private _toolBar = this._editor.toolbarModule.toolbar;
+
   private get _editorAPI(): Editor {
-    return this._editor.editor;
+    return this._editor.documentEditor.editor;
   }
 
   private get _editorHistory(): EditorHistory {
-    return this._editor.editorHistory;
+    return this._editor.documentEditor.editorHistory;
+  }
+
+  constructor(_editor: any, _recognition: any) {
+    super(_editor, _recognition);
+    const toolbarItems = toolBarSettings(this._editor);
+    this._toolBar.addItems(toolbarItems, 5);
+    this._toolBar.clicked = (arg: { item: { id: any } }) =>
+      toolbarButtonClick(arg, this._editorAPI);
   }
 
   getUndoStackSize(): number {
