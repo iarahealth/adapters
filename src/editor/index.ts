@@ -8,9 +8,23 @@ export abstract class EditorAdapter {
         this.insertInference(event.detail);
       }
     );
+    _recognition.addEventListener("iaraSpeechRecognitionStart", () => {
+      this.blockEditorWhileSpeaking(true);
+    });
+    _recognition.addEventListener("iaraSpeechRecognitionStop", () => {
+      this.blockEditorWhileSpeaking(false);
+    });
+    // VAD Events
+    _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStart", () => {
+      this.blockEditorWhileSpeaking(true);
+    });
+    _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStop", () => {
+      this.blockEditorWhileSpeaking(false);
+    });
   }
 
   abstract insertInference(inference: IaraInference): void;
+  abstract blockEditorWhileSpeaking(status: any): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;

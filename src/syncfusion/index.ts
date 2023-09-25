@@ -70,12 +70,12 @@ export class IaraSyncfusionAdapter
       this.spanSavingEditor.innerText = "Salvando...";
       element.appendChild(this.spanSavingEditor);
     }
-    let contentText = await this._editor
+    const contentText = await this._editor
       .saveAsBlob("Txt")
       .then(async (blob: Blob) => {
         return await blob.text();
       });
-    let contentSfdt = await this._editor
+    const contentSfdt = await this._editor
       .saveAsBlob("Sfdt")
       .then(async (blob: Blob) => {
         return await blob.text();
@@ -108,6 +108,14 @@ export class IaraSyncfusionAdapter
       this.spanSavingEditor.innerText = "Salvo";
     }, 3000);
   };
+
+  blockEditorWhileSpeaking(status: boolean) {
+    const wrapper = document.getElementById("iara-syncfusion-editor-container");
+    if (wrapper)
+      status
+        ? (wrapper.style.cursor = "not-allowed")
+        : (wrapper.style.cursor = "auto");
+  }
 
   undo() {
     this._editorHistory.undo();
