@@ -8,7 +8,7 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _initialUndoStackSize = 0;
-  public spanSavingEditor = document.createElement("span");
+  public spanSavingReport = document.createElement("span");
   public timeoutToSave: string | number | NodeJS.Timeout | undefined;
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -63,12 +63,12 @@ export class IaraSyncfusionAdapter
       "iara-syncfusion-editor-container_editor"
     );
     if (element) {
-      this.spanSavingEditor.style.margin = "10px";
-      this.spanSavingEditor.style.fontSize = "14px";
-      this.spanSavingEditor.style.display = "flex";
-      this.spanSavingEditor.style.justifyContent = "end";
-      this.spanSavingEditor.innerText = "Salvando...";
-      element.appendChild(this.spanSavingEditor);
+      this.spanSavingReport.style.margin = "10px";
+      this.spanSavingReport.style.fontSize = "14px";
+      this.spanSavingReport.style.display = "flex";
+      this.spanSavingReport.style.justifyContent = "end";
+      this.spanSavingReport.innerText = "Salvando...";
+      element.appendChild(this.spanSavingReport);
     }
     const contentText = await this._editor
       .saveAsBlob("Txt")
@@ -105,7 +105,7 @@ export class IaraSyncfusionAdapter
     clearTimeout(this.timeoutToSave);
     this.timeoutToSave = setTimeout(() => {
       this.timeoutToSave = undefined;
-      this.spanSavingEditor.innerText = "Salvo";
+      this.spanSavingReport.innerText = "Salvo";
     }, 3000);
   };
 
