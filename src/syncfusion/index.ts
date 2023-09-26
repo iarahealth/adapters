@@ -1,26 +1,37 @@
-import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
-
+import type {
+  Editor,
+  EditorHistory,
+  Selection,
+} from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
+import { IaraSyncfusionInferenceFormatter } from "./formatter";
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
   implements EditorAdapter
 {
   private _initialUndoStackSize = 0;
-  public spanSavingReport = document.createElement("span");
+  public savingReportSpan = document.createElement("span");
   public timeoutToSave: string | number | NodeJS.Timeout | undefined;
+  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
+
   private get _editorAPI(): Editor {
     return this._editor.editor;
   }
-
   private get _editorHistory(): EditorHistory {
     return this._editor.editorHistory;
+  }
+  private get _editorSelection(): Selection {
+    return this._editor.selection;
   }
 
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
+    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
+      this._editorSelection
+    );
   }
 
   getUndoStackSize(): number {
@@ -37,6 +48,7 @@ export class IaraSyncfusionAdapter
 
   insertInference(inference: IaraInference) {
     if (inference.isFirst) {
+      if (this._editorSelection.text.length) this._editorAPI.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
       const undoStackSize = this.getUndoStackSize();
@@ -44,16 +56,14 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = inference.richTranscript
-      .replace(/^<div>/, "")
-      .replace(/<\/div>$/, "");
-    const [firstLine, ...lines]: string[] = text.split("</div><div>");
+    const text = this._inferenceFormatter.format(inference);
 
+    const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
 
     lines.forEach(line => {
       this.insertParagraph();
-      line = line.trim();
+      line = line.trimStart();
       if (line) this.insertText(line);
     });
   }
@@ -63,23 +73,20 @@ export class IaraSyncfusionAdapter
       "iara-syncfusion-editor-container_editor"
     );
     if (element) {
-      this.spanSavingReport.style.margin = "10px";
-      this.spanSavingReport.style.fontSize = "14px";
-      this.spanSavingReport.style.display = "flex";
-      this.spanSavingReport.style.justifyContent = "end";
-      this.spanSavingReport.innerText = "Salvando...";
-      element.appendChild(this.spanSavingReport);
+      this.savingReportSpan.style.margin = "10px";
+      this.savingReportSpan.style.fontSize = "14px";
+      this.savingReportSpan.style.display = "flex";
+      this.savingReportSpan.style.justifyContent = "end";
+      this.savingReportSpan.innerText = "Salvando...";
+      element.appendChild(this.savingReportSpan);
     }
     const contentText = await this._editor
       .saveAsBlob("Txt")
-      .then(async (blob: Blob) => {
-        return await blob.text();
-      });
+      .then((blob: Blob) => blob.text());
+
     const contentSfdt = await this._editor
       .saveAsBlob("Sfdt")
-      .then(async (blob: Blob) => {
-        return await blob.text();
-      });
+      .then((blob: Blob) => blob.text());
 
     const response = fetch(
       "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
@@ -92,10 +99,11 @@ export class IaraSyncfusionAdapter
         body: contentSfdt,
       }
     );
-    const htmlContent = await response;
-    const html = await htmlContent.json();
+    const htmlContent = await response.then(response => response.json());
 
-    this._debounceToSave(() => this._onReportChanged(contentText, html.html));
+    this._debounceToSave(() =>
+      this._onReportChanged(contentText, htmlContent.html)
+    );
   }
 
   private _debounceToSave = (func: () => void) => {
@@ -105,7 +113,7 @@ export class IaraSyncfusionAdapter
     clearTimeout(this.timeoutToSave);
     this.timeoutToSave = setTimeout(() => {
       this.timeoutToSave = undefined;
-      this.spanSavingReport.innerText = "Salvo";
+      this.savingReportSpan.innerText = "Salvo";
     }, 3000);
   };
 

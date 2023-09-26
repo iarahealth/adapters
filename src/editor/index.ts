@@ -33,7 +33,10 @@ export abstract class EditorAdapter {
   finishReport(): void {
     this._recognition.finishReport();
   }
-  protected _onReportChanged(content: string, html: string): Promise<void> {
-    return this._recognition.report.change(content, html);
+  protected _onReportChanged(
+    plainContent: string,
+    richContent: string
+  ): Promise<void> {
+    return this._recognition.report.change(plainContent, richContent);
   }
 }
