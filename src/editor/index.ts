@@ -7,44 +7,36 @@ export abstract class EditorAdapter {
       (event: { detail: IaraInference }) => {
         this.insertInference(event.detail);
       }
-    )
-    _recognition.addEventListener(
-      "iaraSpeechRecognitionStart",
-      () => {
-        this.blockEditorWhileSpeaking(true)
-      }
-    )
-    _recognition.addEventListener(
-      "iaraSpeechRecognitionStop",
-      () => {
-        this.blockEditorWhileSpeaking(false)
-      }
-    )
+    );
+    _recognition.addEventListener("iaraSpeechRecognitionStart", () => {
+      this.blockEditorWhileSpeaking(true);
+    });
+    _recognition.addEventListener("iaraSpeechRecognitionStop", () => {
+      this.blockEditorWhileSpeaking(false);
+    });
     // VAD Events
-    _recognition.addEventListener(
-      "iaraSpeechRecognitionVADVoiceStart",
-      () => {
-        this.blockEditorWhileSpeaking(true)
-      }
-    )
-    _recognition.addEventListener(
-      "iaraSpeechRecognitionVADVoiceStop",
-      () => {
-        this.blockEditorWhileSpeaking(false)
-      }
-    )
+    _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStart", () => {
+      this.blockEditorWhileSpeaking(true);
+    });
+    _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStop", () => {
+      this.blockEditorWhileSpeaking(false);
+    });
   }
 
   abstract insertInference(inference: IaraInference): void;
   abstract blockEditorWhileSpeaking(status: any): void;
 
-  beginReport(): void {
-    this._recognition.beginReport();
+  beginReport(currentReportId?: string): void {
+    if (currentReportId) return;
+    return this._recognition.beginReport();
   }
   finishReport(): void {
     this._recognition.finishReport();
   }
-  protected _onReportChanged(content: string[]): Promise<void> {
-    return this._recognition.report.change(content[0], content[1]);
+  protected _onReportChanged(
+    plainContent: string,
+    richContent: string
+  ): Promise<void> {
+    return this._recognition.report.change(plainContent, richContent);
   }
 }
