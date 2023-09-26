@@ -34,6 +34,10 @@ export class IaraSyncfusionAdapter
     );
   }
 
+  private get _recognitionInternal(): any {
+    return this._recognition.internal;
+  }
+
   getUndoStackSize(): number {
     return this._editorHistory.undoStack?.length || 0;
   }
@@ -44,6 +48,34 @@ export class IaraSyncfusionAdapter
 
   insertText(text: string) {
     this._editorAPI.insertText(text);
+  }
+
+  async converter(template: string, type: 'html' | 'sfdt') {
+    const { Authorization } = this._recognitionInternal.iaraAPIMandatoryHeaders;
+    let htmlContent: any = type == 'html' ? { html: template } : { sfdt: template };
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/';
+    endpoint += type == 'html' ? 'html_to_sfdt/' : 'sfdt_to_html/';
+
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json;charset=UTF-8");
+    headers.append("Authorization", Authorization);
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(htmlContent),
+      })
+      .then(async (response) => await response.json())
+      .catch(function (error) {
+        console.error(error.message)
+      });
+
+    return response;
+  }
+
+  async insertTemplate(template: string) {
+    const response = await this.converter(template, 'html');
+    this._editor.open(response);
   }
 
   insertInference(inference: IaraInference) {
