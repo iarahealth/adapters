@@ -13,7 +13,7 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
-  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
+  public timeoutToSave: any;
   private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
 
   private get _editorAPI(): Editor {
