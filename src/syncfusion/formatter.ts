@@ -34,6 +34,30 @@ export class IaraSyncfusionInferenceFormatter {
       : text;
   }
 
+  private _copyContent(isCut: boolean, selectionOffsets: SelectionOffsets) {
+    this._selection.selectAll();
+    this._selection.copySelectedContent(isCut);
+    this._selection.select(selectionOffsets.start, selectionOffsets.end);
+  }
+
+  private _iaraServices(command: string, selectionOffsets: SelectionOffsets) {
+    // iara copiar laudo
+    if (command.includes('iara copiar laudo')) {
+      this._copyContent(false, selectionOffsets);
+      alert('Laudo copiado para a área de transferência (CTRL + C)');
+      return command.replace(/iara copiar laudo/g,'');
+    }
+
+    // iara finalizar laudo
+    if (command.includes('iara finalizar laudo')) {
+      this._copyContent(true, selectionOffsets);
+      alert('Laudo copiado para a área de transferência (CTRL + C) e o editor de texto foi limpo.');
+      return command.replace(/iara finalizar laudo/g,'');
+    }
+
+    return command;
+  }
+
   private _getWordAfterSelection(selectionOffsets: SelectionOffsets): string {
     this._selection.extendToWordEnd();
     const wordAfter = this._selection.text.trimEnd();
@@ -62,6 +86,7 @@ export class IaraSyncfusionInferenceFormatter {
 
     text = this._addTrailingSpaces(text, wordAfter, wordBefore);
     text = this._capitalize(text, wordBefore);
+    text = this._iaraServices(text, initialSelectionOffsets);
 
     return text;
   }

@@ -29,6 +29,7 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
+    this._editor.enableLocalPaste = true;
     this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
       this._editorSelection
     );
