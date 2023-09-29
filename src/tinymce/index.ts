@@ -1,3 +1,4 @@
+import type { Selection } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
@@ -6,6 +7,9 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   private get _editorAPI() {
     return this._editor.activeEditor;
+  }
+  private get _editorSelection(): Selection {
+    return this._editor.selection;
   }
 
   getUndoStackSize(): number {
@@ -43,12 +47,22 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorAPI.insertContent(text);
   }
 
-  blockEditorWhileSpeech (status: boolean) {
+  blockEditorWhileSpeaking (status: boolean) {
     const wrapper = document.getElementsByTagName('tinymce')[0] as HTMLElement
     if (wrapper) status ? wrapper.style.cursor = 'not-allowed' : wrapper.style.cursor = 'auto'
   }
 
   undo() {
     this._editorAPI.undoManager.undo();
+  }
+
+  copyReport(): void {
+    this._editorSelection.selectAll();
+    this._editorSelection.copySelectedContent(false);
+  }
+
+  clearReport(): void {
+    this._editorSelection.selectAll();
+    this._editorAPI.delete();
   }
 }

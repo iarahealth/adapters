@@ -129,4 +129,14 @@ export class IaraSyncfusionAdapter
   undo() {
     this._editorHistory.undo();
   }
+
+  copyReport(): void {
+    this._editorSelection.selectAll();
+    this._editorSelection.copySelectedContent(false);
+  }
+
+  clearReport(): void {
+    this._editorSelection.selectAll();
+    this._editorAPI.delete();
+  }
 }
