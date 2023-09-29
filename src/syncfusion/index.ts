@@ -34,10 +34,6 @@ export class IaraSyncfusionAdapter
     );
   }
 
-  private get _recognitionInternal(): any {
-    return this._recognition.internal;
-  }
-
   getUndoStackSize(): number {
     return this._editorHistory.undoStack?.length || 0;
   }
@@ -51,7 +47,7 @@ export class IaraSyncfusionAdapter
   }
 
   async getEditorContent() {
-    const content = await this._editor.saveAsBlob("Sfdt")
+    const content = await this._editor.saveAsBlob("Txt")
       .then((blob: Blob) => blob.text());
     return content;
   }
