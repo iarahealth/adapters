@@ -34,10 +34,6 @@ export class IaraSyncfusionAdapter
     );
   }
 
-  private get _recognitionInternal(): any {
-    return this._recognition.internal;
-  }
-
   getUndoStackSize(): number {
     return this._editorHistory.undoStack?.length || 0;
   }
@@ -50,10 +46,8 @@ export class IaraSyncfusionAdapter
     this._editorAPI.insertText(text);
   }
 
-  async converter(template: string, type: 'html' | 'sfdt') {
-    let htmlContent: any = type == 'html' ? { html: template } : { sfdt: template };
-    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/';
-    endpoint += type == 'html' ? 'html_to_sfdt/' : 'sfdt_to_html/';
+  async sfdtToHtml(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/';
 
     const response = await fetch(endpoint, {
         method: "POST",
@@ -61,18 +55,31 @@ export class IaraSyncfusionAdapter
           "Content-Type": "application/json",
           ...this._recognition.internal.iaraAPIMandatoryHeaders,
         },
-        body: JSON.stringify(htmlContent),
+        body: JSON.stringify({ sfdt: content }),
       })
-      .then(async (response) => await response.json())
-      .catch(function (error) {
-        console.error(error.message)
-      });
+      .then(async (response) => await response.json());
+
+    return response;
+  }
+
+  async htmlToSfdt(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/';
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        body: JSON.stringify({ html: content }),
+      })
+      .then(async (response) => await response.json());
 
     return response;
   }
 
   async insertTemplate(template: string) {
-    const response = await this.converter(template, 'html');
+    const response = await this.htmlToSfdt(template);
     this._editor.open(response);
   }
 
