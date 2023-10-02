@@ -46,6 +46,43 @@ export class IaraSyncfusionAdapter
     this._editorAPI.insertText(text);
   }
 
+  async sfdtToHtml(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/';
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        body: JSON.stringify({ sfdt: content }),
+      })
+      .then(async (response) => await response.json());
+
+    return response;
+  }
+
+  async htmlToSfdt(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/';
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        body: JSON.stringify({ html: content }),
+      })
+      .then(async (response) => await response.json());
+
+    return response;
+  }
+
+  async insertTemplate(template: string) {
+    const response = await this.htmlToSfdt(template);
+    this._editor.open(response);
+  }
+
   insertInference(inference: IaraInference) {
     if (inference.isFirst) {
       if (this._editorSelection.text.length) this._editorAPI.delete();
