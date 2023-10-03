@@ -24,7 +24,7 @@ export abstract class EditorAdapter {
   }
 
   abstract insertInference(inference: IaraInference): void;
-  abstract blockEditorWhileSpeech(status: any): void;
+  abstract blockEditorWhileSpeaking(status: any): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;
