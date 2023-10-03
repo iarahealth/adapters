@@ -47,7 +47,7 @@ export class IaraSyncfusionAdapter
   }
 
   async getEditorContent() {
-    const content = await this._editor.saveAsBlob("Txt")
+    const content = await this._editor.saveAsBlob("Html")
       .then((blob: Blob) => blob.text());
     return content;
   }
@@ -71,7 +71,7 @@ export class IaraSyncfusionAdapter
       this.insertParagraph();
       line = line.trimStart();
       if (line) this.insertText(line);
-    });
+    }); 
   }
 
   private async _onContentChange() {
