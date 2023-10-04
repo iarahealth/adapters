@@ -35,6 +35,10 @@ export class IaraSyncfusionAdapter
     );
   }
 
+  private get _recognitionInternal(): any {
+    return this._recognition.internal;
+  }
+
   getUndoStackSize(): number {
     return this._editorHistory.undoStack?.length || 0;
   }
