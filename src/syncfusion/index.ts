@@ -83,6 +83,12 @@ export class IaraSyncfusionAdapter
     const response = await this.htmlToSfdt(template);
     this._editor.open(response);
   }
+  
+  async getEditorContent() {
+    const content = await this._editor.saveAsBlob("Html")
+      .then((blob: Blob) => blob.text());
+    return content;
+  }
 
   insertInference(inference: IaraInference) {
     if (inference.isFirst) {
@@ -103,7 +109,7 @@ export class IaraSyncfusionAdapter
       this.insertParagraph();
       line = line.trimStart();
       if (line) this.insertText(line);
-    });
+    }); 
   }
 
   private async _onContentChange() {
