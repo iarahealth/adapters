@@ -65,4 +65,12 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorSelection.selectAll();
     this._editorAPI.delete();
   }
+
+  setEditorFontFamily(fontName: string): void {
+    throw new Error("Método não implementado.");
+  }
+
+  setEditorFontSize(fontSize: number): void {
+    throw new Error("Método não implementado.");
+  }
 }
