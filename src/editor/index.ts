@@ -42,7 +42,7 @@ export abstract class EditorAdapter {
     if (currentReportId) return;
     return this._recognition.beginReport();
   }
-  finishReport(): void {  
+  finishReport(): void {
     this.copyReport();
     this.clearReport();
     this._recognition.finishReport();

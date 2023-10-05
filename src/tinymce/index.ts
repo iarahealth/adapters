@@ -47,7 +47,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorAPI.insertContent(text);
   }
 
-  blockEditorWhileSpeech (status: boolean) {
+  blockEditorWhileSpeaking (status: boolean) {
     const wrapper = document.getElementsByTagName('tinymce')[0] as HTMLElement
     if (wrapper) status ? wrapper.style.cursor = 'not-allowed' : wrapper.style.cursor = 'auto'
   }
