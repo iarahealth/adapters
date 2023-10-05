@@ -35,12 +35,13 @@ export abstract class EditorAdapter {
   abstract blockEditorWhileSpeaking(status: any): void;
   abstract copyReport(): void;
   abstract clearReport(): void;
+  abstract setEditorFont(fontName: string): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;
     return this._recognition.beginReport();
   }
-  finishReport(): void {
+  finishReport(): void {  
     this.copyReport();
     this.clearReport();
     this._recognition.finishReport();

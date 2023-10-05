@@ -182,4 +182,9 @@ export class IaraSyncfusionAdapter
     this._editorSelection.selectAll();
     this._editorAPI.delete();
   }
+
+  setEditorFont(fontName: string): void {
+    this._editorSelection.characterFormat.fontFamily = fontName;
+    this._editor.focusIn();
+  }
 }
