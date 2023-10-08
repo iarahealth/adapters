@@ -35,6 +35,8 @@ export abstract class EditorAdapter {
   abstract blockEditorWhileSpeaking(status: any): void;
   abstract copyReport(): void;
   abstract clearReport(): void;
+  abstract setEditorFontFamily(fontName: string): void;
+  abstract setEditorFontSize(fontSize: number): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;
