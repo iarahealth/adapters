@@ -100,7 +100,7 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = this._inferenceFormatter.format(inference);
+    const text = this.textFormatter(inference);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
@@ -181,6 +181,11 @@ export class IaraSyncfusionAdapter
   clearReport(): void {
     this._editorSelection.selectAll();
     this._editorAPI.delete();
+  }
+
+  textFormatter(text: IaraInference): string {
+    const formatted = this._inferenceFormatter.format(text);
+    return formatted;
   }
 
   setEditorFontFamily(fontFamily: string): void {

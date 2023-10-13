@@ -35,6 +35,7 @@ export abstract class EditorAdapter {
   abstract blockEditorWhileSpeaking(status: any): void;
   abstract copyReport(): void;
   abstract clearReport(): void;
+  abstract textFormatter(text: IaraInference): string;
   abstract setEditorFontFamily(fontName: string): void;
   abstract setEditorFontSize(fontSize: number): void;
 
