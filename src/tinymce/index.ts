@@ -1,4 +1,3 @@
-import type { Selection } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 
@@ -7,9 +6,6 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   private get _editorAPI() {
     return this._editor.activeEditor;
-  }
-  private get _editorSelection(): Selection {
-    return this._editor.selection;
   }
 
   getUndoStackSize(): number {
@@ -58,16 +54,6 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   undo() {
     this._editorAPI.undoManager.undo();
-  }
-
-  copyReport(): void {
-    this._editorSelection.selectAll();
-    this._editorSelection.copySelectedContent(false);
-  }
-
-  clearReport(): void {
-    this._editorSelection.selectAll();
-    this._editorAPI.delete();
   }
 
   textFormatter(_text: IaraInference): string {
