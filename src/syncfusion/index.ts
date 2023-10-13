@@ -13,7 +13,7 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
-  public timeoutToSave: any;
+  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
   private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
 
   private get _editorAPI(): Editor {
@@ -29,7 +29,6 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
-    this._editor.enableLocalPaste = true;
     this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
       this._editorSelection
     );
@@ -47,49 +46,6 @@ export class IaraSyncfusionAdapter
     this._editorAPI.insertText(text);
   }
 
-  async sfdtToHtml(content: string) {
-    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/';
-
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...this._recognition.internal.iaraAPIMandatoryHeaders,
-        },
-        body: JSON.stringify({ sfdt: content }),
-      })
-      .then(async (response) => await response.json());
-
-    return response;
-  }
-
-  async htmlToSfdt(content: string) {
-    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/';
-
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...this._recognition.internal.iaraAPIMandatoryHeaders,
-        },
-        body: JSON.stringify({ html: content }),
-      })
-      .then(async (response) => await response.json());
-
-    return response;
-  }
-
-  async insertTemplate(template: string) {
-    const response = await this.htmlToSfdt(template);
-    this._editor.open(response);
-  }
-  
-  async getEditorContent() {
-    const content = await this._editor.saveAsBlob("Html")
-      .then((blob: Blob) => blob.text());
-    return content;
-  }
-
   insertInference(inference: IaraInference) {
     if (inference.isFirst) {
       if (this._editorSelection.text.length) this._editorAPI.delete();
@@ -100,7 +56,7 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = this.textFormatter(inference);
+    const text = this._inferenceFormatter.format(inference);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
@@ -171,30 +127,5 @@ export class IaraSyncfusionAdapter
 
   undo() {
     this._editorHistory.undo();
-  }
-
-  copyReport(): void {
-    this._editorSelection.selectAll();
-    this._editorSelection.copySelectedContent(false);
-  }
-
-  clearReport(): void {
-    this._editorSelection.selectAll();
-    this._editorAPI.delete();
-  }
-
-  textFormatter(text: IaraInference): string {
-    const formatted = this._inferenceFormatter.format(text);
-    return formatted;
-  }
-
-  setEditorFontFamily(fontFamily: string): void {
-    this._editorSelection.characterFormat.fontFamily = fontFamily;
-    this._editor.focusIn();
-  }
-
-  setEditorFontSize(fontSize: number): void {
-    this._editorSelection.characterFormat.fontSize = fontSize;
-    this._editor.focusIn();
   }
 }
