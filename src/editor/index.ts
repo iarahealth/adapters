@@ -25,19 +25,13 @@ export abstract class EditorAdapter {
 
   abstract insertInference(inference: IaraInference): void;
   abstract blockEditorWhileSpeaking(status: any): void;
-  abstract copyReport(): void;
-  abstract clearReport(): void;
   abstract textFormatter(text: IaraInference): string;
-  abstract setEditorFontFamily(fontName: string): void;
-  abstract setEditorFontSize(fontSize: number): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;
     return this._recognition.beginReport();
   }
   finishReport(): void {
-    this.copyReport();
-    this.clearReport();
     this._recognition.finishReport();
   }
   protected _onReportChanged(
