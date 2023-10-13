@@ -55,12 +55,4 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   textFormatter(_text: IaraInference): string {
     throw new Error("Método não implementado.");
   }
-
-  setEditorFontFamily(_fontName: string): void {
-    throw new Error("Método não implementado.");
-  }
-
-  setEditorFontSize(_fontSize: number): void {
-    throw new Error("Método não implementado.");
-  }
 }
