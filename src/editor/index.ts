@@ -2,6 +2,14 @@ import { IaraInference } from "../speech";
 
 export abstract class EditorAdapter {
   constructor(protected _editor: any, protected _recognition: any) {
+    _recognition.commands.add('iara copiar laudo', () => {
+      this.copyReport();
+      alert('Laudo copiado para a área de transferência (CTRL + C)');
+    });
+    _recognition.commands.add('iara finalizar laudo', () => {
+      this.finishReport();
+      alert('Laudo copiado para a área de transferência (CTRL + C) e o editor de texto foi limpo.');
+    });
     _recognition.addEventListener(
       "iaraSpeechRecognitionResult",
       (event: { detail: IaraInference }) => {
@@ -25,6 +33,10 @@ export abstract class EditorAdapter {
 
   abstract insertInference(inference: IaraInference): void;
   abstract blockEditorWhileSpeaking(status: any): void;
+  abstract copyReport(): void;
+  abstract clearReport(): void;
+  abstract setEditorFontFamily(fontName: string): void;
+  abstract setEditorFontSize(fontSize: number): void;
   abstract textFormatter(text: IaraInference): string;
 
   beginReport(currentReportId?: string): void {
@@ -32,6 +44,8 @@ export abstract class EditorAdapter {
     return this._recognition.beginReport();
   }
   finishReport(): void {
+    this.copyReport();
+    this.clearReport();
     this._recognition.finishReport();
   }
   protected _onReportChanged(
