@@ -49,7 +49,7 @@ export abstract class EditorAdapter {
   abstract clearReport(): void;
   abstract setEditorFontFamily(fontName: string): void;
   abstract setEditorFontSize(fontSize: number): void;
-  // Formatação
+  
   abstract editorToggleBold(): void;
   abstract editorToggleItalic(): void;
   abstract editorToggleUnderline(): void;
