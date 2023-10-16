@@ -9,17 +9,17 @@ export abstract class EditorAdapter {
       }
     );
     _recognition.addEventListener("iaraSpeechRecognitionStart", () => {
-      this.blockEditorWhileSpeech(true);
+      this.blockEditorWhileSpeaking(true);
     });
     _recognition.addEventListener("iaraSpeechRecognitionStop", () => {
-      this.blockEditorWhileSpeech(false);
+      this.blockEditorWhileSpeaking(false);
     });
     // VAD Events
     _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStart", () => {
-      this.blockEditorWhileSpeech(true);
+      this.blockEditorWhileSpeaking(true);
     });
     _recognition.addEventListener("iaraSpeechRecognitionVADVoiceStop", () => {
-      this.blockEditorWhileSpeech(false);
+      this.blockEditorWhileSpeaking(false);
     });
   }
 
