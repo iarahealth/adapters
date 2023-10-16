@@ -10,6 +10,18 @@ export abstract class EditorAdapter {
       this.finishReport();
       alert('Laudo copiado para a área de transferência (CTRL + C) e o editor de texto foi limpo.');
     });
+    _recognition.commands.add('iara negrito', () => {
+      this.editorToggleBold();
+    });
+    _recognition.commands.add('iara itálico', () => {
+      this.editorToggleItalic();
+    });
+    _recognition.commands.add('iara sublinhado', () => {
+      this.editorToggleUnderline();
+    });
+    _recognition.commands.add('iara maiúsculo', () => {
+      this.editorToggleUppercase();
+    });
     _recognition.addEventListener(
       "iaraSpeechRecognitionResult",
       (event: { detail: IaraInference }) => {
@@ -37,6 +49,11 @@ export abstract class EditorAdapter {
   abstract clearReport(): void;
   abstract setEditorFontFamily(fontName: string): void;
   abstract setEditorFontSize(fontSize: number): void;
+  
+  abstract editorToggleBold(): void;
+  abstract editorToggleItalic(): void;
+  abstract editorToggleUnderline(): void;
+  abstract editorToggleUppercase(): void;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;

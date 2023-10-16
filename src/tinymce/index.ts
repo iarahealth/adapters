@@ -47,7 +47,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorAPI.insertContent(text);
   }
 
-  blockEditorWhileSpeaking (status: boolean) {
+  blockEditorWhileSpeaking(status: boolean) {
     const wrapper = document.getElementsByTagName('tinymce')[0] as HTMLElement
     if (wrapper) status ? wrapper.style.cursor = 'not-allowed' : wrapper.style.cursor = 'auto'
   }
@@ -71,6 +71,22 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   setEditorFontSize(_fontSize: number): void {
+    throw new Error("Método não implementado.");
+  }
+
+  editorToggleBold(): void {
+    throw new Error("Método não implementado.");
+  }
+
+  editorToggleItalic(): void {
+    throw new Error("Método não implementado.");
+  }
+
+  editorToggleUnderline(): void {
+    throw new Error("Método não implementado.");
+  }
+
+  editorToggleUppercase(): void {
     throw new Error("Método não implementado.");
   }
 }

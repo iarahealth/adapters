@@ -192,4 +192,20 @@ export class IaraSyncfusionAdapter
     this._editorSelection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
+
+  editorToggleBold(): void {
+    this._editorAPI.toggleBold();
+  }
+
+  editorToggleItalic(): void {
+    this._editorAPI.toggleItalic();
+  }
+
+  editorToggleUnderline(): void {
+    this._editorAPI.toggleUnderline('Single');
+  }
+
+  editorToggleUppercase(): void {
+    throw new Error("Método não implementado.");
+  }
 }
