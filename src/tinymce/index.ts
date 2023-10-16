@@ -70,6 +70,10 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorAPI.delete();
   }
 
+  textFormatter(_text: IaraInference): string {
+    throw new Error("Método não implementado.");
+  }
+
   setEditorFontFamily(_fontName: string): void {
     throw new Error("Método não implementado.");
   }
