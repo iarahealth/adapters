@@ -59,18 +59,21 @@ export abstract class EditorAdapter {
     if (currentReportId) return;
     return this._recognition.beginReport();
   }
+
   finishReport(): void {
     this.copyReport();
     this.clearReport();
     this._recognition.finishReport();
   }
+
   protected _onReportChanged(
     plainContent: string,
     richContent: string
   ): Promise<void> {
     return this._recognition.report.change(plainContent, richContent);
   }
-  _estimateVolume(text: string, regex: string) {
+
+  protected _estimateVolume(text: string, regex: string) {
     let converted = false;
     const iterator = text.matchAll(RegExp(regex, 'giu'));
     const matches = [...iterator];
@@ -112,5 +115,34 @@ export abstract class EditorAdapter {
       }
     });
     return text;
+  }
+
+  protected _parseMeasurements(text: string): string {
+    const numberMap = [
+          { um: '1' },
+          { dois: '2' },
+          { três: '3' },
+          { quatro: '4' },
+          { cinco: '5' },
+          { seis: '6' },
+          { sete: '7' },
+          { oito: '8' },
+          { nove: '9' }
+    ]
+    //convert the number by extensive number before the 'por' into numerals and change 'por' to 'x'
+    text = numberMap.reduce((a, c) => {
+        const [[oldText, newText]] = Object.entries(c)
+        return a.replace(new RegExp(`${oldText} (por|x)`, 'gui'), `${newText} x`)
+    }, text)
+    //convert the number by extensive after the 'por' into numerals and change 'por' to 'x'
+    text = numberMap.reduce((a, c) => {
+      const [[oldText, newText]] = Object.entries(c)
+      return a.replace(new RegExp(`(por|x) ${oldText}`, 'gui'), `x ${newText}`)
+    }, text)
+   
+    //convert the 'por' before or after a number and return the formatted expression without a space ex:1x1
+    text = text.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/gui, '$1x')
+    
+    return text
   }
 }
