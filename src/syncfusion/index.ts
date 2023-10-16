@@ -206,7 +206,6 @@ export class IaraSyncfusionAdapter
   }
 
   editorToggleUppercase(): void {
-    const text = this._editorSelection.text
-    this._editorAPI.insertText(text.toLocaleUpperCase()); 
+    throw new Error("Método não implementado.");
   }
 }
