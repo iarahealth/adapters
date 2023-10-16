@@ -130,7 +130,12 @@ export class IaraSyncfusionAdapter
   }
 
   textFormatter(text: IaraInference): string {
-    const formatted = this._inferenceFormatter.format(text);
+    let formatted = this._inferenceFormatter.format(text);
+
+    //expression to estimate volume
+    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()')
+    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)')
+
     return formatted;
   }
 }
