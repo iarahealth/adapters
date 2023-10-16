@@ -25,6 +25,7 @@ export abstract class EditorAdapter {
 
   abstract insertInference(inference: IaraInference): void;
   abstract blockEditorWhileSpeaking(status: any): void;
+  abstract textFormatter(text: IaraInference): string;
 
   beginReport(currentReportId?: string): void {
     if (currentReportId) return;
