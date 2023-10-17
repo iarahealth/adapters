@@ -60,6 +60,8 @@ export abstract class EditorAdapter {
     return this._recognition.beginReport();
   }
   finishReport(): void {
+    this.copyReport();
+    this.clearReport();
     this._recognition.finishReport();
   }
   protected _onReportChanged(
