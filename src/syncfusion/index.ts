@@ -100,7 +100,8 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = this.textFormatter(inference);
+    let text = this._inferenceFormatter.format(inference);
+    text = this.inferenceFormatter(text);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
@@ -181,18 +182,6 @@ export class IaraSyncfusionAdapter
   clearReport(): void {
     this._editorSelection.selectAll();
     this._editorAPI.delete();
-  }
-
-  textFormatter(text: IaraInference): string {
-    let formatted = this._inferenceFormatter.format(text);
-
-    formatted = this._parseMeasurements(formatted);
-
-    //expression to estimate volume
-    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()')
-    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)')
-
-    return formatted;
   }
 
   setEditorFontFamily(fontFamily: string): void {
