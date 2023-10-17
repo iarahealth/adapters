@@ -146,4 +146,14 @@ export abstract class EditorAdapter {
     
     return text
   }
+
+  inferenceFormatter(text: string): string {
+    let formatted = this._parseMeasurements(text);
+
+    // expression to estimate volume
+    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()')
+    formatted = this._estimateVolume(formatted, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)')
+
+    return formatted;
+  }
 }
