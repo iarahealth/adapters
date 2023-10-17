@@ -56,7 +56,7 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = this._inferenceFormatter.format(inference);
+    const text = this.textFormatter(inference);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
@@ -65,7 +65,7 @@ export class IaraSyncfusionAdapter
       this.insertParagraph();
       line = line.trimStart();
       if (line) this.insertText(line);
-    }); 
+    });
   }
 
   private async _onContentChange() {
