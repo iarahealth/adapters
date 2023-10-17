@@ -56,8 +56,8 @@ export class IaraSyncfusionInferenceFormatter {
         // then each one must be converted to radius:
         // (4/3 * π * (a/2) * (b/2) * (c/2))
         
-          // Volume estimation given 3 elipsoid radius
-          volume /= 8;
+        // Volume estimation given 3 elipsoid radius
+        volume /= 8;
         
         if (volume >= 1000 && match[6] == 'mm') {
           // convert the volume from mm³ to cm³
@@ -78,7 +78,7 @@ export class IaraSyncfusionInferenceFormatter {
     return text;
   }
 
-  public _parseMeasureText(innerHTML: string): string {
+  public _parseMeasurements(text: string): string {
     const numberMap = [
           { um: '1' },
           { dois: '2' },
@@ -91,24 +91,24 @@ export class IaraSyncfusionInferenceFormatter {
           { nove: '9' }
     ]
     //convert the number by extensive number before the 'por' into numerals and change 'por' to 'x'
-    innerHTML = numberMap.reduce((a, c) => {
+    text = numberMap.reduce((a, c) => {
         const [[oldText, newText]] = Object.entries(c)
         return a.replace(new RegExp(`${oldText} (por|x)`, 'gui'), `${newText} x`)
-    }, innerHTML)
+    }, text)
     //convert the number by extensive after the 'por' into numerals and change 'por' to 'x'
-    innerHTML = numberMap.reduce((a, c) => {
+    text = numberMap.reduce((a, c) => {
       const [[oldText, newText]] = Object.entries(c)
       return a.replace(new RegExp(`(por|x) ${oldText}`, 'gui'), `x ${newText}`)
-    }, innerHTML)
+    }, text)
    
     //convert the 'por' before or after a number and return the formatted expression without a space ex:1x1
-    innerHTML = innerHTML.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/gui, '$1x')
+    text = text.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/gui, '$1x')
     
     //expression to estimate volume
-    innerHTML = this._estimateVolume(innerHTML, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()')
-    innerHTML = this._estimateVolume(innerHTML, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)')
+    text = this._estimateVolume(text, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()')
+    text = this._estimateVolume(text, '(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)')
 
-    return innerHTML
+    return text
   }
 
   private _getWordAfterSelection(selectionOffsets: SelectionOffsets): string {
@@ -139,7 +139,7 @@ export class IaraSyncfusionInferenceFormatter {
 
     text = this._addTrailingSpaces(text, wordAfter, wordBefore);
     text = this._capitalize(text, wordBefore);
-    text = this._parseMeasureText(text);
+    text = this._parseMeasurements(text);
 
     return text;
   }
