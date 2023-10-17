@@ -13,7 +13,7 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
-  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
+  public timeoutToSave: any;
   private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
 
   private get _editorAPI(): Editor {
@@ -29,6 +29,7 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
+    this._editor.enableLocalPaste = true;
     this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
       this._editorSelection
     );
@@ -44,6 +45,49 @@ export class IaraSyncfusionAdapter
 
   insertText(text: string) {
     this._editorAPI.insertText(text);
+  }
+
+  async sfdtToHtml(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/';
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        body: JSON.stringify({ sfdt: content }),
+      })
+      .then(async (response) => await response.json());
+
+    return response;
+  }
+
+  async htmlToSfdt(content: string) {
+    let endpoint = 'https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/';
+
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...this._recognition.internal.iaraAPIMandatoryHeaders,
+        },
+        body: JSON.stringify({ html: content }),
+      })
+      .then(async (response) => await response.json());
+
+    return response;
+  }
+
+  async insertTemplate(template: string) {
+    const response = await this.htmlToSfdt(template);
+    this._editor.open(response);
+  }
+
+  async getEditorContent() {
+    const content = await this._editor.saveAsBlob("Html")
+      .then((blob: Blob) => blob.text());
+    return content;
   }
 
   insertInference(inference: IaraInference) {
