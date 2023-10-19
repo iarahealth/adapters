@@ -14,7 +14,7 @@ export class IaraSyncfusionAdapter
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: any;
-  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
+  private _syncfusionFormatter: IaraSyncfusionInferenceFormatter;
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -30,8 +30,9 @@ export class IaraSyncfusionAdapter
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
     this._editor.enableLocalPaste = true;
-    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
-      this._editorSelection
+    this._syncfusionFormatter = new IaraSyncfusionInferenceFormatter(
+      this._editorSelection,
+      this
     );
   }
 
@@ -100,8 +101,8 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    let text = this._inferenceFormatter.format(inference);
-    text = this.inferenceFormatter(text);
+    // Syncfusion formatter
+    let text = this._syncfusionFormatter.format(inference);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
