@@ -1,5 +1,6 @@
 import type { Selection } from "@syncfusion/ej2-documenteditor";
 import { IaraInference } from "../speech";
+import { EditorAdapter } from "../editor";
 
 interface SelectionOffsets {
   end: string;
@@ -7,7 +8,7 @@ interface SelectionOffsets {
 }
 
 export class IaraSyncfusionInferenceFormatter {
-  constructor(private _selection: Selection) {}
+  constructor(private _selection: Selection, private _editor: EditorAdapter) {}
 
   private _addTrailingSpaces(
     text: string,
@@ -62,6 +63,7 @@ export class IaraSyncfusionInferenceFormatter {
 
     text = this._addTrailingSpaces(text, wordAfter, wordBefore);
     text = this._capitalize(text, wordBefore);
+    text = this._editor.inferenceFormatter(text);
 
     return text;
   }
