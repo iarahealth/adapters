@@ -16,6 +16,10 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     return this._editorAPI.undoManager.data.length || 0;
   }
 
+  getEditorContent(): void {
+    throw new Error("Método não implementado.");
+  }
+
   insertInference(inference: IaraInference): void {
     if (inference.isFirst) {
       this._initialUndoStackSize = this.getUndoStackSize();
