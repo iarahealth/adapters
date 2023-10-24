@@ -44,6 +44,7 @@ export abstract class EditorAdapter {
   }
 
   abstract insertInference(inference: IaraInference): void;
+  abstract getEditorContent(): void;
   abstract blockEditorWhileSpeaking(status: any): void;
   abstract copyReport(): void;
   abstract clearReport(): void;
