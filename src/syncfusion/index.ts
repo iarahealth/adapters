@@ -21,6 +21,7 @@ export class IaraSyncfusionAdapter
 <<<<<<< HEAD
 <<<<<<< HEAD
   public timeoutToSave: any;
+<<<<<<< HEAD
   private _editorFormatter: IaraEditorInferenceFormatter;
 <<<<<<< HEAD
 =======
@@ -32,6 +33,9 @@ export class IaraSyncfusionAdapter
 >>>>>>> 08cb5ac (rebase)
 =======
 >>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
+=======
+  private _inferenceFormatter: IaraEditorInferenceFormatter;
+>>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -49,6 +53,7 @@ export class IaraSyncfusionAdapter
 <<<<<<< HEAD
 <<<<<<< HEAD
     this._editor.enableLocalPaste = true;
+<<<<<<< HEAD
     this._editorFormatter = new IaraEditorInferenceFormatter();
 <<<<<<< HEAD
 =======
@@ -61,6 +66,9 @@ export class IaraSyncfusionAdapter
 >>>>>>> 08cb5ac (rebase)
 =======
 >>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
+=======
+    this._inferenceFormatter = new IaraEditorInferenceFormatter();
+>>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
   }
 
   getUndoStackSize(): number {
@@ -170,6 +178,7 @@ export class IaraSyncfusionAdapter
     const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
     const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
 
+<<<<<<< HEAD
     text = this._editorFormatter.format(inference, wordBefore, wordAfter);
 <<<<<<< HEAD
 =======
@@ -180,6 +189,9 @@ export class IaraSyncfusionAdapter
 >>>>>>> 19d0828 (rebase)
 =======
 >>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
+=======
+    text = this._inferenceFormatter.format(inference, wordBefore, wordAfter);
+>>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
