@@ -18,8 +18,13 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
+<<<<<<< HEAD
   public timeoutToSave: any;
   private _editorFormatter: IaraEditorInferenceFormatter;
+=======
+  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
+  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
+>>>>>>> 08cb5ac (rebase)
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -34,8 +39,14 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
+<<<<<<< HEAD
     this._editor.enableLocalPaste = true;
     this._editorFormatter = new IaraEditorInferenceFormatter();
+=======
+    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
+      this._editorSelection
+    );
+>>>>>>> 08cb5ac (rebase)
   }
 
   getUndoStackSize(): number {
@@ -131,6 +142,7 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
+<<<<<<< HEAD
     // Syncfusion formatter
     let text = inference.richTranscript
       .replace(/^<div>/, "")
@@ -144,6 +156,9 @@ export class IaraSyncfusionAdapter
     const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
 
     text = this._editorFormatter.format(inference, wordBefore, wordAfter);
+=======
+    const text = this._inferenceFormatter.format(inference);
+>>>>>>> 08cb5ac (rebase)
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
