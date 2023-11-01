@@ -18,24 +18,8 @@ export class IaraSyncfusionAdapter
 {
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
-<<<<<<< HEAD
-<<<<<<< HEAD
   public timeoutToSave: any;
-<<<<<<< HEAD
-  private _editorFormatter: IaraEditorInferenceFormatter;
-<<<<<<< HEAD
-=======
-  public timeoutToSave: string | number | NodeJS.Timeout | undefined;
-=======
-  public timeoutToSave: any;
->>>>>>> 42f63e0 (rebase)
-  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
->>>>>>> 08cb5ac (rebase)
-=======
->>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
-=======
   private _inferenceFormatter: IaraEditorInferenceFormatter;
->>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -50,25 +34,8 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
-<<<<<<< HEAD
-<<<<<<< HEAD
     this._editor.enableLocalPaste = true;
-<<<<<<< HEAD
-    this._editorFormatter = new IaraEditorInferenceFormatter();
-<<<<<<< HEAD
-=======
-=======
-    this._editor.enableLocalPaste = true;
->>>>>>> 42f63e0 (rebase)
-    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
-      this._editorSelection
-    );
->>>>>>> 08cb5ac (rebase)
-=======
->>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
-=======
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
->>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
   }
 
   getUndoStackSize(): number {
@@ -164,8 +131,6 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     // Syncfusion formatter
     let text = inference.richTranscript
       .replace(/^<div>/, "")
@@ -178,20 +143,7 @@ export class IaraSyncfusionAdapter
     const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
     const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
 
-<<<<<<< HEAD
-    text = this._editorFormatter.format(inference, wordBefore, wordAfter);
-<<<<<<< HEAD
-=======
-    const text = this._inferenceFormatter.format(inference);
->>>>>>> 08cb5ac (rebase)
-=======
-    const text = this.textFormatter(inference);
->>>>>>> 19d0828 (rebase)
-=======
->>>>>>> d241b74 (feat-177: editor formatter and calculate volume)
-=======
     text = this._inferenceFormatter.format(inference, wordBefore, wordAfter);
->>>>>>> fbdaa81 (fix: name of _inferenceFormatter)
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
