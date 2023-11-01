@@ -143,6 +143,7 @@ export class IaraSyncfusionAdapter
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     // Syncfusion formatter
     let text = inference.richTranscript
       .replace(/^<div>/, "")
@@ -159,6 +160,9 @@ export class IaraSyncfusionAdapter
 =======
     const text = this._inferenceFormatter.format(inference);
 >>>>>>> 08cb5ac (rebase)
+=======
+    const text = this.textFormatter(inference);
+>>>>>>> 19d0828 (rebase)
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
