@@ -135,6 +135,7 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.style.fontSize = "14px";
       this.savingReportSpan.style.display = "flex";
       this.savingReportSpan.style.justifyContent = "end";
+      this.savingReportSpan.style.color = 'black';
       this.savingReportSpan.innerText = "Salvando...";
       element.appendChild(this.savingReportSpan);
     }
