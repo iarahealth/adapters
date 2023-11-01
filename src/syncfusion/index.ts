@@ -19,10 +19,14 @@ export class IaraSyncfusionAdapter
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
 <<<<<<< HEAD
+<<<<<<< HEAD
   public timeoutToSave: any;
   private _editorFormatter: IaraEditorInferenceFormatter;
 =======
   public timeoutToSave: string | number | NodeJS.Timeout | undefined;
+=======
+  public timeoutToSave: any;
+>>>>>>> 42f63e0 (rebase)
   private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
 >>>>>>> 08cb5ac (rebase)
 
@@ -40,9 +44,13 @@ export class IaraSyncfusionAdapter
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
 <<<<<<< HEAD
+<<<<<<< HEAD
     this._editor.enableLocalPaste = true;
     this._editorFormatter = new IaraEditorInferenceFormatter();
 =======
+=======
+    this._editor.enableLocalPaste = true;
+>>>>>>> 42f63e0 (rebase)
     this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
       this._editorSelection
     );
