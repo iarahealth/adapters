@@ -5,7 +5,12 @@ import type {
 } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
-import { IaraSyncfusionInferenceFormatter } from "./formatter";
+import { IaraEditorInferenceFormatter } from "../editor/formatter";
+
+interface SelectionOffsets {
+  end: string;
+  start: string;
+}
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
@@ -14,7 +19,7 @@ export class IaraSyncfusionAdapter
   private _initialUndoStackSize = 0;
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: any;
-  private _inferenceFormatter: IaraSyncfusionInferenceFormatter;
+  private _inferenceFormatter: IaraEditorInferenceFormatter;
 
   private get _editorAPI(): Editor {
     return this._editor.editor;
@@ -30,9 +35,7 @@ export class IaraSyncfusionAdapter
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
     this._editor.enableLocalPaste = true;
-    this._inferenceFormatter = new IaraSyncfusionInferenceFormatter(
-      this._editorSelection
-    );
+    this._inferenceFormatter = new IaraEditorInferenceFormatter();
   }
 
   getUndoStackSize(): number {
@@ -104,6 +107,20 @@ export class IaraSyncfusionAdapter
     return htmlContent.html;
   }
 
+  private _getWordAfterSelection(selectionOffsets: SelectionOffsets): string {
+    this._editorSelection.extendToWordEnd();
+    const wordAfter = this._editorSelection.text.trimEnd();
+    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
+    return wordAfter;
+  }
+
+  private _getWordBeforeSelection(selectionOffsets: SelectionOffsets): string {
+    this._editorSelection.extendToWordStart();
+    const wordBefore = this._editorSelection.text.trimStart();
+    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
+    return wordBefore;
+  }
+
   insertInference(inference: IaraInference) {
     if (inference.isFirst) {
       if (this._editorSelection.text.length) this._editorAPI.delete();
@@ -114,7 +131,19 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    const text = this._inferenceFormatter.format(inference);
+    // Syncfusion formatter
+    let text = inference.richTranscript
+      .replace(/^<div>/, "")
+      .replace(/<\/div>$/, "");
+
+    const initialSelectionOffsets = {
+      end: this._editorSelection.endOffset,
+      start: this._editorSelection.startOffset,
+    };
+    const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
+    const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
+
+    text = this._inferenceFormatter.format(inference, wordBefore, wordAfter);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);

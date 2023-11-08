@@ -60,11 +60,13 @@ export abstract class EditorAdapter {
     if (currentReportId) return;
     return this._recognition.beginReport();
   }
+
   finishReport(): void {
     this.copyReport();
     this.clearReport();
     this._recognition.finishReport();
   }
+
   protected _onReportChanged(
     plainContent: string,
     richContent: string
