@@ -34,6 +34,7 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
+    this._editor.destroyed = this._onContentDestroyed.bind(this);
     this._editor.enableLocalPaste = true;
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
   }
@@ -155,6 +156,10 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  private async _onContentDestroyed() {
+    this.finishReport();
+  }
+
   private async _onContentChange() {
     const element = document.getElementById(
       "iara-syncfusion-editor-container_editor"
@@ -164,7 +169,7 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.style.fontSize = "14px";
       this.savingReportSpan.style.display = "flex";
       this.savingReportSpan.style.justifyContent = "end";
-      this.savingReportSpan.style.color = 'black';
+      this.savingReportSpan.style.color = "black";
       this.savingReportSpan.innerText = "Salvando...";
       element.appendChild(this.savingReportSpan);
     }
