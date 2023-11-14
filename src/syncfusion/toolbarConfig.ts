@@ -212,42 +212,6 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
     "96",
   ];
 
-  function lineSpacingAction(args: { item: { text: any } }) {
-    var text = args.item.text;
-    switch (text) {
-      case "Single":
-        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
-        break;
-      case "1.15":
-        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
-        break;
-      case "1.5":
-        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
-        break;
-      case "Double":
-        editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
-        break;
-    }
-    setTimeout(function () {
-      editor.documentEditor.focusIn();
-    }, 30);
-  }
-
-  const items: ItemModel[] = [
-    {
-      text: "Single",
-    },
-    {
-      text: "1.15",
-    },
-    {
-      text: "1.5",
-    },
-    {
-      text: "Double",
-    },
-  ];
-
   const addItemsToolbar = [
     { type: "Separator" },
     {
