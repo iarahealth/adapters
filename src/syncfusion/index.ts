@@ -39,12 +39,16 @@ export class IaraSyncfusionAdapter
     return this._editor.selection;
   }
 
-  constructor(protected _editor: any, protected _recognition: any) {
+  constructor(
+    protected _editor: any,
+    protected _recognition: any,
+    replaceToolbar: boolean = true
+  ) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
     this._editor.destroyed = this._onEditorDestroy.bind(this);
     this._editor.enableLocalPaste = true;
-    this.initToolbarConfigs();
+    if (replaceToolbar) this.initToolbarConfigs();
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
   }
 
