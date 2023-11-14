@@ -25,10 +25,7 @@ export class IaraSyncfusionAdapter
 
   constructor(_editor: any, _recognition: any) {
     super(_editor, _recognition);
-    const toolbarItems = toolBarSettings(this._editor);
-    this._toolBar.addItems(toolbarItems, 5);
-    this._toolBar.clicked = (arg: { item: { id: any } }) =>
-      toolbarButtonClick(arg, this._editorAPI);
+    this.initToolbarConfigs();
   }
 
   getUndoStackSize(): number {
@@ -64,6 +61,28 @@ export class IaraSyncfusionAdapter
       line = line.trim();
       if (line) this.insertText(line);
     });
+  }
+
+  initToolbarConfigs() {
+    const toolbarItems = toolBarSettings(this._editor);
+    this._toolBar.addItems(toolbarItems, 5);
+    this._editor.toolbarClick = this.onClickToolbar.bind(this);
+    this.removePropertiesPane();
+  }
+
+  onClickToolbar(arg: { item: any }) {
+    toolbarButtonClick(arg, this._editorAPI, this._editor);
+  }
+
+  removePropertiesPane() {
+    this._editor.showPropertiesPane = false;
+    const paneButton = document.querySelector(
+      ".e-de-ctnr-properties-pane-btn"
+    ) as HTMLElement;
+    paneButton.remove();
+    //remove wrapper button
+    const wrapper = document.querySelector(".e-de-tlbr-wrapper") as HTMLElement;
+    wrapper.style.width = "100%";
   }
 
   undo() {

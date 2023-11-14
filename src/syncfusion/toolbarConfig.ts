@@ -2,13 +2,14 @@ import {
   Editor,
   DocumentEditorContainer,
 } from "@syncfusion/ej2-documenteditor";
-
-import { ComboBox } from "@syncfusion/ej2-dropdowns";
+import { DropDownButton, ItemModel } from "@syncfusion/ej2-splitbuttons";
+import { ComboBox, DropDownList } from "@syncfusion/ej2-dropdowns";
 import { ColorPicker } from "@syncfusion/ej2-inputs";
 
 export const toolbarButtonClick = (
-  arg: { item: { id: any } },
-  editorAPI: Editor
+  arg: { item: any },
+  editorAPI: Editor,
+  editor: DocumentEditorContainer
 ) => {
   switch (arg.item.id) {
     case "bold":
@@ -63,6 +64,32 @@ export const toolbarButtonClick = (
       //Clear all formattiing of the selected paragraph or content.
       editorAPI.clearFormatting();
       break;
+    case "Bullets":
+      //To create bullet list
+      editorAPI.applyBullet("\uf0b7", "Symbol");
+      break;
+    case "Numbering":
+      //To create numbering list
+      editorAPI.applyNumbering("%1)", "UpRoman");
+      break;
+    case "clearlist":
+      //To clear list
+      editorAPI.clearList();
+      break;
+    case "Single":
+      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
+      break;
+    case "1.15":
+      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
+      break;
+    case "1.5":
+      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
+      break;
+    case "Double":
+      editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
+      break;
+    default:
+      break;
   }
 };
 
@@ -91,8 +118,35 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
   //Selection change to retrieve formatting
   const onSelectionChange = () => {
     if (editor.documentEditor.selection) {
+      var paragraphFormat = editor.documentEditor.selection.paragraphFormat;
+      var toggleBtnId = [
+        "AlignLeft",
+        "AlignCenter",
+        "AlignRight",
+        "Justify",
+        "ShowParagraphMark",
+      ];
+      for (let i = 0; i < toggleBtnId.length; i++) {
+        let toggleBtn = document.getElementById(toggleBtnId[i]);
+        //Remove toggle state.
+        toggleBtn?.classList.remove("e-btn-toggle");
+      }
+      //Add toggle state based on selection paragraph format.
+      if (paragraphFormat.textAlignment === "Left") {
+        document.getElementById("AlignLeft")?.classList.add("e-btn-toggle");
+      } else if (paragraphFormat.textAlignment === "Right") {
+        document.getElementById("AlignRight")?.classList.add("e-btn-toggle");
+      } else if (paragraphFormat.textAlignment === "Center") {
+        document.getElementById("AlignCenter")?.classList.add("e-btn-toggle");
+      } else {
+        document.getElementById("Justify")?.classList.add("e-btn-toggle");
+      }
+      if (editor.documentEditor.documentEditorSettings.showHiddenMarks) {
+        document
+          .getElementById("ShowParagraphMark")
+          ?.classList.add("e-btn-toggle");
+      }
       enableDisableFontOptions();
-      // #endregion
     }
   };
   const enableDisableFontOptions = () => {
@@ -157,6 +211,43 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
     "72",
     "96",
   ];
+
+  function lineSpacingAction(args: { item: { text: any } }) {
+    var text = args.item.text;
+    switch (text) {
+      case "Single":
+        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
+        break;
+      case "1.15":
+        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
+        break;
+      case "1.5":
+        editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
+        break;
+      case "Double":
+        editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
+        break;
+    }
+    setTimeout(function () {
+      editor.documentEditor.focusIn();
+    }, 30);
+  }
+
+  const items: ItemModel[] = [
+    {
+      text: "Single",
+    },
+    {
+      text: "1.15",
+    },
+    {
+      text: "1.5",
+    },
+    {
+      text: "Double",
+    },
+  ];
+
   const addItemsToolbar = [
     { type: "Separator" },
     {
@@ -262,6 +353,35 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
       tooltipText: "Decrease Indent",
       id: "DecreaseIndent",
     },
+    { type: "Separator" },
+    {
+      prefixIcon: "e-de-e-paragraph-mark e-icons",
+      tooltipText:
+        "Show the hidden characters like spaces, tab, paragraph marks, and breaks.(Ctrl + *)",
+      id: "ShowParagraphMark",
+    },
+    {
+      prefixIcon: "e-de-ctnr-clearall e-icons",
+      tooltipText: "ClearFormatting",
+      id: "ClearFormat",
+    },
+    { type: "Separator" },
+    {
+      prefixIcon: "e-de-ctnr-bullets e-icons",
+      tooltipText: "Bullets",
+      id: "Bullets",
+    },
+    {
+      prefixIcon: "e-de-ctnr-numbering e-icons",
+      tooltipText: "Numbering",
+      id: "Numbering",
+    },
+    {
+      text: "Clear",
+      id: "clearlist",
+      tooltipText: "Clear List",
+    },
   ];
+
   return addItemsToolbar;
 };
