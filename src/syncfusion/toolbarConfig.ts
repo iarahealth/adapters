@@ -4,7 +4,6 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { ComboBox } from "@syncfusion/ej2-dropdowns";
 import { ColorPicker } from "@syncfusion/ej2-inputs";
-import { ItemModel } from "@syncfusion/ej2-splitbuttons";
 
 export const toolbarButtonClick = (
   arg: { item: any },
