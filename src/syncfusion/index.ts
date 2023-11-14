@@ -34,7 +34,7 @@ export class IaraSyncfusionAdapter
   constructor(protected _editor: any, protected _recognition: any) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
-    this._editor.destroyed = this._onContentDestroyed.bind(this);
+    this._editor.destroyed = this._onEditorDestroy.bind(this);
     this._editor.enableLocalPaste = true;
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
   }
@@ -156,7 +156,7 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  private async _onContentDestroyed() {
+  private async _onEditorDestroy() {
     this.finishReport();
   }
 
