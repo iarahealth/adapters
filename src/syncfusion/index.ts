@@ -36,7 +36,7 @@ export class IaraSyncfusionAdapter
   }
 
   private get _editorSelection(): Selection {
-    return this._editor.selection;
+    return this._editor.documentEditor.selection;
   }
 
   constructor(
