@@ -1,79 +1,75 @@
-import {
-  DocumentEditorContainer,
-  Editor,
-} from "@syncfusion/ej2-documenteditor";
+import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import { ComboBox } from "@syncfusion/ej2-dropdowns";
 import { ColorPicker } from "@syncfusion/ej2-inputs";
 
 export const toolbarButtonClick = (
-  arg: { item: any },
-  editorAPI: Editor,
+  arg: { item: { id: string } },
   editor: DocumentEditorContainer
-) => {
+): void => {
   switch (arg.item.id) {
     case "bold":
       //Toggles the bold of selected content
-      editorAPI.toggleBold();
+      editor.documentEditor.editor.toggleBold();
       break;
     case "italic":
       //Toggles the Italic of selected content
-      editorAPI.toggleItalic();
+      editor.documentEditor.editor.toggleItalic();
       break;
     case "underline":
       //Toggles the underline of selected content
-      editorAPI.toggleUnderline("Single");
+      editor.documentEditor.editor.toggleUnderline("Single");
       break;
     case "strikethrough":
       //Toggles the strikethrough of selected content
-      editorAPI.toggleStrikethrough();
+      editor.documentEditor.editor.toggleStrikethrough();
       break;
     case "subscript":
       //Toggles the subscript of selected content
-      editorAPI.toggleSubscript();
+      editor.documentEditor.editor.toggleSubscript();
       break;
     case "superscript":
       //Toggles the superscript of selected content
-      editorAPI.toggleSuperscript();
+      editor.documentEditor.editor.toggleSuperscript();
       break;
     case "AlignLeft":
       //Toggle the Left alignment for selected or current paragraph
-      editorAPI.toggleTextAlignment("Left");
+      editor.documentEditor.editor.toggleTextAlignment("Left");
       break;
     case "AlignRight":
       //Toggle the Right alignment for selected or current paragraph
-      editorAPI.toggleTextAlignment("Right");
+      editor.documentEditor.editor.toggleTextAlignment("Right");
       break;
     case "AlignCenter":
       //Toggle the Center alignment for selected or current paragraph
-      editorAPI.toggleTextAlignment("Center");
+      editor.documentEditor.editor.toggleTextAlignment("Center");
       break;
     case "Justify":
       //Toggle the Justify alignment for selected or current paragraph
-      editorAPI.toggleTextAlignment("Justify");
+      editor.documentEditor.editor.toggleTextAlignment("Justify");
       break;
     case "IncreaseIndent":
       //Increase the left indent of selected or current paragraph
-      editorAPI.increaseIndent();
+      editor.documentEditor.editor.increaseIndent();
       break;
     case "DecreaseIndent":
       //Decrease the left indent of selected or current paragraph
-      editorAPI.decreaseIndent();
+      editor.documentEditor.editor.decreaseIndent();
       break;
     case "ClearFormat":
       //Clear all formattiing of the selected paragraph or content.
-      editorAPI.clearFormatting();
+      editor.documentEditor.editor.clearFormatting();
       break;
     case "Bullets":
       //To create bullet list
-      editorAPI.applyBullet("\uf0b7", "Symbol");
+      editor.documentEditor.editor.applyBullet("\uf0b7", "Symbol");
       break;
     case "Numbering":
       //To create numbering list
-      editorAPI.applyNumbering("%1)", "UpRoman");
+      editor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
       break;
     case "clearlist":
       //To clear list
-      editorAPI.clearList();
+      editor.documentEditor.editor.clearList();
       break;
     case "Single":
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
@@ -92,19 +88,21 @@ export const toolbarButtonClick = (
   }
 };
 
-export const toolBarSettings = (editor: DocumentEditorContainer) => {
+export const toolBarSettings = (
+  editor: DocumentEditorContainer
+): Record<string, any>[] => {
   //To change the font Style of selected content
-  const changeFontFamily = (args: { value: any }) => {
+  const changeFontFamily = (args: { value: string }) => {
     editor.documentEditor.selection.characterFormat.fontFamily = args.value;
     editor.documentEditor.focusIn();
   };
   //To Change the font Size of selected content
-  const changeFontSize = (args: { value: any }) => {
+  const changeFontSize = (args: { value: number }) => {
     editor.documentEditor.selection.characterFormat.fontSize = args.value;
     editor.documentEditor.focusIn();
   };
   //To Change the font Color of selected content
-  const changeFontColor = (args: { currentValue: { hex: any } }) => {
+  const changeFontColor = (args: { currentValue: { hex: string } }) => {
     editor.documentEditor.selection.characterFormat.fontColor =
       args.currentValue.hex;
     editor.documentEditor.focusIn();
@@ -117,19 +115,19 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
   //Selection change to retrieve formatting
   const onSelectionChange = () => {
     if (editor.documentEditor.selection) {
-      var paragraphFormat = editor.documentEditor.selection.paragraphFormat;
-      var toggleBtnId = [
+      const paragraphFormat = editor.documentEditor.selection.paragraphFormat;
+      const toggleBtnIds = [
         "AlignLeft",
         "AlignCenter",
         "AlignRight",
         "Justify",
         "ShowParagraphMark",
       ];
-      for (let i = 0; i < toggleBtnId.length; i++) {
-        let toggleBtn = document.getElementById(toggleBtnId[i]);
+      toggleBtnIds.forEach(toggleBtnId => {
+        const toggleBtn = document.getElementById(toggleBtnId);
         //Remove toggle state.
         toggleBtn?.classList.remove("e-btn-toggle");
-      }
+      });
       //Add toggle state based on selection paragraph format.
       if (paragraphFormat.textAlignment === "Left") {
         document.getElementById("AlignLeft")?.classList.add("e-btn-toggle");
@@ -149,31 +147,30 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
     }
   };
   const enableDisableFontOptions = () => {
-    var characterformat = editor.documentEditor.selection.characterFormat;
-    var properties = [
+    const characterformat = editor.documentEditor.selection.characterFormat;
+    const properties = [
       characterformat.bold,
       characterformat.italic,
       characterformat.underline,
       characterformat.strikethrough,
     ];
-    var toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
-    for (var i = 0; i < properties.length; i++) {
+    const toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
+    for (let i = 0; i < properties.length; i++) {
       changeActiveState(properties[i], toggleBtnId[i]);
     }
   };
   function changeActiveState(property: string | boolean, btnId: string) {
-    let toggleBtn: HTMLElement | null = document.getElementById(btnId);
+    const toggleBtn: HTMLElement | null = document.getElementById(btnId);
     if (
-      (typeof property == "boolean" && property == true) ||
+      (typeof property == "boolean" && property) ||
       (typeof property == "string" && property !== "None")
     )
       toggleBtn?.classList.add("e-btn-toggle");
-    else {
-      if (toggleBtn?.classList.contains("e-btn-toggle"))
-        toggleBtn.classList.remove("e-btn-toggle");
+    else if (toggleBtn?.classList.contains("e-btn-toggle")) {
+      toggleBtn.classList.remove("e-btn-toggle");
     }
   }
-  let fontStyle: string[] = [
+  const fontStyle: string[] = [
     "Algerian",
     "Arial",
     "Calibri",
@@ -191,7 +188,7 @@ export const toolBarSettings = (editor: DocumentEditorContainer) => {
     "Verdana",
     "Windings",
   ];
-  let fontSize: string[] = [
+  const fontSize: string[] = [
     "8",
     "9",
     "10",

@@ -1,11 +1,12 @@
 import type {
+  DocumentEditorContainer,
   Editor,
   EditorHistory,
   Selection,
 } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
-import { IaraInference } from "../speech";
 import { IaraEditorInferenceFormatter } from "../editor/formatter";
+import { IaraInference } from "../speech";
 import { toolBarSettings, toolbarButtonClick } from "./toolbarConfig";
 
 interface SelectionOffsets {
@@ -40,9 +41,9 @@ export class IaraSyncfusionAdapter
   }
 
   constructor(
-    protected _editor: any,
+    protected _editor: DocumentEditorContainer,
     protected _recognition: any,
-    replaceToolbar: boolean = true
+    replaceToolbar = true
   ) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
@@ -56,15 +57,15 @@ export class IaraSyncfusionAdapter
     return this._editorHistory.undoStack?.length || 0;
   }
 
-  insertParagraph() {
+  insertParagraph(): void {
     this._editorAPI.insertText("\n");
   }
 
-  insertText(text: string) {
+  insertText(text: string): void {
     this._editorAPI.insertText(text);
   }
 
-  async sfdtToHtml(content: string) {
+  async sfdtToHtml(content: string): Promise<string> {
     const endpoint =
       "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/";
 
@@ -80,7 +81,7 @@ export class IaraSyncfusionAdapter
     return response;
   }
 
-  async htmlToSfdt(content: string) {
+  async htmlToSfdt(content: string): Promise<string> {
     const endpoint =
       "https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/";
 
@@ -96,13 +97,13 @@ export class IaraSyncfusionAdapter
     return response;
   }
 
-  async insertTemplate(template: string) {
+  async insertTemplate(template: string): Promise<void> {
     const response = await this.htmlToSfdt(template);
-    this._editor.open(response);
+    this._editor.documentEditor.open(response);
   }
 
-  async getEditorContent() {
-    const contentSfdt = await this._editor
+  async getEditorContent(): Promise<string> {
+    const contentSfdt = await this._editor.documentEditor
       .saveAsBlob("Sfdt")
       .then((blob: Blob) => blob.text());
 
@@ -135,7 +136,7 @@ export class IaraSyncfusionAdapter
     return wordBefore;
   }
 
-  insertInference(inference: IaraInference) {
+  insertInference(inference: IaraInference): void {
     if (inference.isFirst) {
       if (this._editorSelection.text.length) this._editorAPI.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
@@ -146,10 +147,6 @@ export class IaraSyncfusionAdapter
     }
 
     // Syncfusion formatter
-    let text = inference.richTranscript
-      .replace(/^<div>/, "")
-      .replace(/<\/div>$/, "");
-
     const initialSelectionOffsets = {
       end: this._editorSelection.endOffset,
       start: this._editorSelection.startOffset,
@@ -157,6 +154,9 @@ export class IaraSyncfusionAdapter
     const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
     const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
 
+    let text = inference.richTranscript
+      .replace(/^<div>/, "")
+      .replace(/<\/div>$/, "");
     text = this._inferenceFormatter.format(inference, wordBefore, wordAfter);
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
@@ -169,33 +169,34 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  initToolbarConfigs() {
+  initToolbarConfigs(): void {
     const toolbarItems = toolBarSettings(this._editor);
     this._toolBar.addItems(toolbarItems, 5);
     this._editor.toolbarClick = this.onClickToolbar.bind(this);
     this.removePropertiesPane();
   }
 
-  onClickToolbar(arg: { item: any }) {
-    toolbarButtonClick(arg, this._editorAPI, this._editor);
+  onClickToolbar(arg: { item: any }): void {
+    toolbarButtonClick(arg, this._editor);
   }
 
-  removePropertiesPane() {
+  removePropertiesPane(): void {
     this._editor.showPropertiesPane = false;
-    const paneButton = document.querySelector(
+    const paneButton: HTMLElement | null = document.querySelector(
       ".e-de-ctnr-properties-pane-btn"
-    ) as HTMLElement;
-    paneButton.remove();
+    );
+    paneButton?.remove();
     //remove wrapper button
-    const wrapper = document.querySelector(".e-de-tlbr-wrapper") as HTMLElement;
-    wrapper.style.width = "100%";
+    const wrapper: HTMLElement | null =
+      document.querySelector(".e-de-tlbr-wrapper");
+    if (wrapper) wrapper.style.width = "100%";
   }
 
   private async _onEditorDestroy() {
     this.finishReport();
   }
 
-  private async _onContentChange() {
+  private async _onContentChange(): Promise<void> {
     const element = document.getElementById(
       "iara-syncfusion-editor-container_editor"
     );
@@ -208,13 +209,15 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.innerText = "Salvando...";
       element.appendChild(this.savingReportSpan);
     }
-    const contentText = await this._editor
+    const contentText = await this._editor.documentEditor
       .saveAsBlob("Txt")
       .then((blob: Blob) => blob.text());
 
     const contentHTML = await this.getEditorContent();
 
-    this._debounceToSave(() => this._onReportChanged(contentText, contentHTML));
+    this._debounceToSave(() => {
+      this._onReportChanged(contentText, contentHTML);
+    });
   }
 
   private _debounceToSave = (func: () => void) => {
@@ -228,7 +231,7 @@ export class IaraSyncfusionAdapter
     }, 3000);
   };
 
-  blockEditorWhileSpeaking(status: boolean) {
+  blockEditorWhileSpeaking(status: boolean): void {
     const wrapper = document.getElementById("iara-syncfusion-editor-container");
     if (wrapper)
       status
@@ -236,7 +239,7 @@ export class IaraSyncfusionAdapter
         : (wrapper.style.cursor = "auto");
   }
 
-  undo() {
+  undo(): void {
     this._editorHistory.undo();
   }
 
@@ -252,12 +255,12 @@ export class IaraSyncfusionAdapter
 
   setEditorFontFamily(fontFamily: string): void {
     this._editorSelection.characterFormat.fontFamily = fontFamily;
-    this._editor.focusIn();
+    this._editor.documentEditor.focusIn();
   }
 
   setEditorFontSize(fontSize: number): void {
     this._editorSelection.characterFormat.fontSize = fontSize;
-    this._editor.focusIn();
+    this._editor.documentEditor.focusIn();
   }
 
   editorToggleBold(): void {
