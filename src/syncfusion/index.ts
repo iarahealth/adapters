@@ -6,6 +6,7 @@ import type {
 import { EditorAdapter } from "../editor";
 import { IaraInference } from "../speech";
 import { IaraEditorInferenceFormatter } from "../editor/formatter";
+import { toolBarSettings, toolbarButtonClick } from "./toolbarConfig";
 
 interface SelectionOffsets {
   end: string;
@@ -17,25 +18,37 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _initialUndoStackSize = 0;
-  public savingReportSpan = document.createElement("span");
-  public timeoutToSave: any;
+
   private _inferenceFormatter: IaraEditorInferenceFormatter;
 
-  private get _editorAPI(): Editor {
-    return this._editor.editor;
-  }
-  private get _editorHistory(): EditorHistory {
-    return this._editor.editorHistory;
-  }
-  private get _editorSelection(): Selection {
-    return this._editor.selection;
+  public savingReportSpan = document.createElement("span");
+  public timeoutToSave: any;
+
+  private get _toolBar() {
+    return this._editor.toolbarModule.toolbar;
   }
 
-  constructor(protected _editor: any, protected _recognition: any) {
+  private get _editorAPI(): Editor {
+    return this._editor.documentEditor.editor;
+  }
+  private get _editorHistory(): EditorHistory {
+    return this._editor.documentEditor.editorHistory;
+  }
+
+  private get _editorSelection(): Selection {
+    return this._editor.documentEditor.selection;
+  }
+
+  constructor(
+    protected _editor: any,
+    protected _recognition: any,
+    replaceToolbar: boolean = true
+  ) {
     super(_editor, _recognition);
     this._editor.contentChange = this._onContentChange.bind(this);
     this._editor.destroyed = this._onEditorDestroy.bind(this);
     this._editor.enableLocalPaste = true;
+    if (replaceToolbar) this.initToolbarConfigs();
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
   }
 
@@ -154,6 +167,28 @@ export class IaraSyncfusionAdapter
       line = line.trimStart();
       if (line) this.insertText(line);
     });
+  }
+
+  initToolbarConfigs() {
+    const toolbarItems = toolBarSettings(this._editor);
+    this._toolBar.addItems(toolbarItems, 5);
+    this._editor.toolbarClick = this.onClickToolbar.bind(this);
+    this.removePropertiesPane();
+  }
+
+  onClickToolbar(arg: { item: any }) {
+    toolbarButtonClick(arg, this._editorAPI, this._editor);
+  }
+
+  removePropertiesPane() {
+    this._editor.showPropertiesPane = false;
+    const paneButton = document.querySelector(
+      ".e-de-ctnr-properties-pane-btn"
+    ) as HTMLElement;
+    paneButton.remove();
+    //remove wrapper button
+    const wrapper = document.querySelector(".e-de-tlbr-wrapper") as HTMLElement;
+    wrapper.style.width = "100%";
   }
 
   private async _onEditorDestroy() {
