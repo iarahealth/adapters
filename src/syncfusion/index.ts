@@ -81,7 +81,7 @@ export class IaraSyncfusionAdapter
       html,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
-    this._editor.documentEditor.open(JSON.stringify({ sfdt: sfdt.value }));
+    this._editor.documentEditor.open(sfdt.value);
   }
 
   insertText(text: string): void {
