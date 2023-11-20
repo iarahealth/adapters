@@ -1226,7 +1226,6 @@ declare class IaraDataAPIConnector<T, D, P> extends IaraHTTPConnector<T, D, P> {
     _contentType?: ContentType
   );
 }
-export interface IaraDataAPIReport {}
 export interface IaraDataAPIValidations {
   status: string;
 }
@@ -1647,7 +1646,7 @@ export interface IaraSpeechRecognitionContext<T> {
     user?: IaraAPIUser;
   };
   iaraDataAPI?: {
-    reports: IaraDataAPIConnector<T, IaraDataAPIReport, IaraDataAPIXMLParams>;
+    reports: IaraDataAPIConnector<T, unknown, IaraDataAPIXMLParams>;
     validations: IaraDataAPIConnector<T, IaraDataAPIValidations, Validation>;
   };
   iaraDataAPIValidationHeaders?: {
@@ -1663,7 +1662,7 @@ export interface IaraSpeechRecognitionContext<T> {
   initialized: boolean;
   initParams: InitParams;
   initReadinessRequiredHookScopes: InitReadinessRequiredHookScopes[];
-  initReadinessRequiredHookScopesStatus: InitReadinessRequiredHookScopesStatus;
+  initReadinessRequiredHookScopesStatus: unknown;
   initStartedDateTime: number;
   interimResults: () => boolean;
   interimResultsPollingId: number;
@@ -1857,15 +1856,6 @@ declare enum InitReadinessRequiredHookScopes {
   ASRMANAGER_PARAMS_MISMATCH = "asrmanager.paramsmismatch",
   ASRMANAGER_PARSER_RULES_LOADED = "asrmanager.parserrulesloaded",
   INIT_INPUT_OK = "initinputok",
-}
-export interface InitReadinessRequiredHookScopesStatus {
-  [InitReadinessRequiredHookScopes.ASRMANAGER_ASR_PARSER_RULES_LOADED]?: boolean;
-  [InitReadinessRequiredHookScopes.ASRMANAGER_MODEL_AND_ASR_LOADED]?: boolean;
-  [InitReadinessRequiredHookScopes.ASRMANAGER_PARAMS_MATCH]?: boolean;
-  [InitReadinessRequiredHookScopes.ASRMANAGER_PARAMS_MISMATCH]?: boolean;
-  [InitReadinessRequiredHookScopes.ASRMANAGER_PARSER_RULES_LOADED]?: boolean;
-  [InitReadinessRequiredHookScopes.INIT_INPUT_OK]?: boolean;
-  [key: string]: boolean;
 }
 export interface InitStructure {
   done?: (doneCallback: (e?: CustomEvent) => void) => InitStructure;
@@ -2183,7 +2173,7 @@ export interface Template {
   originalRichTranscript: string;
   config?: TemplateConfig;
   callback: TemplateCallback<void>;
-  metadata: Object;
+  metadata: unknown;
 }
 export type TemplateCallback<T> = (
   resultEvent: CustomEvent<IaraSpeechRecognitionDetail>,
@@ -2210,7 +2200,7 @@ declare class IaraRichTranscriptTemplates<T> {
     replaceText: string,
     callback?: TemplateCallback<void>,
     config?: TemplateConfig,
-    metadata?: Object
+    metadata?: unknown
   ): boolean;
   private _addSimpleTemplate;
   private _addEnclosedTemplate;

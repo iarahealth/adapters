@@ -28,9 +28,9 @@ export abstract class EditorAdapter {
     return this._recognition.beginReport();
   }
 
-  finishReport(): void {
+  finishReport(clear = true): void {
     this.copyReport();
-    this.clearReport();
+    if (clear) this.clearReport();
     this._recognition.finishReport();
   }
 

@@ -69,23 +69,12 @@ export class IaraSFDT {
   }
 
   static async toRtf(
-    content: string,
-    authHeaders: HeadersInit
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _content: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _authHeaders: HeadersInit
   ): Promise<string> {
     return Promise.resolve("");
-    // const { rtf } = await fetch(
-    //   "https://api.iarahealth.com/speech/syncfusion/sfdt_to_rtf/",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       ...authHeaders,
-    //     },
-    //     body: content,
-    //   }
-    // ).then(response => response.json());
-
-    // return rtf;
   }
 
   async toHtml(): Promise<string> {
