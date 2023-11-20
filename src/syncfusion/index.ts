@@ -3,6 +3,7 @@ import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionSelectionManager } from "./selection";
+import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
 
@@ -13,10 +14,11 @@ export class IaraSyncfusionAdapter
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _initialUndoStackSize = 0;
   private _selectionManager: IaraSyncfusionSelectionManager;
+  private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
-
+  
   protected _styleManager: IaraSyncfusionStyleManager;
-
+  
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
@@ -37,6 +39,7 @@ export class IaraSyncfusionAdapter
       this._onContentChange.bind(this)
     );
     this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
+    this._shortcutsManager = new IaraSyncfusionShortcutsManager(_editor, _recognition);
     this._styleManager = new IaraSyncfusionStyleManager(
       _editor,
       this._selectionManager
@@ -163,4 +166,9 @@ export class IaraSyncfusionAdapter
       );
     });
   }
+
+  
+
+
+
 }
