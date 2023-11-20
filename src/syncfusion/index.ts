@@ -1,144 +1,97 @@
-import type {
-  DocumentEditorContainer,
-  Editor,
-  EditorHistory,
-  Selection,
-} from "@syncfusion/ej2-documenteditor";
+import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import { EditorAdapter } from "../editor";
-import { IaraEditorInferenceFormatter } from "../editor/formatter";
-import { IaraInference } from "../speech";
-import { toolBarSettings, toolbarButtonClick } from "./toolbarConfig";
-
-interface SelectionOffsets {
-  end: string;
-  start: string;
-}
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionSelectionManager } from "./selection";
+import { IaraSyncfusionStyleManager } from "./style";
+import { IaraSyncfusionToolbarManager } from "./toolbar";
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
   implements EditorAdapter
 {
+  private _contentManager: IaraSyncfusionEditorContentManager;
   private _initialUndoStackSize = 0;
+  private _selectionManager: IaraSyncfusionSelectionManager;
+  private _toolbarManager: IaraSyncfusionToolbarManager;
 
-  private _inferenceFormatter: IaraEditorInferenceFormatter;
+  protected _styleManager: IaraSyncfusionStyleManager;
 
   public savingReportSpan = document.createElement("span");
-  public timeoutToSave: any;
+  public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
-  private get _toolBar() {
-    return this._editor.toolbarModule.toolbar;
-  }
-
-  private get _editorAPI(): Editor {
-    return this._editor.documentEditor.editor;
-  }
-  private get _editorHistory(): EditorHistory {
-    return this._editor.documentEditor.editorHistory;
-  }
-
-  private get _editorSelection(): Selection {
-    return this._editor.documentEditor.selection;
+  public get contentManager(): IaraSyncfusionEditorContentManager {
+    return this._contentManager;
   }
 
   constructor(
     protected _editor: DocumentEditorContainer,
-    protected _recognition: any,
-    replaceToolbar = true
+    protected _recognition: IaraSpeechRecognition,
+    replaceToolbar = false
   ) {
     super(_editor, _recognition);
-    this._editor.contentChange = this._onContentChange.bind(this);
-    this._editor.destroyed = this._onEditorDestroy.bind(this);
+
+    this._contentManager = new IaraSyncfusionEditorContentManager(
+      _editor,
+      _recognition,
+      this._onContentChange.bind(this)
+    );
+    this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
+    this._styleManager = new IaraSyncfusionStyleManager(
+      _editor,
+      this._selectionManager
+    );
+    this._toolbarManager = new IaraSyncfusionToolbarManager(_editor);
+
+    if (replaceToolbar) this._toolbarManager.init();
+
+    this._editor.destroyed = this.finishReport.bind(this);
     this._editor.enableLocalPaste = true;
-    if (replaceToolbar) this.initToolbarConfigs();
-    this._inferenceFormatter = new IaraEditorInferenceFormatter();
+  }
+
+  blockEditorWhileSpeaking(status: boolean): void {
+    const wrapper = document.getElementById("iara-syncfusion-editor-container");
+    if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
+  }
+
+  copyReport(): void {
+    this._selectionManager.selection.selectAll();
+    this._selectionManager.selection.copySelectedContent(false);
+  }
+
+  clearReport(): void {
+    this._selectionManager.selection.selectAll();
+    this._editor.documentEditor.editor.delete();
+  }
+
+  getEditorContent(): Promise<[string, string, string]> {
+    return this._contentManager.getContent();
   }
 
   getUndoStackSize(): number {
-    return this._editorHistory.undoStack?.length || 0;
+    return this._editor.documentEditor.editorHistory.undoStack?.length || 0;
   }
 
   insertParagraph(): void {
-    this._editorAPI.insertText("\n");
+    this._editor.documentEditor.editor.insertText("\n");
+  }
+
+  async insertTemplate(html: string): Promise<void> {
+    const sfdt = await IaraSFDT.fromHtml(
+      html,
+      this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
+    );
+    this._editor.documentEditor.open(JSON.stringify({ sfdt: sfdt.value }));
   }
 
   insertText(text: string): void {
-    this._editorAPI.insertText(text);
+    this._editor.documentEditor.editor.insertText(text);
   }
 
-  async sfdtToHtml(content: string): Promise<string> {
-    const endpoint =
-      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/";
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...this._recognition.internal.iaraAPIMandatoryHeaders,
-      },
-      body: JSON.stringify({ sfdt: content }),
-    }).then(async response => await response.json());
-
-    return response;
-  }
-
-  async htmlToSfdt(content: string): Promise<string> {
-    const endpoint =
-      "https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/";
-
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...this._recognition.internal.iaraAPIMandatoryHeaders,
-      },
-      body: JSON.stringify({ html: content }),
-    }).then(async response => await response.json());
-
-    return response;
-  }
-
-  async insertTemplate(template: string): Promise<void> {
-    const response = await this.htmlToSfdt(template);
-    this._editor.documentEditor.open(response);
-  }
-
-  async getEditorContent(): Promise<string> {
-    const contentSfdt = await this._editor.documentEditor
-      .saveAsBlob("Sfdt")
-      .then((blob: Blob) => blob.text());
-
-    const response = fetch(
-      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...this._recognition.internal.iaraAPIMandatoryHeaders,
-        },
-        method: "POST",
-        body: contentSfdt,
-      }
-    );
-    const htmlContent = await response.then(response => response.json());
-    return htmlContent.html;
-  }
-
-  private _getWordAfterSelection(selectionOffsets: SelectionOffsets): string {
-    this._editorSelection.extendToWordEnd();
-    const wordAfter = this._editorSelection.text.trimEnd();
-    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
-    return wordAfter;
-  }
-
-  private _getWordBeforeSelection(selectionOffsets: SelectionOffsets): string {
-    this._editorSelection.extendToWordStart();
-    const wordBefore = this._editorSelection.text.trimStart();
-    this._editorSelection.select(selectionOffsets.start, selectionOffsets.end);
-    return wordBefore;
-  }
-
-  insertInference(inference: IaraInference): void {
+  insertInference(inference: IaraSpeechRecognitionDetail): void {
     if (inference.isFirst) {
-      if (this._editorSelection.text.length) this._editorAPI.delete();
+      if (this._selectionManager.selection.text.length)
+        this._editor.documentEditor.editor.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
       const undoStackSize = this.getUndoStackSize();
@@ -148,16 +101,21 @@ export class IaraSyncfusionAdapter
 
     // Syncfusion formatter
     const initialSelectionOffsets = {
-      end: this._editorSelection.endOffset,
-      start: this._editorSelection.startOffset,
+      end: this._selectionManager.selection.endOffset,
+      start: this._selectionManager.selection.startOffset,
     };
-    const wordBefore = this._getWordBeforeSelection(initialSelectionOffsets);
-    const wordAfter = this._getWordAfterSelection(initialSelectionOffsets);
+    const wordBefore = this._selectionManager.getWordBeforeSelection(
+      initialSelectionOffsets
+    );
+    const wordAfter = this._selectionManager.getWordAfterSelection(
+      initialSelectionOffsets
+    );
 
-    let text = inference.richTranscript
-      .replace(/^<div>/, "")
-      .replace(/<\/div>$/, "");
-    text = this._inferenceFormatter.format(inference, wordBefore, wordAfter);
+    const text = this._inferenceFormatter.format(
+      inference,
+      wordBefore,
+      wordAfter
+    );
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
@@ -169,32 +127,20 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  initToolbarConfigs(): void {
-    const toolbarItems = toolBarSettings(this._editor);
-    this._toolBar.addItems(toolbarItems, 5);
-    this._editor.toolbarClick = this.onClickToolbar.bind(this);
-    this.removePropertiesPane();
+  undo(): void {
+    this._editor.documentEditor.editorHistory.undo();
   }
 
-  onClickToolbar(arg: { item: any }): void {
-    toolbarButtonClick(arg, this._editor);
-  }
-
-  removePropertiesPane(): void {
-    this._editor.showPropertiesPane = false;
-    const paneButton: HTMLElement | null = document.querySelector(
-      ".e-de-ctnr-properties-pane-btn"
-    );
-    paneButton?.remove();
-    //remove wrapper button
-    const wrapper: HTMLElement | null =
-      document.querySelector(".e-de-tlbr-wrapper");
-    if (wrapper) wrapper.style.width = "100%";
-  }
-
-  private async _onEditorDestroy() {
-    this.finishReport();
-  }
+  private _debounceSave = (func: () => unknown) => {
+    if (!this.timeoutToSave) {
+      func();
+    }
+    clearTimeout(this.timeoutToSave);
+    this.timeoutToSave = setTimeout(() => {
+      this.timeoutToSave = undefined;
+      this.savingReportSpan.innerText = "Salvo";
+    }, 3000);
+  };
 
   private async _onContentChange(): Promise<void> {
     const element = document.getElementById(
@@ -209,73 +155,12 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.innerText = "Salvando...";
       element.appendChild(this.savingReportSpan);
     }
-    const contentText = await this._editor.documentEditor
-      .saveAsBlob("Txt")
-      .then((blob: Blob) => blob.text());
 
-    const contentHTML = await this.getEditorContent();
-
-    this._debounceToSave(() => {
-      this._onReportChanged(contentText, contentHTML);
+    this._debounceSave(async () => {
+      this._updateReport(
+        await this._contentManager.getPlainTextContent(),
+        await this._contentManager.getHtmlContent()
+      );
     });
-  }
-
-  private _debounceToSave = (func: () => void) => {
-    if (!this.timeoutToSave) {
-      func();
-    }
-    clearTimeout(this.timeoutToSave);
-    this.timeoutToSave = setTimeout(() => {
-      this.timeoutToSave = undefined;
-      this.savingReportSpan.innerText = "Salvo";
-    }, 3000);
-  };
-
-  blockEditorWhileSpeaking(status: boolean): void {
-    const wrapper = document.getElementById("iara-syncfusion-editor-container");
-    if (wrapper)
-      status
-        ? (wrapper.style.cursor = "not-allowed")
-        : (wrapper.style.cursor = "auto");
-  }
-
-  undo(): void {
-    this._editorHistory.undo();
-  }
-
-  copyReport(): void {
-    this._editorSelection.selectAll();
-    this._editorSelection.copySelectedContent(false);
-  }
-
-  clearReport(): void {
-    this._editorSelection.selectAll();
-    this._editorAPI.delete();
-  }
-
-  setEditorFontFamily(fontFamily: string): void {
-    this._editorSelection.characterFormat.fontFamily = fontFamily;
-    this._editor.documentEditor.focusIn();
-  }
-
-  setEditorFontSize(fontSize: number): void {
-    this._editorSelection.characterFormat.fontSize = fontSize;
-    this._editor.documentEditor.focusIn();
-  }
-
-  editorToggleBold(): void {
-    this._editorAPI.toggleBold();
-  }
-
-  editorToggleItalic(): void {
-    this._editorAPI.toggleItalic();
-  }
-
-  editorToggleUnderline(): void {
-    this._editorAPI.toggleUnderline("Single");
-  }
-
-  editorToggleUppercase(): void {
-    throw new Error("Método não implementado.");
   }
 }

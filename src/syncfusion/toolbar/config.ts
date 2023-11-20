@@ -90,7 +90,7 @@ export const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer
-): Record<string, any>[] => {
+): Record<string, unknown>[] => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
     editor.documentEditor.selection.characterFormat.fontFamily = args.value;

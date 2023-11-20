@@ -1,26 +1,31 @@
-import type { Selection } from "@syncfusion/ej2-documenteditor";
+import { Editor } from "tinymce";
 import { EditorAdapter } from "../editor";
-import { IaraInference } from "../speech";
+import { IaraEditorInferenceFormatter } from "../editor/formatter";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraTinyMceStyleManager } from "./style";
 
 export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
+  protected _styleManager: IaraTinyMceStyleManager;
   private _initialUndoStackSize = 0;
 
-  private get _editorAPI() {
-    return this._editor.activeEditor;
-  }
-  private get _editorSelection(): Selection {
-    return this._editor.selection;
+  constructor(
+    protected _editor: Editor,
+    protected _recognition: IaraSpeechRecognition
+  ) {
+    super(_editor, _recognition);
+    this._inferenceFormatter = new IaraEditorInferenceFormatter();
+    this._styleManager = new IaraTinyMceStyleManager();
   }
 
   getUndoStackSize(): number {
-    return this._editorAPI.undoManager.data.length || 0;
+    return (this._editor.undoManager as any).data.length || 0;
   }
 
-  getEditorContent(): void {
+  getEditorContent(): Promise<[string, string, string]> {
     throw new Error("Método não implementado.");
   }
 
-  insertInference(inference: IaraInference): void {
+  insertInference(inference: IaraSpeechRecognitionDetail): void {
     if (inference.isFirst) {
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
@@ -44,53 +49,27 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   insertParagraph() {
-    this._editorAPI.execCommand("InsertParagraph");
+    this._editor.execCommand("InsertParagraph");
   }
 
   insertText(text: string) {
-    this._editorAPI.insertContent(text);
+    this._editor.insertContent(text);
   }
 
   blockEditorWhileSpeaking(status: boolean) {
-    const wrapper = document.getElementsByTagName('tinymce')[0] as HTMLElement
-    if (wrapper) status ? wrapper.style.cursor = 'not-allowed' : wrapper.style.cursor = 'auto'
+    const wrapper = document.getElementsByTagName("tinymce")[0] as HTMLElement;
+    if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
   undo() {
-    this._editorAPI.undoManager.undo();
+    this._editor.undoManager.undo();
   }
 
   copyReport(): void {
-    this._editorSelection.selectAll();
-    this._editorSelection.copySelectedContent(false);
+    throw new Error("Método não implementado.");
   }
 
   clearReport(): void {
-    this._editorSelection.selectAll();
-    this._editorAPI.delete();
-  }
-
-  setEditorFontFamily(_fontName: string): void {
-    throw new Error("Método não implementado.");
-  }
-
-  setEditorFontSize(_fontSize: number): void {
-    throw new Error("Método não implementado.");
-  }
-
-  editorToggleBold(): void {
-    throw new Error("Método não implementado.");
-  }
-
-  editorToggleItalic(): void {
-    throw new Error("Método não implementado.");
-  }
-
-  editorToggleUnderline(): void {
-    throw new Error("Método não implementado.");
-  }
-
-  editorToggleUppercase(): void {
     throw new Error("Método não implementado.");
   }
 }
