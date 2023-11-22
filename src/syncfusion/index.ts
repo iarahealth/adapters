@@ -1,4 +1,6 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
+import { Dialog } from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
@@ -16,9 +18,9 @@ export class IaraSyncfusionAdapter
   private _selectionManager: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
-  
+
   protected _styleManager: IaraSyncfusionStyleManager;
-  
+
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
@@ -39,7 +41,11 @@ export class IaraSyncfusionAdapter
       this._onContentChange.bind(this)
     );
     this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
-    this._shortcutsManager = new IaraSyncfusionShortcutsManager(_editor, _recognition);
+    this._shortcutsManager = new IaraSyncfusionShortcutsManager(
+      _editor,
+      _recognition,
+      this.onTemplateSelectedAtShortCut.bind(this)
+    );
     this._styleManager = new IaraSyncfusionStyleManager(
       _editor,
       this._selectionManager
@@ -79,12 +85,13 @@ export class IaraSyncfusionAdapter
     this._editor.documentEditor.editor.insertText("\n");
   }
 
-  async insertTemplate(html: string): Promise<void> {
+  async insertTemplate(html: string, replaceAllContent = false): Promise<void> {
     const sfdt = await IaraSFDT.fromHtml(
       html,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
-    this._editor.documentEditor.open(sfdt.value);
+    if (replaceAllContent) this._editor.documentEditor.open(sfdt.value);
+    else this._editor.documentEditor.editor.paste(sfdt.value);
   }
 
   insertText(text: string): void {
@@ -138,7 +145,7 @@ export class IaraSyncfusionAdapter
     if (!this.timeoutToSave) {
       func();
     }
-    clearTimeout(this.timeoutToSave);
+    clearTimeout(this.timeoutToSave as unknown as number);
     this.timeoutToSave = setTimeout(() => {
       this.timeoutToSave = undefined;
       this.savingReportSpan.innerText = "Salvo";
@@ -167,8 +174,21 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  
-
-
-
+  onTemplateSelectedAtShortCut(
+    listViewInstance: ListView,
+    dialogObj: Dialog
+  ): void {
+    document.getElementById("listview")?.addEventListener("click", () => {
+      const selecteditem: SelectedCollection =
+        listViewInstance.getSelectedItems() as SelectedCollection;
+      const item = selecteditem.data as unknown as {
+        name: string;
+        category: string;
+        content: string;
+      };
+      this.undo();
+      this.insertTemplate(item.content);
+      dialogObj.hide();
+    });
+  }
 }
