@@ -69,12 +69,21 @@ export class IaraSFDT {
   }
 
   static async toRtf(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _content: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _authHeaders: HeadersInit
+    content: string,
+    authHeaders: HeadersInit
   ): Promise<string> {
-    return Promise.resolve("");
+    const rtf = await fetch(
+      "https://southamerica-east1-api-iara-qa.cloudfunctions.net/syncfusionSFDTtoRTF",
+      {
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        //   ...authHeaders,
+        // },
+        body: content,
+      }
+    ).then(response => response.text());
+    return rtf;
   }
 
   async toHtml(): Promise<string> {
