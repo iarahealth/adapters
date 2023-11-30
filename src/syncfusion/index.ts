@@ -45,7 +45,7 @@ export class IaraSyncfusionAdapter
 
     if (replaceToolbar) this._toolbarManager.init();
 
-    this._editor.destroyed = this.finishReport.bind(this);
+    this._editor.destroyed = this._onEditorDestroyed.bind(this);
     this._editor.enableLocalPaste = true;
   }
 
@@ -166,5 +166,8 @@ export class IaraSyncfusionAdapter
         await this._contentManager.getHtmlContent()
       );
     });
+  }
+  private async _onEditorDestroyed() {
+    this.finishReport();
   }
 }
