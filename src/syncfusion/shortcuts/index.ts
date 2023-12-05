@@ -32,6 +32,7 @@ export class IaraSyncfusionShortcutsManager {
       const templates = [
         ...Object.values(this._recognition.richTranscriptTemplates.templates),
       ];
+
       const updateFormatTemplates = templates.map(template => {
         const categoryName = template.metadata as { category: string };
         return {
@@ -40,9 +41,20 @@ export class IaraSyncfusionShortcutsManager {
           content: template.replaceText,
         };
       });
-
+      const sortedData = updateFormatTemplates.sort(
+        (oldTemplate, newTemplate) => {
+          // Compare based on the 'type' key
+          if (oldTemplate.category === newTemplate.category) {
+            // If types are the same, order by the 'value' key
+            return oldTemplate["name"].localeCompare(newTemplate["name"]);
+          } else {
+            // Order 'template' items first
+            return oldTemplate.category === "template" ? -1 : 1;
+          }
+        }
+      );
       new IaraSyncfusionTemplateSearch(
-        updateFormatTemplates,
+        sortedData ? sortedData : updateFormatTemplates,
         this.onTemplateSelected
       );
     }
