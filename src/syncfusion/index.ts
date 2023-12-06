@@ -89,7 +89,7 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.richTranscriptModifiers) {
+    if (inference.richTranscriptModifiers?.length) {
       this.insertTemplate(inference.richTranscript);
       return;
     }
