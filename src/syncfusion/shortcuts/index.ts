@@ -15,10 +15,11 @@ export class IaraSyncfusionShortcutsManager {
       listViewInstance: ListView,
       dialogObj: Dialog
     ) => void
-  ) {
+  ) {}
+
+  init() {
     this._editor.documentEditor.keyDown = this.onKeyDown.bind(this);
   }
-
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     const key: string = args.event.key;
     const isShiftKey: boolean =

@@ -46,6 +46,7 @@ export class IaraSyncfusionAdapter
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this)
     );
+    this._shortcutsManager.init();
     this._styleManager = new IaraSyncfusionStyleManager(
       _editor,
       this._selectionManager
