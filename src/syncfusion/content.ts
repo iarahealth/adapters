@@ -72,17 +72,17 @@ export class IaraSFDT {
     content: string,
     authHeaders: HeadersInit
   ): Promise<string> {
-    const rtf = await fetch(
-      "https://southamerica-east1-api-iara-qa.cloudfunctions.net/syncfusionSFDTtoRTF",
+    const { rtf } = await fetch(
+      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_rtf/",
       {
         method: "POST",
-        // headers: {
-        //   "Content-Type": "application/json",
-        //   ...authHeaders,
-        // },
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeaders,
+        },
         body: content,
       }
-    ).then(response => response.text());
+    ).then(response => response.json());
     return rtf;
   }
 
