@@ -150,7 +150,7 @@ export class IaraSyncfusionAdapter
     if (!this.timeoutToSave) {
       func();
     }
-    clearTimeout(this.timeoutToSave as unknown as number);
+    clearTimeout(this.timeoutToSave as ReturnType<typeof setTimeout>);
     this.timeoutToSave = setTimeout(() => {
       this.timeoutToSave = undefined;
       this.savingReportSpan.innerText = "Salvo";
