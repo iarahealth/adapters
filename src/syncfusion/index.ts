@@ -30,12 +30,12 @@ export class IaraSyncfusionAdapter
     replaceToolbar = false
   ) {
     super(_editor, _recognition);
-
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editor,
       _recognition,
       this._onContentChange.bind(this)
     );
+
     this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
     this._styleManager = new IaraSyncfusionStyleManager(
       _editor,
@@ -89,46 +89,47 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.richTranscriptModifiers?.length) {
-      this.insertTemplate(inference.richTranscript);
-      return;
+    if (this._editor.documentEditor) {
+      if (inference.richTranscriptModifiers?.length) {
+        this.insertTemplate(inference.richTranscript);
+        return;
+      }
+      if (inference.isFirst) {
+        if (this._selectionManager.selection.text.length)
+          this._editor.documentEditor.editor.delete();
+        this._initialUndoStackSize = this.getUndoStackSize();
+      } else {
+        const undoStackSize = this.getUndoStackSize();
+        for (let i = 0; i < undoStackSize - this._initialUndoStackSize; i++)
+          this.undo();
+      }
+
+      // Syncfusion formatter
+      const initialSelectionOffsets = {
+        end: this._selectionManager.selection.endOffset,
+        start: this._selectionManager.selection.startOffset,
+      };
+      const wordBefore = this._selectionManager.getWordBeforeSelection(
+        initialSelectionOffsets
+      );
+      const wordAfter = this._selectionManager.getWordAfterSelection(
+        initialSelectionOffsets
+      );
+
+      const text = this._inferenceFormatter.format(
+        inference,
+        wordBefore,
+        wordAfter
+      );
+
+      const [firstLine, ...lines]: string[] = text.split("</div><div>");
+      this.insertText(firstLine);
+      lines.forEach(line => {
+        this.insertParagraph();
+        line = line.trimStart();
+        if (line) this.insertText(line);
+      });
     }
-    if (inference.isFirst) {
-      if (this._selectionManager.selection.text.length)
-        this._editor.documentEditor.editor.delete();
-      this._initialUndoStackSize = this.getUndoStackSize();
-    } else {
-      const undoStackSize = this.getUndoStackSize();
-      for (let i = 0; i < undoStackSize - this._initialUndoStackSize; i++)
-        this.undo();
-    }
-
-    // Syncfusion formatter
-    const initialSelectionOffsets = {
-      end: this._selectionManager.selection.endOffset,
-      start: this._selectionManager.selection.startOffset,
-    };
-    const wordBefore = this._selectionManager.getWordBeforeSelection(
-      initialSelectionOffsets
-    );
-    const wordAfter = this._selectionManager.getWordAfterSelection(
-      initialSelectionOffsets
-    );
-
-    const text = this._inferenceFormatter.format(
-      inference,
-      wordBefore,
-      wordAfter
-    );
-
-    const [firstLine, ...lines]: string[] = text.split("</div><div>");
-    this.insertText(firstLine);
-
-    lines.forEach(line => {
-      this.insertParagraph();
-      line = line.trimStart();
-      if (line) this.insertText(line);
-    });
   }
 
   undo(): void {
@@ -168,6 +169,6 @@ export class IaraSyncfusionAdapter
     });
   }
   private async _onEditorDestroyed() {
-    this.finishReport();
+    // this.finishReport();
   }
 }
