@@ -17,7 +17,7 @@ export class IaraSyncfusionShortcutsManager {
     ) => void
   ) {}
 
-  init() {
+  init(): void {
     this._editor.documentEditor.keyDown = this.onKeyDown.bind(this);
   }
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
@@ -42,6 +42,7 @@ export class IaraSyncfusionShortcutsManager {
           content: template.replaceText,
         };
       });
+
       const sortedData = updateFormatTemplates.sort(
         (oldTemplate, newTemplate) => {
           // Compare based on the 'type' key

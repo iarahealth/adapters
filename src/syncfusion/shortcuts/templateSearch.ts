@@ -36,6 +36,8 @@ export class IaraSyncfusionTemplateSearch {
       </div>`,
       width: "350px",
       showCloseIcon: true,
+      closeOnEscape: true,
+      okButton: { text: "" },
     });
     this._listviewInstance.appendTo("#listview");
     document.getElementById("textbox")?.addEventListener("keyup", () => {
