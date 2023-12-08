@@ -15,6 +15,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     super(_editor, _recognition);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
+    this._editor.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
   getUndoStackSize(): number {
