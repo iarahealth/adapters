@@ -15,6 +15,8 @@ export abstract class EditorAdapter {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
+    this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
+      true;
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
@@ -37,13 +39,10 @@ export abstract class EditorAdapter {
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", () => {
       this.copyReport();
-      alert("Laudo copiado para a área de transferência (CTRL + C)");
     });
     this._recognition.commands.add("iara finalizar laudo", () => {
+      console.log("AQUINENNE");
       this.finishReport();
-      alert(
-        "Laudo copiado para a área de transferência (CTRL + C) e o editor de texto foi limpo."
-      );
     });
     this._recognition.commands.add("iara negrito", () => {
       this._styleManager.toggleBold();
