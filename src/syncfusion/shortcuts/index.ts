@@ -43,20 +43,19 @@ export class IaraSyncfusionShortcutsManager {
         };
       });
 
-      const sortedData = updateFormatTemplates.sort(
-        (oldTemplate, newTemplate) => {
-          // Compare based on the 'type' key
-          if (oldTemplate.category === newTemplate.category) {
-            // If types are the same, order by the 'value' key
-            return oldTemplate["name"].localeCompare(newTemplate["name"]);
-          } else {
-            // Order 'template' items first
-            return oldTemplate.category === "template" ? -1 : 1;
-          }
+      updateFormatTemplates.sort((oldTemplate, newTemplate) => {
+        // Compare based on the 'type' key
+        if (oldTemplate.category === newTemplate.category) {
+          // If types are the same, order by the 'value' key
+          return oldTemplate["name"].localeCompare(newTemplate["name"]);
+        } else {
+          // Order 'template' items first
+          return oldTemplate.category === "template" ? -1 : 1;
         }
-      );
+      });
+
       new IaraSyncfusionTemplateSearch(
-        sortedData ? sortedData : updateFormatTemplates,
+        updateFormatTemplates,
         this.onTemplateSelected
       );
     }
