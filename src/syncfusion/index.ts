@@ -34,12 +34,12 @@ export class IaraSyncfusionAdapter
     replaceToolbar = false
   ) {
     super(_editor, _recognition);
-
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editor,
       _recognition,
       this._onContentChange.bind(this)
     );
+
     this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
       _editor,
@@ -55,7 +55,11 @@ export class IaraSyncfusionAdapter
 
     if (replaceToolbar) this._toolbarManager.init();
 
-    this._editor.destroyed = this._onEditorDestroyed.bind(this);
+    this._editor.addEventListener(
+      "destroyed",
+      this._onEditorDestroyed.bind(this)
+    );
+
     this._editor.enableLocalPaste = true;
   }
 
@@ -100,7 +104,7 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.richTranscriptModifiers) {
+    if (inference.richTranscriptModifiers?.length) {
       this.insertTemplate(inference.richTranscript);
       return;
     }
@@ -134,7 +138,6 @@ export class IaraSyncfusionAdapter
 
     const [firstLine, ...lines]: string[] = text.split("</div><div>");
     this.insertText(firstLine);
-
     lines.forEach(line => {
       this.insertParagraph();
       line = line.trimStart();
@@ -177,10 +180,6 @@ export class IaraSyncfusionAdapter
         await this._contentManager.getHtmlContent()
       );
     });
-  }
-
-  private async _onEditorDestroyed() {
-    this.finishReport();
   }
 
   onTemplateSelectedAtShortCut(

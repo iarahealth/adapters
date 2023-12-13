@@ -7,6 +7,38 @@ import { IaraEditorStyleManager } from "./style";
 export abstract class EditorAdapter {
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
+  private _listeners = [
+    {
+      key: "iaraSpeechRecognitionResult",
+      callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
+        if (event?.detail) this.insertInference(event.detail);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionStart",
+      callback: () => {
+        this.blockEditorWhileSpeaking(true);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionStop",
+      callback: () => {
+        this.blockEditorWhileSpeaking(false);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionVADVoiceStart",
+      callback: () => {
+        this.blockEditorWhileSpeaking(true);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionVADVoiceStop",
+      callback: () => {
+        this.blockEditorWhileSpeaking(false);
+      },
+    },
+  ];
 
   constructor(
     protected _editor: DocumentEditorContainer | TinymceEditor,
@@ -60,30 +92,19 @@ export abstract class EditorAdapter {
   }
 
   private _initListeners(): void {
-    this._recognition.addEventListener(
-      "iaraSpeechRecognitionResult",
-      (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        if (event?.detail) this.insertInference(event.detail);
-      }
-    );
-    this._recognition.addEventListener("iaraSpeechRecognitionStart", () => {
-      this.blockEditorWhileSpeaking(true);
+    this._listeners.forEach(listener => {
+      this._recognition.addEventListener(listener.key, listener.callback);
     });
-    this._recognition.addEventListener("iaraSpeechRecognitionStop", () => {
-      this.blockEditorWhileSpeaking(false);
+  }
+
+  protected async _onEditorDestroyed(): Promise<void> {
+    // this.finishReport();
+    this._listeners.forEach(listener => {
+      this._recognition.removeEventListener(
+        listener.key,
+        listener.callback as EventListenerOrEventListenerObject
+      );
     });
-    this._recognition.addEventListener(
-      "iaraSpeechRecognitionVADVoiceStart",
-      () => {
-        this.blockEditorWhileSpeaking(true);
-      }
-    );
-    this._recognition.addEventListener(
-      "iaraSpeechRecognitionVADVoiceStop",
-      () => {
-        this.blockEditorWhileSpeaking(false);
-      }
-    );
   }
 
   protected _updateReport(
