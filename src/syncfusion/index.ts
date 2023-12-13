@@ -105,10 +105,6 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.richTranscriptModifiers?.length) {
-      this.insertTemplate(inference.richTranscript);
-      return;
-    }
     if (inference.isFirst) {
       if (this._selectionManager.selection.text.length)
         this._editor.documentEditor.editor.delete();
@@ -117,6 +113,14 @@ export class IaraSyncfusionAdapter
       const undoStackSize = this.getUndoStackSize();
       for (let i = 0; i < undoStackSize - this._initialUndoStackSize; i++)
         this.undo();
+    }
+
+    if (inference.richTranscriptModifiers?.length) {
+      const removeDivTags = inference.richTranscript
+        .replace(/^<div>/, "")
+        .replace(/<\/div>$/, "");
+      this.insertTemplate(removeDivTags);
+      return;
     }
 
     // Syncfusion formatter
