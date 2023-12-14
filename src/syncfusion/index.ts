@@ -59,8 +59,6 @@ export class IaraSyncfusionAdapter
       "destroyed",
       this._onEditorDestroyed.bind(this)
     );
-
-    this._editor.enableLocalPaste = true;
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
