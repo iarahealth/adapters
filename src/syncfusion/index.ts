@@ -41,7 +41,6 @@ export class IaraSyncfusionAdapter
     );
 
     this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
-
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
       _editor,
       _recognition,
