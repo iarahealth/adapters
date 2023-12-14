@@ -3,7 +3,7 @@ import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 
 export class IaraSyncfusionTemplateSearch {
-  private _template: string;
+  private _template: (data: { name: string }) => string;
   private _listviewInstance: ListView;
   constructor(
     private _dataSource: { name: string; category: string; content: string }[],
@@ -12,20 +12,29 @@ export class IaraSyncfusionTemplateSearch {
       dialogObj: Dialog
     ) => void
   ) {
-    this._template =
-      '<div class="e-list-wrapper" style="padding-left:10px; overflow: auto; height: 120px;">' +
-      '<div class="e-list-wrappere-list-multi-line">' +
-      '<span class="e-list-item-header">${name}</span>' +
-      "</div>" +
-      "</div>";
+    this._template = (data: {
+      name: string;
+    }) => `<div class="e-list-wrapper" style="padding-left:10px; overflow: auto; height: 120px;">
+      <div class="e-list-wrappere-list-multi-line">
+        <span class="e-list-item-header">${data.name}</span>
+      </div>
+    </div>`;
+
+    const customGroupTemplate = (data: {
+      items: { name: string; category: string; content: string }[];
+    }) => {
+      return `<div>
+        <span class="category">${data.items[0].category}</span> 
+        <span class="count"> ${data.items.length} Item(s)</span>
+      </div>`;
+    };
 
     this._listviewInstance = new ListView({
       dataSource: this._dataSource,
       sortOrder: "None",
       fields: { text: "name", groupBy: "category" },
       template: this._template,
-      groupTemplate:
-        '<div><span class="category">${items[0].category}</span> <span class="count"> ${items.length} Item(s)</span></div> ',
+      groupTemplate: customGroupTemplate,
     });
 
     const dialogObj = DialogUtility.alert({
