@@ -5,6 +5,7 @@ import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
 export abstract class EditorAdapter {
+  public onFinishedReport?: () => void;
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
   private _listeners = [
@@ -66,6 +67,7 @@ export abstract class EditorAdapter {
     this.copyReport();
     if (clear) this.clearReport();
     this._recognition.finishReport();
+    this.onFinishedReport?.();
   }
 
   private _initCommands(): void {
@@ -73,7 +75,6 @@ export abstract class EditorAdapter {
       this.copyReport();
     });
     this._recognition.commands.add("iara finalizar laudo", () => {
-      console.log("AQUINENNE");
       this.finishReport();
     });
     this._recognition.commands.add("iara negrito", () => {
