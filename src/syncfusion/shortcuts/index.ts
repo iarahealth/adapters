@@ -35,10 +35,13 @@ export class IaraSyncfusionShortcutsManager {
       ];
 
       const updateFormatTemplates = templates.map(template => {
-        const categoryName = template.metadata as { category: string };
+        const metadata = template.metadata as {
+          category: string;
+          name: string;
+        };
         return {
-          name: template.key,
-          category: categoryName.category ? categoryName.category : "",
+          name: metadata.name,
+          category: metadata.category ? metadata.category : "",
           content: template.replaceText,
         };
       });
