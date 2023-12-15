@@ -24,7 +24,11 @@ export class IaraSyncfusionTemplateSearch {
       items: { name: string; category: string; content: string }[];
     }) => {
       return `<div>
-        <span class="category">${data.items[0].category}</span> 
+        <span class="category">${
+          data.items.length > 1
+            ? data.items[0].category + "s"
+            : data.items[0].category
+        }</span> 
         <span class="count"> ${data.items.length} Item(s)</span>
       </div>`;
     };
