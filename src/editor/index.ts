@@ -5,6 +5,7 @@ import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
 export abstract class EditorAdapter {
+  public onFinishedReport?: () => void;
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
   private _listeners = [
@@ -47,6 +48,8 @@ export abstract class EditorAdapter {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
+    this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
+      true;
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
@@ -64,18 +67,15 @@ export abstract class EditorAdapter {
     this.copyReport();
     if (clear) this.clearReport();
     this._recognition.finishReport();
+    this.onFinishedReport?.();
   }
 
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", () => {
       this.copyReport();
-      alert("Laudo copiado para a área de transferência (CTRL + C)");
     });
     this._recognition.commands.add("iara finalizar laudo", () => {
       this.finishReport();
-      alert(
-        "Laudo copiado para a área de transferência (CTRL + C) e o editor de texto foi limpo."
-      );
     });
     this._recognition.commands.add("iara negrito", () => {
       this._styleManager.toggleBold();

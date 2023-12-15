@@ -1773,6 +1773,7 @@ export interface IaraSpeechRecognitionContext<T> {
     minWaitTimeTooSoonToDoSomethingMilli: number;
     quickSpeechMikeEvents: boolean;
     recordManagerGetLinesInternalMilli: number;
+    replaceCommandActivationStringBeforeCallback: boolean;
     robotDelay: number;
     setupBrowserMicrofoneForceSampleRate: boolean;
     telemetry: boolean;
