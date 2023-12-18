@@ -42,7 +42,7 @@ export class IaraSyncfusionTemplateSearch {
     });
 
     const dialogObj = DialogUtility.alert({
-      title: "<div class='dlg-template'>Selecione a frase/template</div>",
+      title: "<div class='dlg-template'>Selecione</div>",
       content: `<div class="e-list-wrapper" >
       <input class="e-input" type="text" id="textbox" placeholder="Buscar" title="Type in a name">
       <div id='listview' style="overflow: auto; max-height: 300px;"></div>
