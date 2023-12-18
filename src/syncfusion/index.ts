@@ -102,6 +102,8 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
+    if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
+
     if (inference.isFirst) {
       if (this._selectionManager.selection.text.length)
         this._editor.documentEditor.editor.delete();
