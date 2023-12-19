@@ -14,6 +14,7 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _contentManager: IaraSyncfusionEditorContentManager;
+  private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
   private _selectionManager: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
@@ -54,6 +55,8 @@ export class IaraSyncfusionAdapter
     this._toolbarManager = new IaraSyncfusionToolbarManager(_editor);
 
     if (replaceToolbar) this._toolbarManager.init();
+
+    this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
     this._editor.addEventListener(
       "destroyed",
@@ -153,37 +156,36 @@ export class IaraSyncfusionAdapter
     this._editor.documentEditor.editorHistory.undo();
   }
 
-  private _debounceSave = (func: () => unknown) => {
-    if (!this.timeoutToSave) {
-      func();
-    }
-    clearTimeout(this.timeoutToSave as ReturnType<typeof setTimeout>);
-    this.timeoutToSave = setTimeout(() => {
-      this.timeoutToSave = undefined;
-      this.savingReportSpan.innerText = "Salvo";
-    }, 3000);
+  private _debounce = (func: () => unknown) => {
+    let timer: ReturnType<typeof setTimeout>;
+    return () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func();
+      }, 1000);
+    };
   };
 
   private async _onContentChange(): Promise<void> {
-    const element = document.getElementById(
-      "iara-syncfusion-editor-container_editor"
-    );
+    const element = document.querySelector(".e-de-status-bar");
     if (element) {
       this.savingReportSpan.style.margin = "10px";
-      this.savingReportSpan.style.fontSize = "14px";
+      this.savingReportSpan.style.fontSize = "12px";
       this.savingReportSpan.style.display = "flex";
       this.savingReportSpan.style.justifyContent = "end";
       this.savingReportSpan.style.color = "black";
       this.savingReportSpan.innerText = "Salvando...";
-      element.appendChild(this.savingReportSpan);
+      element.insertBefore(this.savingReportSpan, element.firstChild);
     }
+    this._debouncedSaveReport();
+  }
 
-    this._debounceSave(async () => {
-      this._updateReport(
-        await this._contentManager.getPlainTextContent(),
-        await this._contentManager.getHtmlContent()
-      );
-    });
+  private async _saveReport(): Promise<void> {
+    this.savingReportSpan.innerText = "Salvo";
+    this._updateReport(
+      await this._contentManager.getPlainTextContent(),
+      await this._contentManager.getHtmlContent()
+    );
   }
 
   onTemplateSelectedAtShortCut(
