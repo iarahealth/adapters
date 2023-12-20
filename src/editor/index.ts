@@ -98,7 +98,6 @@ export abstract class EditorAdapter {
   }
 
   protected async _onEditorDestroyed(): Promise<void> {
-    // this.finishReport();
     this._listeners.forEach(listener => {
       this._recognition.removeEventListener(
         listener.key,
