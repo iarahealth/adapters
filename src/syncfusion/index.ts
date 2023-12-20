@@ -69,9 +69,12 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
-  copyReport(): void {
+  async copyReport(): Promise<void> {
+    this._editor.documentEditor.focusIn();
     this._selectionManager.selection.selectAll();
-    this._selectionManager.selection.copySelectedContent(false);
+    this._recognition.automation.copyText(
+      ...(await this._contentManager.getContent())
+    );
   }
 
   clearReport(): void {
