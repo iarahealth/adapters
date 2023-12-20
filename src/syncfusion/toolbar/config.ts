@@ -96,7 +96,7 @@ export const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  localeEditorContainer: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
 ): Record<string, unknown>[] => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
@@ -245,37 +245,37 @@ export const toolBarSettings = (
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-bold e-icons",
-      tooltipText: localeEditorContainer["Bold Tooltip"],
+      tooltipText: editorContainerLocale["Bold Tooltip"],
       id: "bold",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-italic e-icons",
-      tooltipText: localeEditorContainer["Italic Tooltip"],
+      tooltipText: editorContainerLocale["Italic Tooltip"],
       id: "italic",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-underline e-icons",
-      tooltipText: localeEditorContainer["Underline Tooltip"],
+      tooltipText: editorContainerLocale["Underline Tooltip"],
       id: "underline",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-strikethrough e-icons",
-      tooltipText: localeEditorContainer["Strikethrough"],
+      tooltipText: editorContainerLocale["Strikethrough"],
       id: "strikethrough",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-subscript e-icons",
-      tooltipText: localeEditorContainer["Subscript Tooltip"],
+      tooltipText: editorContainerLocale["Subscript Tooltip"],
       id: "subscript",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-superscript e-icons",
-      tooltipText: localeEditorContainer["Superscript Tooltip"],
+      tooltipText: editorContainerLocale["Superscript Tooltip"],
       id: "superscript",
     },
     { type: "Separator" },
@@ -292,53 +292,53 @@ export const toolBarSettings = (
     { type: "Separator" },
     {
       prefixIcon: "e-de-ctnr-alignleft e-icons",
-      tooltipText: localeEditorContainer["Align left Tooltip"],
+      tooltipText: editorContainerLocale["Align left Tooltip"],
       id: "AlignLeft",
     },
     {
       prefixIcon: "e-de-ctnr-aligncenter e-icons",
-      tooltipText: localeEditorContainer["Align center"],
+      tooltipText: editorContainerLocale["Align center"],
       id: "AlignCenter",
     },
     {
       prefixIcon: "e-de-ctnr-alignright e-icons",
-      tooltipText: localeEditorContainer["Align right Tooltip"],
+      tooltipText: editorContainerLocale["Align right Tooltip"],
       id: "AlignRight",
     },
     {
       prefixIcon: "e-de-ctnr-justify e-icons",
-      tooltipText: localeEditorContainer["Justify Tooltip"],
+      tooltipText: editorContainerLocale["Justify Tooltip"],
       id: "Justify",
     },
     {
       prefixIcon: "e-de-ctnr-increaseindent e-icons",
-      tooltipText: localeEditorContainer["Increase indent"],
+      tooltipText: editorContainerLocale["Increase indent"],
       id: "IncreaseIndent",
     },
     {
       prefixIcon: "e-de-ctnr-decreaseindent e-icons",
-      tooltipText: localeEditorContainer["Decrease indent"],
+      tooltipText: editorContainerLocale["Decrease indent"],
       id: "DecreaseIndent",
     },
     { type: "Separator" },
     {
       prefixIcon: "e-de-ctnr-bullets e-icons",
-      tooltipText: localeEditorContainer["Bullets"],
+      tooltipText: editorContainerLocale["Bullets"],
       id: "Bullets",
     },
     {
       prefixIcon: "e-de-ctnr-numbering e-icons",
-      tooltipText: localeEditorContainer["Numbering"],
+      tooltipText: editorContainerLocale["Numbering"],
       id: "Numbering",
     },
     {
       prefixIcon: "e-de-e-paragraph-mark e-icons",
-      tooltipText: localeEditorContainer["Paragraph"],
+      tooltipText: editorContainerLocale["Paragraph"],
       id: "ShowParagraphMark",
     },
     {
       prefixIcon: "e-de-ctnr-clearall e-icons",
-      tooltipText: localeEditorContainer["Clear all formatting"],
+      tooltipText: editorContainerLocale["Clear all formatting"],
       id: "ClearFormat",
     },
   ];

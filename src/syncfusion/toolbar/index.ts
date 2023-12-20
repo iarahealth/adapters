@@ -6,8 +6,8 @@ export class IaraSyncfusionToolbarManager {
   constructor(private _editor: DocumentEditorContainer) {}
 
   public init(): void {
-    const localeEditorContainer = EJ2_LOCALE["pt-BR"].documenteditorcontainer;
-    const toolbarItems = toolBarSettings(this._editor, localeEditorContainer);
+    const editorContainerLocale = EJ2_LOCALE["pt-BR"].documenteditorcontainer;
+    const toolbarItems = toolBarSettings(this._editor, editorContainerLocale);
     this._editor.toolbarModule.toolbar.addItems(toolbarItems, 5);
     this._editor.toolbarClick = this._onClickToolbar.bind(this);
     this._removePropertiesPane();
