@@ -12,3 +12,9 @@ export abstract class EditorAdapter {
 
   abstract insertInference(inference: IaraInference): void;
 }
+
+export abstract class setEditorFont
+{
+    // constructor() {
+    // }
+}

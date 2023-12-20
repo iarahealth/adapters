@@ -1,5 +1,6 @@
-import { EditorAdapter } from "../editor";
+import { EditorAdapter, setEditorFont } from "../editor";
 import { IaraInference } from "../speech";
+
 
 export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   private _initialUndoStackSize = 0;
@@ -46,4 +47,15 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   undo() {
     this._editorAPI.undoManager.undo();
   }
-}
+};
+
+
+export class tinymceDefaultFont
+  extends setEditorFont
+  implements setEditorFont
+{
+    constructor() {
+        super();
+        throw new Error("Método não implementado");
+      }
+};

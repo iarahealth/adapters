@@ -1,6 +1,29 @@
 import type { Editor, EditorHistory } from "@syncfusion/ej2-documenteditor";
-import { EditorAdapter } from "../editor";
+import { EditorAdapter, setEditorFont } from "../editor";
 import { IaraInference } from "../speech";
+
+export class syncfusionDefaultFont
+  extends setEditorFont
+  implements setEditorFont
+{
+    defaultFormat: object;
+ 
+    constructor() 
+    {
+        super();
+                
+        this.defaultFormat = {
+            bold: false,   
+            italic: false,   
+            baselineAlignment: 'Normal',   
+            underline: 'None',   
+            fontColor: "red",   
+            fontFamily: 'Segoe UI',   
+            fontSize: 22   
+        };
+    }
+}
+
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
