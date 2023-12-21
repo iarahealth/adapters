@@ -42,7 +42,7 @@ export abstract class EditorAdapter {
   ];
 
   constructor(
-    protected _editor: DocumentEditorContainer | TinymceEditor,
+    protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
@@ -71,9 +71,11 @@ export abstract class EditorAdapter {
 
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", () => {
+      this._recognition.stop();
       this.copyReport();
     });
     this._recognition.commands.add("iara finalizar laudo", () => {
+      this._recognition.stop();
       this.finishReport();
     });
     this._recognition.commands.add("iara negrito", () => {
