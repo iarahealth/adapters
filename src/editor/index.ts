@@ -64,7 +64,6 @@ export abstract class EditorAdapter {
   }
 
   finishReport(clear = true): void {
-    console.log("AQUI");
     this.copyReport();
     if (clear) this.clearReport();
     this._recognition.finishReport();
