@@ -1,4 +1,5 @@
 import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { ComboBox } from "@syncfusion/ej2-dropdowns";
 import { ColorPicker } from "@syncfusion/ej2-inputs";
 
@@ -83,13 +84,19 @@ export const toolbarButtonClick = (
     case "Double":
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
       break;
+    case "ShowParagraphMark":
+      //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
+      editor.documentEditor.documentEditorSettings.showHiddenMarks =
+        !editor.documentEditor.documentEditorSettings.showHiddenMarks;
+      break;
     default:
       break;
   }
 };
 
 export const toolBarSettings = (
-  editor: DocumentEditorContainer
+  editor: DocumentEditorContainer,
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
 ): Record<string, unknown>[] => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
@@ -238,37 +245,37 @@ export const toolBarSettings = (
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-bold e-icons",
-      tooltipText: "Bold",
+      tooltipText: editorContainerLocale["Bold Tooltip"],
       id: "bold",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-italic e-icons",
-      tooltipText: "Italic",
+      tooltipText: editorContainerLocale["Italic Tooltip"],
       id: "italic",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-underline e-icons",
-      tooltipText: "Underline",
+      tooltipText: editorContainerLocale["Underline Tooltip"],
       id: "underline",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-strikethrough e-icons",
-      tooltipText: "Strikethrough",
+      tooltipText: editorContainerLocale["Strikethrough"],
       id: "strikethrough",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-subscript e-icons",
-      tooltipText: "Subscript",
+      tooltipText: editorContainerLocale["Subscript Tooltip"],
       id: "subscript",
     },
     {
       type: "Button",
       prefixIcon: "e-de-ctnr-superscript e-icons",
-      tooltipText: "Superscript",
+      tooltipText: editorContainerLocale["Superscript Tooltip"],
       id: "superscript",
     },
     { type: "Separator" },
@@ -285,61 +292,54 @@ export const toolBarSettings = (
     { type: "Separator" },
     {
       prefixIcon: "e-de-ctnr-alignleft e-icons",
-      tooltipText: "Align Left",
+      tooltipText: editorContainerLocale["Align left Tooltip"],
       id: "AlignLeft",
     },
     {
       prefixIcon: "e-de-ctnr-aligncenter e-icons",
-      tooltipText: "Align Center",
+      tooltipText: editorContainerLocale["Align center"],
       id: "AlignCenter",
     },
     {
       prefixIcon: "e-de-ctnr-alignright e-icons",
-      tooltipText: "Align Right",
+      tooltipText: editorContainerLocale["Align right Tooltip"],
       id: "AlignRight",
     },
     {
       prefixIcon: "e-de-ctnr-justify e-icons",
-      tooltipText: "Justify",
+      tooltipText: editorContainerLocale["Justify Tooltip"],
       id: "Justify",
     },
     {
       prefixIcon: "e-de-ctnr-increaseindent e-icons",
-      tooltipText: "Increase Indent",
+      tooltipText: editorContainerLocale["Increase indent"],
       id: "IncreaseIndent",
     },
     {
       prefixIcon: "e-de-ctnr-decreaseindent e-icons",
-      tooltipText: "Decrease Indent",
+      tooltipText: editorContainerLocale["Decrease indent"],
       id: "DecreaseIndent",
     },
     { type: "Separator" },
     {
-      prefixIcon: "e-de-e-paragraph-mark e-icons",
-      tooltipText:
-        "Show the hidden characters like spaces, tab, paragraph marks, and breaks.(Ctrl + *)",
-      id: "ShowParagraphMark",
-    },
-    {
-      prefixIcon: "e-de-ctnr-clearall e-icons",
-      tooltipText: "ClearFormatting",
-      id: "ClearFormat",
-    },
-    { type: "Separator" },
-    {
       prefixIcon: "e-de-ctnr-bullets e-icons",
-      tooltipText: "Bullets",
+      tooltipText: editorContainerLocale["Bullets"],
       id: "Bullets",
     },
     {
       prefixIcon: "e-de-ctnr-numbering e-icons",
-      tooltipText: "Numbering",
+      tooltipText: editorContainerLocale["Numbering"],
       id: "Numbering",
     },
     {
-      text: "Clear",
-      id: "clearlist",
-      tooltipText: "Clear List",
+      prefixIcon: "e-de-e-paragraph-mark e-icons",
+      tooltipText: editorContainerLocale["Paragraph"],
+      id: "ShowParagraphMark",
+    },
+    {
+      prefixIcon: "e-de-ctnr-clearall e-icons",
+      tooltipText: editorContainerLocale["Clear all formatting"],
+      id: "ClearFormat",
     },
   ];
 

@@ -58,9 +58,8 @@ export abstract class EditorAdapter {
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
   abstract getEditorContent(): Promise<[string, string, string]>;
 
-  beginReport(currentReportId?: string): string | void {
-    if (currentReportId) return;
-    return this._recognition.beginReport();
+  beginReport(): string | void {
+    return this._recognition.beginReport({ richText: "", text: "" });
   }
 
   finishReport(clear = true): void {
