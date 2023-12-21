@@ -1,5 +1,5 @@
 import {
-  DocumentEditorContainer,
+  DocumentEditor,
   DocumentEditorKeyDownEventArgs,
 } from "@syncfusion/ej2-documenteditor";
 import { ListView } from "@syncfusion/ej2-lists";
@@ -9,7 +9,7 @@ import { IaraSyncfusionTemplateSearch } from "./templateSearch";
 
 export class IaraSyncfusionShortcutsManager {
   constructor(
-    private _editor: DocumentEditorContainer,
+    private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     private onTemplateSelected: (
       listViewInstance: ListView,
@@ -18,7 +18,7 @@ export class IaraSyncfusionShortcutsManager {
   ) {}
 
   init(): void {
-    this._editor.documentEditor.keyDown = this.onKeyDown.bind(this);
+    this._editor.keyDown = this.onKeyDown.bind(this);
   }
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     const key: string = args.event.key;

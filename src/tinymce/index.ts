@@ -9,17 +9,17 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   private _initialUndoStackSize = 0;
 
   constructor(
-    protected _editor: Editor,
+    protected _editorContainer: Editor,
     protected _recognition: IaraSpeechRecognition
   ) {
-    super(_editor, _recognition);
+    super(_editorContainer, _recognition);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
-    this._editor.on("destroyed", this._onEditorDestroyed.bind(this));
+    this._editorContainer.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
   getUndoStackSize(): number {
-    return (this._editor.undoManager as any).data.length || 0;
+    return (this._editorContainer.undoManager as any).data.length || 0;
   }
 
   getEditorContent(): Promise<[string, string, string]> {
@@ -50,11 +50,11 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   insertParagraph() {
-    this._editor.execCommand("InsertParagraph");
+    this._editorContainer.execCommand("InsertParagraph");
   }
 
   insertText(text: string) {
-    this._editor.insertContent(text);
+    this._editorContainer.insertContent(text);
   }
 
   blockEditorWhileSpeaking(status: boolean) {
@@ -63,7 +63,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   undo() {
-    this._editor.undoManager.undo();
+    this._editorContainer.undoManager.undo();
   }
 
   copyReport(): void {

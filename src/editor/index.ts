@@ -42,7 +42,7 @@ export abstract class EditorAdapter {
   ];
 
   constructor(
-    protected _editor: DocumentEditorContainer | TinymceEditor,
+    protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
