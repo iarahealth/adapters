@@ -75,6 +75,7 @@ export class IaraSyncfusionAdapter
     this._recognition.automation.copyText(
       ...(await this._contentManager.getContent())
     );
+    this._selectionManager.selection.moveNextPosition();
   }
 
   clearReport(): void {
