@@ -4,7 +4,7 @@ import { Dialog } from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
-import { IaraSyncfusionSelectionManager } from "./selection";
+import { IaraSyncfusionSelectionManager as IaraSyncfusionInferenceSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
@@ -16,7 +16,7 @@ export class IaraSyncfusionAdapter
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
-  private _selectionManager: IaraSyncfusionSelectionManager;
+  private _selectionManager?: IaraSyncfusionInferenceSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
 
@@ -30,35 +30,33 @@ export class IaraSyncfusionAdapter
   }
 
   constructor(
-    protected _editor: DocumentEditorContainer,
+    protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
     replaceToolbar = false
   ) {
-    super(_editor, _recognition);
+    super(_editorContainer, _recognition);
     this._contentManager = new IaraSyncfusionEditorContentManager(
-      _editor,
+      _editorContainer.documentEditor,
       _recognition,
       this._onContentChange.bind(this)
     );
 
-    this._selectionManager = new IaraSyncfusionSelectionManager(_editor);
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
-      _editor,
+      _editorContainer.documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this)
     );
     this._shortcutsManager.init();
     this._styleManager = new IaraSyncfusionStyleManager(
-      _editor,
-      this._selectionManager
+      _editorContainer.documentEditor
     );
-    this._toolbarManager = new IaraSyncfusionToolbarManager(_editor);
+    this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
 
     if (replaceToolbar) this._toolbarManager.init();
 
     this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
-    this._editor.addEventListener(
+    this._editorContainer.addEventListener(
       "destroyed",
       this._onEditorDestroyed.bind(this)
     );
@@ -70,16 +68,16 @@ export class IaraSyncfusionAdapter
   }
 
   async copyReport(): Promise<void> {
-    this._editor.documentEditor.focusIn();
-    this._selectionManager.selection.selectAll();
+    this._editorContainer.documentEditor.focusIn();
+    this._editorContainer.documentEditor.selection.selectAll();
     this._recognition.automation.copyText(
       ...(await this._contentManager.getContent())
     );
   }
 
   clearReport(): void {
-    this._selectionManager.selection.selectAll();
-    this._editor.documentEditor.editor.delete();
+    this._editorContainer.documentEditor.selection.selectAll();
+    this._editorContainer.documentEditor.editor.delete();
   }
 
   getEditorContent(): Promise<[string, string, string]> {
@@ -87,11 +85,13 @@ export class IaraSyncfusionAdapter
   }
 
   getUndoStackSize(): number {
-    return this._editor.documentEditor.editorHistory.undoStack?.length || 0;
+    return (
+      this._editorContainer.documentEditor.editorHistory.undoStack?.length || 0
+    );
   }
 
   insertParagraph(): void {
-    this._editor.documentEditor.editor.insertText("\n");
+    this._editorContainer.documentEditor.editor.insertText("\n");
   }
 
   async insertTemplate(html: string, replaceAllContent = false): Promise<void> {
@@ -99,20 +99,21 @@ export class IaraSyncfusionAdapter
       html,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
-    if (replaceAllContent) this._editor.documentEditor.open(sfdt.value);
-    else this._editor.documentEditor.editor.paste(sfdt.value);
+    if (replaceAllContent)
+      this._editorContainer.documentEditor.open(sfdt.value);
+    else this._editorContainer.documentEditor.editor.paste(sfdt.value);
   }
 
   insertText(text: string): void {
-    this._editor.documentEditor.editor.insertText(text);
+    this._editorContainer.documentEditor.editor.insertText(text);
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      if (this._selectionManager.selection.text.length)
-        this._editor.documentEditor.editor.delete();
+      if (this._editorContainer.documentEditor.selection.text.length)
+        this._editorContainer.documentEditor.editor.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
       const undoStackSize = this.getUndoStackSize();
@@ -128,17 +129,12 @@ export class IaraSyncfusionAdapter
       return;
     }
 
-    // Syncfusion formatter
-    const initialSelectionOffsets = {
-      end: this._selectionManager.selection.endOffset,
-      start: this._selectionManager.selection.startOffset,
-    };
-    const wordBefore = this._selectionManager.getWordBeforeSelection(
-      initialSelectionOffsets
+    this._selectionManager = new IaraSyncfusionInferenceSelectionManager(
+      this._editorContainer.documentEditor
     );
-    const wordAfter = this._selectionManager.getWordAfterSelection(
-      initialSelectionOffsets
-    );
+
+    const wordBefore = this._selectionManager.getWordBeforeSelection();
+    const wordAfter = this._selectionManager.getWordAfterSelection();
 
     const text = this._inferenceFormatter.format(
       inference,
@@ -156,7 +152,7 @@ export class IaraSyncfusionAdapter
   }
 
   undo(): void {
-    this._editor.documentEditor.editorHistory.undo();
+    this._editorContainer.documentEditor.editorHistory.undo();
   }
 
   private _debounce = (func: () => unknown) => {
