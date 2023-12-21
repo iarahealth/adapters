@@ -48,6 +48,7 @@
   },
   "peerDependencies": {
     "@syncfusion/ej2-documenteditor": ">=23.2",
+    "@syncfusion/ej2-locale": ">=23.2",
     "tinymce": ">=6.5"
   },
   "peerDependenciesMeta": {
