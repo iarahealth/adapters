@@ -1,4 +1,4 @@
-import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraSpeechRecognition } from "../speech";
 
 export class IaraSFDT {
@@ -7,11 +7,8 @@ export class IaraSFDT {
 
   constructor(public value: string, private _authHeaders: HeadersInit) {}
 
-  static async fromEditor(
-    editor: DocumentEditorContainer,
-    authHeaders: HeadersInit
-  ) {
-    const value: string = await editor.documentEditor
+  static async fromEditor(editor: DocumentEditor, authHeaders: HeadersInit) {
+    const value: string = await editor
       .saveAsBlob("Sfdt")
       .then((blob: Blob) => blob.text());
     return new IaraSFDT(value, authHeaders);
@@ -108,7 +105,7 @@ export class IaraSyncfusionEditorContentManager {
   private _sfdt: IaraSFDT | undefined;
 
   constructor(
-    private _editor: DocumentEditorContainer,
+    private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     onContentChange: () => void
   ) {
@@ -160,7 +157,7 @@ export class IaraSyncfusionEditorContentManager {
 
   private async _getPlainTextContent(): Promise<string> {
     if (this._isPlainTextDirty) {
-      this._plainText = await this._editor.documentEditor
+      this._plainText = await this._editor
         .saveAsBlob("Txt")
         .then((blob: Blob) => blob.text());
       this._isPlainTextDirty = false;

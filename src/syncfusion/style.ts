@@ -1,31 +1,27 @@
-import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraEditorStyleManager } from "../editor/style";
-import { IaraSyncfusionSelectionManager } from "./selection";
 
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
-  constructor(
-    private _editor: DocumentEditorContainer,
-    private _selectionManager: IaraSyncfusionSelectionManager
-  ) {
+  constructor(private _editor: DocumentEditor) {
     super();
   }
 
   setFontFamily(fontFamily: string): void {
-    this._selectionManager.selection.characterFormat.fontFamily = fontFamily;
-    this._editor.documentEditor.focusIn();
+    this._editor.selection.characterFormat.fontFamily = fontFamily;
+    this._editor.focusIn();
   }
   setFontSize(fontSize: number): void {
-    this._selectionManager.selection.characterFormat.fontSize = fontSize;
-    this._editor.documentEditor.focusIn();
+    this._editor.selection.characterFormat.fontSize = fontSize;
+    this._editor.focusIn();
   }
   toggleBold(): void {
-    this._editor.documentEditor.editor.toggleBold();
+    this._editor.editor.toggleBold();
   }
   toggleItalic(): void {
-    this._editor.documentEditor.editor.toggleItalic();
+    this._editor.editor.toggleItalic();
   }
   toggleUnderline(): void {
-    this._editor.documentEditor.editor.toggleUnderline("Single");
+    this._editor.editor.toggleUnderline("Single");
   }
   toggleUppercase(): void {
     throw new Error("Método não implementado.");
