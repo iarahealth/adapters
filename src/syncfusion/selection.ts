@@ -2,7 +2,6 @@ import type {
   BaselineAlignment,
   DocumentEditor,
   HighlightColor,
-  SelectionCharacterFormat,
   Strikethrough,
   Underline,
 } from "@syncfusion/ej2-documenteditor";
