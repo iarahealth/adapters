@@ -127,11 +127,18 @@ export class IaraSyncfusionAdapter
     }
 
     if (inference.richTranscriptModifiers?.length) {
-      const removeDivTags = inference.richTranscript
-        .replace(/^<div>/, "")
-        .replace(/<\/div>$/, "");
-      this.insertTemplate(removeDivTags);
-      return;
+      const phraseOrTemplate =
+        this._recognition.richTranscriptTemplates.templates[
+          inference.richTranscriptModifiers[0]
+        ];
+      const metadata = phraseOrTemplate.metadata as { category?: string };
+      if (metadata.category === "Template" || !metadata.category) {
+        const removeDivTags = inference.richTranscript
+          .replace(/^<div>/, "")
+          .replace(/<\/div>$/, "");
+        this.insertTemplate(removeDivTags);
+        return;
+      }
     }
 
     if (!this._selectionManager) return;
