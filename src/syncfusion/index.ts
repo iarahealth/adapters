@@ -112,6 +112,10 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
+      this._selectionManager = new IaraSyncfusionInferenceSelectionManager(
+        this._editorContainer.documentEditor
+      );
+
       if (this._editorContainer.documentEditor.selection.text.length)
         this._editorContainer.documentEditor.editor.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
@@ -129,12 +133,11 @@ export class IaraSyncfusionAdapter
       return;
     }
 
-    this._selectionManager = new IaraSyncfusionInferenceSelectionManager(
-      this._editorContainer.documentEditor
-    );
+    if (!this._selectionManager) return;
 
     const wordBefore = this._selectionManager.getWordBeforeSelection();
     const wordAfter = this._selectionManager.getWordAfterSelection();
+    this._selectionManager.resetSelection();
 
     const text = this._inferenceFormatter.format(
       inference,
@@ -149,6 +152,8 @@ export class IaraSyncfusionAdapter
       line = line.trimStart();
       if (line) this.insertText(line);
     });
+
+    if (inference.isFinal) this._selectionManager = undefined;
   }
 
   undo(): void {

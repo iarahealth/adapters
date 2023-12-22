@@ -35,7 +35,7 @@ export class IaraSyncfusionSelectionManager {
       characterFormat: {
         allCaps: characterFormat.allCaps,
         baselineAlignment: characterFormat.baselineAlignment,
-        bold: characterFormat.allCaps,
+        bold: characterFormat.bold,
         fontColor: characterFormat.fontColor,
         fontFamily: characterFormat.fontFamily,
         fontSize: characterFormat.fontSize,
@@ -52,22 +52,16 @@ export class IaraSyncfusionSelectionManager {
   public getWordAfterSelection(): string {
     this._editor.selection.extendToWordEnd();
     const wordAfter = this._editor.selection.text.trimEnd();
-
-    this._resetSelection();
-
     return wordAfter;
   }
 
   public getWordBeforeSelection(): string {
     this._editor.selection.extendToWordStart();
     const wordBefore = this._editor.selection.text.trimStart();
-
-    this._resetSelection();
-
     return wordBefore;
   }
 
-  private _resetSelection() {
+  public resetSelection() {
     this._editor.selection.select(
       this._initialSelectionData.startOffset,
       this._initialSelectionData.endOffset
@@ -85,10 +79,6 @@ export class IaraSyncfusionSelectionManager {
       "strikethrough",
       "underline",
     ];
-
-    if (this._initialSelectionData.characterFormat.bold) {
-      // this._initialSelectionData.characterFormat.bold = false;
-    }
 
     charFormatProps.forEach(prop => {
       (this._editor.selection.characterFormat as any)[prop] =
