@@ -1,11 +1,16 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { toolBarSettings, toolbarButtonClick } from "./config";
 
 export class IaraSyncfusionToolbarManager {
   constructor(private _editorContainer: DocumentEditorContainer) {}
 
-  public init() {
-    const toolbarItems = toolBarSettings(this._editorContainer);
+  public init(): void {
+    const editorContainerLocale = EJ2_LOCALE["pt-BR"].documenteditorcontainer;
+    const toolbarItems = toolBarSettings(
+      this._editorContainer,
+      editorContainerLocale
+    );
     this._editorContainer.toolbarModule.toolbar.addItems(toolbarItems, 5);
     this._editorContainer.toolbarClick = this._onClickToolbar.bind(this);
     this._removePropertiesPane();
