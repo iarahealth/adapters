@@ -59,6 +59,7 @@ export abstract class EditorAdapter {
   abstract getEditorContent(): Promise<[string, string, string]>;
 
   beginReport(): string | void {
+    this._recognition.report["_key"] = "";
     return this._recognition.beginReport({ richText: "", text: "" });
   }
 
