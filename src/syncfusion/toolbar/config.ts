@@ -103,6 +103,7 @@ export const toolBarSettings = (
     editor.documentEditor.selection.characterFormat.fontFamily = args.value;
     editor.documentEditor.focusIn();
   };
+
   //To Change the font Size of selected content
   const changeFontSize = (args: { value: number }) => {
     editor.documentEditor.selection.characterFormat.fontSize = args.value;
@@ -222,7 +223,8 @@ export const toolBarSettings = (
       template: new ComboBox({
         dataSource: fontStyle,
         width: 120,
-        index: 2,
+        index: 1,
+        value: editor.documentEditor.selection.characterFormat.fontFamily,
         allowCustom: true,
         change: changeFontFamily,
         autofill: true,
@@ -237,6 +239,7 @@ export const toolBarSettings = (
         width: 80,
         allowCustom: true,
         index: 2,
+        value: editor.documentEditor.selection.characterFormat.fontSize,
         change: changeFontSize,
         showClearButton: false,
       }),
