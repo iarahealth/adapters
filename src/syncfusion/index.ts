@@ -136,7 +136,8 @@ export class IaraSyncfusionAdapter
         const removeDivTags = inference.richTranscript
           .replace(/^<div>/, "")
           .replace(/<\/div>$/, "");
-        this.insertTemplate(removeDivTags);
+        const removeDivParagraph = removeDivTags.replace(/(<\/div><div>)/, "");
+        this.insertTemplate(removeDivParagraph);
         return;
       }
     }
