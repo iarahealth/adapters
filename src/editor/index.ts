@@ -43,13 +43,16 @@ export abstract class EditorAdapter {
 
   constructor(
     protected _editorContainer: DocumentEditorContainer | TinymceEditor,
-    protected _recognition: IaraSpeechRecognition
+    protected _recognition: IaraSpeechRecognition,
+    protected _shouldSaveReport: boolean = true
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
+    if (this._shouldSaveReport && !this._recognition.report["_key"])
+      this.beginReport();
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
@@ -59,11 +62,12 @@ export abstract class EditorAdapter {
   abstract getEditorContent(): Promise<[string, string, string]>;
 
   beginReport(): string | void {
-    this._recognition.report["_key"] = "";
+    if (!this._shouldSaveReport) return;
     return this._recognition.beginReport({ richText: "", text: "" });
   }
 
   finishReport(clear = true): void {
+    if (!this._shouldSaveReport) return;
     this.copyReport();
     if (clear) this.clearReport();
     this._recognition.finishReport();
@@ -100,6 +104,7 @@ export abstract class EditorAdapter {
   }
 
   protected async _onEditorDestroyed(): Promise<void> {
+    this._recognition.report["_key"] = "";
     this._listeners.forEach(listener => {
       this._recognition.removeEventListener(
         listener.key,

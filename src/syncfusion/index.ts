@@ -32,13 +32,15 @@ export class IaraSyncfusionAdapter
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
+    protected _shouldSaveReport = true,
     replaceToolbar = false
   ) {
-    super(_editorContainer, _recognition);
+    super(_editorContainer, _recognition, _shouldSaveReport);
+
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
       _recognition,
-      this._onContentChange.bind(this)
+      () => (this._shouldSaveReport ? this._onContentChange() : undefined)
     );
 
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
@@ -136,7 +138,8 @@ export class IaraSyncfusionAdapter
         const removeDivTags = inference.richTranscript
           .replace(/^<div>/, "")
           .replace(/<\/div>$/, "");
-        this.insertTemplate(removeDivTags);
+        const removeDivParagraph = removeDivTags.replace(/(<\/div><div>)/, "");
+        this.insertTemplate(removeDivParagraph);
         return;
       }
     }
