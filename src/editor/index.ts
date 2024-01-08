@@ -57,7 +57,7 @@ export abstract class EditorAdapter {
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
   abstract clearReport(): void;
-  abstract copyReport(): void;
+  abstract copyReport(): Promise<void>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
   abstract getEditorContent(): Promise<[string, string, string]>;
 
@@ -66,9 +66,9 @@ export abstract class EditorAdapter {
     return this._recognition.beginReport({ richText: "", text: "" });
   }
 
-  finishReport(clear = true): void {
+  async finishReport(clear = true): Promise<void> {
     if (!this._shouldSaveReport) return;
-    this.copyReport();
+    await this.copyReport();
     if (clear) this.clearReport();
     this._recognition.finishReport();
     this.onFinishedReport?.();
