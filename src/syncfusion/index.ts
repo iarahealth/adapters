@@ -1,4 +1,9 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import {
+  createSpinner,
+  showSpinner,
+  hideSpinner,
+} from "@syncfusion/ej2-popups";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
@@ -62,6 +67,10 @@ export class IaraSyncfusionAdapter
       "destroyed",
       this._onEditorDestroyed.bind(this)
     );
+
+    createSpinner({
+      target: _editorContainer.editorContainer,
+    });
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -72,9 +81,11 @@ export class IaraSyncfusionAdapter
   async copyReport(): Promise<void> {
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
+    showSpinner(this._editorContainer.editorContainer);
     this._recognition.automation.copyText(
       ...(await this._contentManager.getContent())
     );
+    hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
 
