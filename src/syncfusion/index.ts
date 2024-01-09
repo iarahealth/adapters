@@ -139,18 +139,34 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    if (inference.richTranscriptModifiers?.length) {
+    if (
+      inference.richTranscriptModifiers?.length &&
+      inference.richTranscriptWithoutModifiers
+    ) {
       const phraseOrTemplate =
         this._recognition.richTranscriptTemplates.templates[
           inference.richTranscriptModifiers[0]
         ];
       const metadata = phraseOrTemplate.metadata as { category?: string };
       if (metadata.category === "Template" || !metadata.category) {
-        const removeDivTags = inference.richTranscript
-          .replace(/^<div>/, "")
+        const index: number | undefined =
+          inference.richTranscriptWithoutModifiers.match(
+            `iara texto ${inference.richTranscriptModifiers[0]}`
+          )?.index;
+
+        const templatePrefix = inference.richTranscript
+          .slice(0, index)
+          .replace(/^<div>/, "");
+        const template = inference.richTranscript
+          .slice(index)
           .replace(/<\/div>$/, "");
-        const removeDivParagraph = removeDivTags.replace(/(<\/div><div>)/, "");
-        this.insertTemplate(removeDivParagraph);
+
+        this.insertInference({
+          ...inference,
+          ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
+        });
+        this.insertTemplate(template);
+
         return;
       }
     }
