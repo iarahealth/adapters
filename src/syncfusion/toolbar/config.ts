@@ -96,7 +96,7 @@ export const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"]["documenteditorcontainer"]
 ): Record<string, unknown>[] => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
