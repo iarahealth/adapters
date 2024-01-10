@@ -67,7 +67,7 @@ export class IaraSyncfusionAdapter
       this._onEditorDestroyed.bind(this)
     );
 
-    this._editorContainer.documentEditor.addEventListener("selectionChange", (event: SelectionChangeEventArgs) => {
+    this._editorContainer.documentEditor.addEventListener("selectionChange", () => {
       if (this._resetSelection)
       {
         this._resetSelection = false;
