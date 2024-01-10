@@ -960,6 +960,7 @@ export declare class IaraSpeechRecognitionDetail extends IaraEventDetail {
   transcript: string;
   richTranscript: string;
   richTranscriptModifiers?: string[];
+  richTranscriptWithoutModifiers?: string;
   rid?: string;
   isFinal: boolean;
   isFirst: boolean;
