@@ -25,7 +25,7 @@ export class IaraSyncfusionAdapter
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
 
-  private _resetSelection: boolean = false;
+  private _resetSelection = false;
 
   private _cursorSelection?: IaraSyncfusionSelectionManager;
 
@@ -76,27 +76,28 @@ export class IaraSyncfusionAdapter
       target: _editorContainer.editorContainer,
     });
 
-    this._editorContainer.documentEditor.addEventListener("selectionChange", () => {
-      if (this._resetSelection)
-      {
-        this._resetSelection = false;
-        this._cursorSelection?.resetSelection();
-        this._cursorSelection = undefined;
+    this._editorContainer.documentEditor.addEventListener(
+      "selectionChange",
+      () => {
+        if (this._resetSelection) {
+          this._resetSelection = false;
+          this._cursorSelection?.resetSelection();
+          this._cursorSelection = undefined;
+        }
       }
-    });
+    );
 
-    this._editorContainer.element.addEventListener("mousedown", (event) => {
-      if (event.button === 1)
-      {
+    this._editorContainer.element.addEventListener("mousedown", event => {
+      if (event.button === 1) {
         this._resetSelection = true;
-        this._cursorSelection = new IaraSyncfusionSelectionManager(this._editorContainer.documentEditor);
+        this._cursorSelection = new IaraSyncfusionSelectionManager(
+          this._editorContainer.documentEditor
+        );
         event.preventDefault();
         this._recognition.toggleRecording();
       }
     });
   }
-
-
 
   blockEditorWhileSpeaking(status: boolean): void {
     const wrapper = document.getElementById("iara-syncfusion-editor-container");
@@ -151,7 +152,7 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-    this._selectionManager = new IaraSyncfusionSelectionManager(
+      this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
 
@@ -176,7 +177,10 @@ export class IaraSyncfusionAdapter
       if (metadata.category === "Template" || !metadata.category) {
         const index: number | undefined =
           inference.richTranscriptWithoutModifiers.match(
-            `iara texto ${inference.richTranscriptModifiers[0]}`
+            new RegExp(
+              `iara texto ${inference.richTranscriptModifiers[0]}`,
+              "ui"
+            )
           )?.index;
 
         const templatePrefix = inference.richTranscript
