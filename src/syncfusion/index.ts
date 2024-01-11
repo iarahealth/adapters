@@ -9,7 +9,7 @@ import { Dialog } from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
-import { IaraSyncfusionSelectionManager as IaraSyncfusionInferenceSelectionManager } from "./selection";
+import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
@@ -21,9 +21,13 @@ export class IaraSyncfusionAdapter
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
-  private _selectionManager?: IaraSyncfusionInferenceSelectionManager;
+  private _selectionManager?: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
+
+  private _resetSelection: boolean = false;
+
+  private _cursorSelection?: IaraSyncfusionSelectionManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -71,7 +75,28 @@ export class IaraSyncfusionAdapter
     createSpinner({
       target: _editorContainer.editorContainer,
     });
+
+    this._editorContainer.documentEditor.addEventListener("selectionChange", () => {
+      if (this._resetSelection)
+      {
+        this._resetSelection = false;
+        this._cursorSelection?.resetSelection();
+        this._cursorSelection = undefined;
+      }
+    });
+
+    this._editorContainer.element.addEventListener("mousedown", (event) => {
+      if (event.button === 1)
+      {
+        this._resetSelection = true;
+        this._cursorSelection = new IaraSyncfusionSelectionManager(this._editorContainer.documentEditor);
+        event.preventDefault();
+        this._recognition.toggleRecording();
+      }
+    });
   }
+
+
 
   blockEditorWhileSpeaking(status: boolean): void {
     const wrapper = document.getElementById("iara-syncfusion-editor-container");
@@ -126,7 +151,7 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      this._selectionManager = new IaraSyncfusionInferenceSelectionManager(
+    this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
 

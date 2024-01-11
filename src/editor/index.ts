@@ -21,6 +21,7 @@ export abstract class EditorAdapter {
         this.blockEditorWhileSpeaking(true);
       },
     },
+
     {
       key: "iaraSpeechRecognitionStop",
       callback: () => {
