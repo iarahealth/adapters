@@ -1,11 +1,11 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import {
-  createSpinner,
-  showSpinner,
-  hideSpinner,
-} from "@syncfusion/ej2-popups";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
-import { Dialog } from "@syncfusion/ej2-popups";
+import {
+  Dialog,
+  createSpinner,
+  hideSpinner,
+  showSpinner,
+} from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
@@ -134,9 +134,12 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editor.insertText("\n");
   }
 
-  async insertTemplate(html: string, replaceAllContent = false): Promise<void> {
-    const sfdt = await IaraSFDT.fromHtml(
-      html,
+  async insertTemplate(
+    content: string,
+    replaceAllContent = false
+  ): Promise<void> {
+    const sfdt = await IaraSFDT.fromContent(
+      content,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
     if (replaceAllContent)

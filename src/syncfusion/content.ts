@@ -1,11 +1,36 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraSpeechRecognition } from "../speech";
 
+export enum IaraSyncfusionContentTypes {
+  SFDT = "SFDT",
+  HTML = "HTML",
+  RTF = "RTF",
+}
+
 export class IaraSFDT {
   public html: string | undefined;
   public rtf: string | undefined;
 
   constructor(public value: string, private _authHeaders: HeadersInit) {}
+
+  static detectContentType(content: string): IaraSyncfusionContentTypes {
+    if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
+    else if (content.startsWith("{")) return IaraSyncfusionContentTypes.SFDT;
+    else if (content.startsWith("<")) return IaraSyncfusionContentTypes.HTML;
+    else throw new Error("Content type not recognized.");
+  }
+
+  static async fromContent(content: string, authHeaders: HeadersInit) {
+    const contentType = IaraSFDT.detectContentType(content);
+    switch (contentType) {
+      case IaraSyncfusionContentTypes.SFDT:
+        return new IaraSFDT(content, authHeaders);
+      case IaraSyncfusionContentTypes.HTML:
+        return IaraSFDT.fromHtml(content, authHeaders);
+      case IaraSyncfusionContentTypes.RTF:
+        return IaraSFDT.fromRtf(content, authHeaders);
+    }
+  }
 
   static async fromEditor(editor: DocumentEditor, authHeaders: HeadersInit) {
     const value: string = await editor
