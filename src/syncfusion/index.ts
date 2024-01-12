@@ -108,9 +108,8 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
-    this._recognition.automation.copyText(
-      ...(await this._contentManager.getContent())
-    );
+    const content = await this._contentManager.getContent();
+    this._recognition.automation.copyText(content[0], content[1], content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
@@ -120,7 +119,7 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editor.delete();
   }
 
-  getEditorContent(): Promise<[string, string, string]> {
+  getEditorContent(): Promise<[string, string, string, string]> {
     return this._contentManager.getContent();
   }
 

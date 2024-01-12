@@ -60,7 +60,7 @@ export abstract class EditorAdapter {
   abstract clearReport(): void;
   abstract copyReport(): Promise<void>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
-  abstract getEditorContent(): Promise<[string, string, string]>;
+  abstract getEditorContent(): Promise<[string, string, string, string?]>;
 
   beginReport(): string | void {
     if (!this._shouldSaveReport) return;

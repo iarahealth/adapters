@@ -140,12 +140,13 @@ export class IaraSyncfusionEditorContentManager {
     };
   }
 
-  async getContent(): Promise<[string, string, string]> {
+  async getContent(): Promise<[string, string, string, string]> {
     const sfdt = await this._getSfdtContent();
     return Promise.all([
       this.getPlainTextContent(),
       sfdt.toHtml(),
       sfdt.toRtf(),
+      sfdt.value,
     ]);
   }
 
