@@ -11,19 +11,19 @@ export class IaraSyncfusionToolbarManager {
       this._editorContainer,
       editorContainerLocale
     );
-    const toolbarContainer = <HTMLElement>(
-      document.querySelector(".e-de-ctnr-toolbar")
-    );
-    const removeItemsToolbar = <HTMLElement>(
-      document.querySelector(".e-de-tlbr-wrapper")
+    const editorElementContainer = <HTMLElement>(
+      document.querySelector(".e-de-ctn")
     );
 
-    removeItemsToolbar.style.display = "none";
+    const editorFirstElementContainer = editorElementContainer.firstChild;
 
-    toolbarContainer.style.height = "max-content";
     const ribbonContainer = document.createElement("div");
     ribbonContainer.id = "ribbon";
-    toolbarContainer?.appendChild(ribbonContainer);
+    editorElementContainer.insertBefore(
+      ribbonContainer,
+      editorFirstElementContainer
+    );
+
     toolbarRibbonItems.appendTo("#ribbon");
     const ribbonMenuElement = <HTMLElement>(
       document.querySelector(".e-ribbon-tab")
