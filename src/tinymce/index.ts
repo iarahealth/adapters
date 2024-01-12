@@ -66,7 +66,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editorContainer.undoManager.undo();
   }
 
-  copyReport(): void {
+  copyReport(): Promise<void> {
     throw new Error("Método não implementado.");
   }
 

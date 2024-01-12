@@ -1,10 +1,15 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import {
+  createSpinner,
+  showSpinner,
+  hideSpinner,
+} from "@syncfusion/ej2-popups";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
-import { IaraSyncfusionSelectionManager as IaraSyncfusionInferenceSelectionManager } from "./selection";
+import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
@@ -16,9 +21,13 @@ export class IaraSyncfusionAdapter
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
-  private _selectionManager?: IaraSyncfusionInferenceSelectionManager;
+  private _selectionManager?: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
+
+  private _resetSelection = false;
+
+  private _cursorSelection?: IaraSyncfusionSelectionManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -62,6 +71,32 @@ export class IaraSyncfusionAdapter
       "destroyed",
       this._onEditorDestroyed.bind(this)
     );
+
+    createSpinner({
+      target: _editorContainer.editorContainer,
+    });
+
+    this._editorContainer.documentEditor.addEventListener(
+      "selectionChange",
+      () => {
+        if (this._resetSelection) {
+          this._resetSelection = false;
+          this._cursorSelection?.resetSelection();
+          this._cursorSelection = undefined;
+        }
+      }
+    );
+
+    this._editorContainer.element.addEventListener("mousedown", event => {
+      if (event.button === 1) {
+        this._resetSelection = true;
+        this._cursorSelection = new IaraSyncfusionSelectionManager(
+          this._editorContainer.documentEditor
+        );
+        event.preventDefault();
+        this._recognition.toggleRecording();
+      }
+    });
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -72,9 +107,11 @@ export class IaraSyncfusionAdapter
   async copyReport(): Promise<void> {
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
+    showSpinner(this._editorContainer.editorContainer);
     this._recognition.automation.copyText(
       ...(await this._contentManager.getContent())
     );
+    hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
 
@@ -115,7 +152,7 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      this._selectionManager = new IaraSyncfusionInferenceSelectionManager(
+      this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
 
@@ -128,18 +165,37 @@ export class IaraSyncfusionAdapter
         this.undo();
     }
 
-    if (inference.richTranscriptModifiers?.length) {
+    if (
+      inference.richTranscriptModifiers?.length &&
+      inference.richTranscriptWithoutModifiers
+    ) {
       const phraseOrTemplate =
         this._recognition.richTranscriptTemplates.templates[
           inference.richTranscriptModifiers[0]
         ];
       const metadata = phraseOrTemplate.metadata as { category?: string };
       if (metadata.category === "Template" || !metadata.category) {
-        const removeDivTags = inference.richTranscript
-          .replace(/^<div>/, "")
+        const index: number | undefined =
+          inference.richTranscriptWithoutModifiers.match(
+            new RegExp(
+              `iara texto ${inference.richTranscriptModifiers[0]}`,
+              "ui"
+            )
+          )?.index;
+
+        const templatePrefix = inference.richTranscript
+          .slice(0, index)
+          .replace(/^<div>/, "");
+        const template = inference.richTranscript
+          .slice(index)
           .replace(/<\/div>$/, "");
-        const removeDivParagraph = removeDivTags.replace(/(<\/div><div>)/, "");
-        this.insertTemplate(removeDivParagraph);
+
+        this.insertInference({
+          ...inference,
+          ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
+        });
+        this.insertTemplate(template);
+
         return;
       }
     }
@@ -196,11 +252,11 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
-    this.savingReportSpan.innerText = "Salvo";
     this._updateReport(
       await this._contentManager.getPlainTextContent(),
       await this._contentManager.getHtmlContent()
     );
+    this.savingReportSpan.innerText = "Salvo";
   }
 
   onTemplateSelectedAtShortCut(
