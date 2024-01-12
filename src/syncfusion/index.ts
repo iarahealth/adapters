@@ -252,11 +252,11 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
-    this.savingReportSpan.innerText = "Salvo";
     this._updateReport(
       await this._contentManager.getPlainTextContent(),
       await this._contentManager.getHtmlContent()
     );
+    this.savingReportSpan.innerText = "Salvo";
   }
 
   onTemplateSelectedAtShortCut(
