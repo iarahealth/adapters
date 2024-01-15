@@ -19,15 +19,14 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _contentManager: IaraSyncfusionEditorContentManager;
+  private _contentDate?: Date;
+  private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
+  private _resetSelection = false;
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
-
-  private _resetSelection = false;
-
-  private _cursorSelection?: IaraSyncfusionSelectionManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -49,7 +48,7 @@ export class IaraSyncfusionAdapter
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
       _recognition,
-      () => (this._shouldSaveReport ? this._onContentChange() : undefined)
+      () => (this._shouldSaveReport ? this._debouncedSaveReport() : undefined)
     );
 
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
@@ -229,7 +228,7 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editorHistory.undo();
   }
 
-  private _debounce = (func: () => unknown) => {
+  private _debounce(func: () => unknown) {
     let timer: ReturnType<typeof setTimeout>;
     return () => {
       clearTimeout(timer);
@@ -237,9 +236,12 @@ export class IaraSyncfusionAdapter
         func();
       }, 1000);
     };
-  };
+  }
 
-  private async _onContentChange(): Promise<void> {
+  private async _saveReport(): Promise<void> {
+    const contentDate = new Date();
+    this._contentDate = contentDate;
+
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
       this.savingReportSpan.style.margin = "10px";
@@ -250,14 +252,14 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.innerText = "Salvando...";
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
-    this._debouncedSaveReport();
-  }
 
-  private async _saveReport(): Promise<void> {
-    this._updateReport(
-      await this._contentManager.getPlainTextContent(),
-      await this._contentManager.getHtmlContent()
-    );
+    const content: string[] = await Promise.all([
+      this._contentManager.getPlainTextContent(),
+      this._contentManager.getHtmlContent(),
+    ]);
+    if (contentDate !== this._contentDate) return;
+
+    await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
 
