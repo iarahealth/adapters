@@ -88,11 +88,12 @@ export class IaraSyncfusionAdapter
 
     this._editorContainer.element.addEventListener("mousedown", event => {
       if (event.button === 1) {
-        this._resetSelection = true;
-        this._cursorSelection = new IaraSyncfusionSelectionManager(
-          this._editorContainer.documentEditor
-        );
-        event.preventDefault();
+        if (!this._selectionManager) {
+          this._resetSelection = true;
+          this._cursorSelection = new IaraSyncfusionSelectionManager(
+            this._editorContainer.documentEditor
+          );
+        }
         this._recognition.toggleRecording();
       }
     });
