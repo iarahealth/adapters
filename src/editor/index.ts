@@ -5,7 +5,7 @@ import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
 export abstract class EditorAdapter {
-  public onFinishedReport?: () => void;
+  public onIaraCommand?: (command: string) => void;
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
   private _listeners = [
@@ -21,6 +21,7 @@ export abstract class EditorAdapter {
         this.blockEditorWhileSpeaking(true);
       },
     },
+
     {
       key: "iaraSpeechRecognitionStop",
       callback: () => {
@@ -59,29 +60,30 @@ export abstract class EditorAdapter {
   abstract clearReport(): void;
   abstract copyReport(): Promise<void>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
-  abstract getEditorContent(): Promise<[string, string, string]>;
+  abstract getEditorContent(): Promise<[string, string, string, string?]>;
 
   beginReport(): string | void {
     if (!this._shouldSaveReport) return;
     return this._recognition.beginReport({ richText: "", text: "" });
   }
 
-  async finishReport(clear = true): Promise<void> {
+  async finishReport(): Promise<void> {
     if (!this._shouldSaveReport) return;
     await this.copyReport();
-    if (clear) this.clearReport();
+    this.clearReport();
     this._recognition.finishReport();
-    this.onFinishedReport?.();
   }
 
   private _initCommands(): void {
-    this._recognition.commands.add("iara copiar laudo", () => {
+    this._recognition.commands.add("iara copiar laudo", async () => {
       this._recognition.stop();
-      this.copyReport();
+      await this.copyReport();
+      this.onIaraCommand?.("iara copiar laudo");
     });
-    this._recognition.commands.add("iara finalizar laudo", () => {
+    this._recognition.commands.add("iara finalizar laudo", async () => {
       this._recognition.stop();
-      this.finishReport();
+      await this.finishReport();
+      this.onIaraCommand?.("iara finalizar laudo");
     });
     this._recognition.commands.add("iara negrito", () => {
       this._styleManager.toggleBold();
