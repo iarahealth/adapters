@@ -1,11 +1,11 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import {
-  createSpinner,
-  showSpinner,
-  hideSpinner,
-} from "@syncfusion/ej2-popups";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
-import { Dialog } from "@syncfusion/ej2-popups";
+import {
+  Dialog,
+  createSpinner,
+  hideSpinner,
+  showSpinner,
+} from "@syncfusion/ej2-popups";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
@@ -19,15 +19,14 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   private _contentManager: IaraSyncfusionEditorContentManager;
+  private _contentDate?: Date;
+  private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
+  private _resetSelection = false;
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager: IaraSyncfusionToolbarManager;
-
-  private _resetSelection = false;
-
-  private _cursorSelection?: IaraSyncfusionSelectionManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -49,7 +48,7 @@ export class IaraSyncfusionAdapter
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
       _recognition,
-      () => (this._shouldSaveReport ? this._onContentChange() : undefined)
+      () => (this._shouldSaveReport ? this._debouncedSaveReport() : undefined)
     );
 
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
@@ -108,9 +107,8 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
-    this._recognition.automation.copyText(
-      ...(await this._contentManager.getContent())
-    );
+    const content = await this._contentManager.getContent();
+    this._recognition.automation.copyText(content[0], content[1], content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
@@ -120,7 +118,7 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editor.delete();
   }
 
-  getEditorContent(): Promise<[string, string, string]> {
+  getEditorContent(): Promise<[string, string, string, string]> {
     return this._contentManager.getContent();
   }
 
@@ -134,9 +132,12 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editor.insertText("\n");
   }
 
-  async insertTemplate(html: string, replaceAllContent = false): Promise<void> {
-    const sfdt = await IaraSFDT.fromHtml(
-      html,
+  async insertTemplate(
+    content: string,
+    replaceAllContent = false
+  ): Promise<void> {
+    const sfdt = await IaraSFDT.fromContent(
+      content,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
     if (replaceAllContent)
@@ -227,7 +228,7 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.editorHistory.undo();
   }
 
-  private _debounce = (func: () => unknown) => {
+  private _debounce(func: () => unknown) {
     let timer: ReturnType<typeof setTimeout>;
     return () => {
       clearTimeout(timer);
@@ -235,9 +236,12 @@ export class IaraSyncfusionAdapter
         func();
       }, 1000);
     };
-  };
+  }
 
-  private async _onContentChange(): Promise<void> {
+  private async _saveReport(): Promise<void> {
+    const contentDate = new Date();
+    this._contentDate = contentDate;
+
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
       this.savingReportSpan.style.margin = "10px";
@@ -248,14 +252,14 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.innerText = "Salvando...";
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
-    this._debouncedSaveReport();
-  }
 
-  private async _saveReport(): Promise<void> {
-    this._updateReport(
-      await this._contentManager.getPlainTextContent(),
-      await this._contentManager.getHtmlContent()
-    );
+    const content: string[] = await Promise.all([
+      this._contentManager.getPlainTextContent(),
+      this._contentManager.getHtmlContent(),
+    ]);
+    if (contentDate !== this._contentDate) return;
+
+    await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
 
