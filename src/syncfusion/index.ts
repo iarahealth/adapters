@@ -242,6 +242,7 @@ export class IaraSyncfusionAdapter
   private async _saveReport(): Promise<void> {
     const contentDate = new Date();
     this._contentDate = contentDate;
+    console.log(`_saveReport`, contentDate);
 
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
@@ -258,10 +259,13 @@ export class IaraSyncfusionAdapter
       this._contentManager.getPlainTextContent(),
       this._contentManager.getHtmlContent(),
     ]);
+    console.log(`_saveReport2`, contentDate, this._contentDate, content[0]);
+
     if (contentDate !== this._contentDate) return;
 
     await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
+    console.log(`_saveReport3`, contentDate, this._contentDate);
   }
 
   onTemplateSelectedAtShortCut(
