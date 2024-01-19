@@ -1,13 +1,49 @@
 import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
-import { ComboBox } from "@syncfusion/ej2-dropdowns";
-import { ColorPicker } from "@syncfusion/ej2-inputs";
+import {
+  DisplayMode,
+  Ribbon,
+  RibbonColorPicker,
+  RibbonFileMenu,
+  RibbonGroupButtonSelection,
+  RibbonItemSize,
+} from "@syncfusion/ej2-ribbon";
 
-export const toolbarButtonClick = (
-  arg: { item: { id: string } },
+Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
+
+const toolbarButtonClick = (
+  arg: string,
   editor: DocumentEditorContainer
 ): void => {
-  switch (arg.item.id) {
+  switch (arg) {
+    case "undo":
+      editor.documentEditor.editorHistory.undo();
+      break;
+    case "redo":
+      editor.documentEditor.editorHistory.redo();
+      break;
+    case "cut":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.selection.selectAll();
+      editor.documentEditor.editor.cut();
+      editor.documentEditor.selection.moveNextPosition();
+      break;
+    case "copy":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.selection.selectAll();
+      editor.documentEditor.selection.copy();
+      editor.documentEditor.selection.moveNextPosition();
+      break;
+    case "Paste":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.enableLocalPaste = true;
+      editor.documentEditor.editor.paste();
+      editor.documentEditor.enableLocalPaste = false;
+      break;
+    case "ChangeCase":
+      editor.documentEditor.selection.characterFormat.allCaps =
+        !editor.documentEditor.selection.characterFormat.allCaps;
+      break;
     case "bold":
       //Toggles the bold of selected content
       editor.documentEditor.editor.toggleBold();
@@ -96,8 +132,8 @@ export const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
-): Record<string, unknown>[] => {
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]
+): Ribbon => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
     editor.documentEditor.selection.characterFormat.fontFamily = args.value;
@@ -162,7 +198,13 @@ export const toolBarSettings = (
       characterformat.underline,
       characterformat.strikethrough,
     ];
-    const toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
+    const toggleBtnId = [
+      "ribbon_tab0_group11_collection15_item17",
+      "ribbon_tab0_group11_collection15_item18",
+      "ribbon_tab0_group11_collection15_item19",
+      "ribbon_tab0_group11_collection15_item20",
+      "ribbon_tab0_group11_collection15_item21",
+    ];
     for (let i = 0; i < properties.length; i++) {
       changeActiveState(properties[i], toggleBtnId[i]);
     }
@@ -173,9 +215,9 @@ export const toolBarSettings = (
       (typeof property == "boolean" && property) ||
       (typeof property == "string" && property !== "None")
     )
-      toggleBtn?.classList.add("e-btn-toggle");
-    else if (toggleBtn?.classList.contains("e-btn-toggle")) {
-      toggleBtn.classList.remove("e-btn-toggle");
+      toggleBtn?.classList.add("e-active");
+    else if (toggleBtn?.classList.contains("e-active")) {
+      toggleBtn.classList.remove("e-active");
     }
   }
   const fontStyle: string[] = [
@@ -216,135 +258,397 @@ export const toolBarSettings = (
     "96",
   ];
 
-  const addItemsToolbar = [
-    { type: "Separator" },
+  const tabs = [
     {
-      type: "Input",
-      template: new ComboBox({
-        dataSource: fontStyle,
-        width: 120,
-        index: 1,
-        value: editor.documentEditor.selection.characterFormat.fontFamily,
-        allowCustom: true,
-        change: changeFontFamily,
-        autofill: true,
-        showClearButton: false,
-      }),
-    },
-    { type: "Separator" },
-    {
-      type: "Input",
-      template: new ComboBox({
-        dataSource: fontSize,
-        width: 80,
-        allowCustom: true,
-        index: 2,
-        value: editor.documentEditor.selection.characterFormat.fontSize,
-        change: changeFontSize,
-        showClearButton: false,
-      }),
-    },
-    { type: "Separator" },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-bold e-icons",
-      tooltipText: editorContainerLocale["Bold Tooltip"],
-      id: "bold",
-    },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-italic e-icons",
-      tooltipText: editorContainerLocale["Italic Tooltip"],
-      id: "italic",
-    },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-underline e-icons",
-      tooltipText: editorContainerLocale["Underline Tooltip"],
-      id: "underline",
-    },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-strikethrough e-icons",
-      tooltipText: editorContainerLocale["Strikethrough"],
-      id: "strikethrough",
-    },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-subscript e-icons",
-      tooltipText: editorContainerLocale["Subscript Tooltip"],
-      id: "subscript",
-    },
-    {
-      type: "Button",
-      prefixIcon: "e-de-ctnr-superscript e-icons",
-      tooltipText: editorContainerLocale["Superscript Tooltip"],
-      id: "superscript",
-    },
-    { type: "Separator" },
-    {
-      type: "Input",
-      prefixIcon: "e-color-icon tb-icons",
-      template: new ColorPicker({
-        value: "#000000",
-        showButtons: true,
-        change: changeFontColor,
-      }),
-    },
-
-    { type: "Separator" },
-    {
-      prefixIcon: "e-de-ctnr-alignleft e-icons",
-      tooltipText: editorContainerLocale["Align left Tooltip"],
-      id: "AlignLeft",
-    },
-    {
-      prefixIcon: "e-de-ctnr-aligncenter e-icons",
-      tooltipText: editorContainerLocale["Align center"],
-      id: "AlignCenter",
-    },
-    {
-      prefixIcon: "e-de-ctnr-alignright e-icons",
-      tooltipText: editorContainerLocale["Align right Tooltip"],
-      id: "AlignRight",
-    },
-    {
-      prefixIcon: "e-de-ctnr-justify e-icons",
-      tooltipText: editorContainerLocale["Justify Tooltip"],
-      id: "Justify",
-    },
-    {
-      prefixIcon: "e-de-ctnr-increaseindent e-icons",
-      tooltipText: editorContainerLocale["Increase indent"],
-      id: "IncreaseIndent",
-    },
-    {
-      prefixIcon: "e-de-ctnr-decreaseindent e-icons",
-      tooltipText: editorContainerLocale["Decrease indent"],
-      id: "DecreaseIndent",
-    },
-    { type: "Separator" },
-    {
-      prefixIcon: "e-de-ctnr-bullets e-icons",
-      tooltipText: editorContainerLocale["Bullets"],
-      id: "Bullets",
-    },
-    {
-      prefixIcon: "e-de-ctnr-numbering e-icons",
-      tooltipText: editorContainerLocale["Numbering"],
-      id: "Numbering",
-    },
-    {
-      prefixIcon: "e-de-e-paragraph-mark e-icons",
-      tooltipText: editorContainerLocale["Paragraph"],
-      id: "ShowParagraphMark",
-    },
-    {
-      prefixIcon: "e-de-ctnr-clearall e-icons",
-      tooltipText: editorContainerLocale["Clear all formatting"],
-      id: "ClearFormat",
+      groups: [
+        {
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Undo",
+                    isToggle: true,
+                    iconCss: "e-icons e-undo",
+                    clicked: function () {
+                      toolbarButtonClick("undo", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Undo Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Redo",
+                    isToggle: true,
+                    iconCss: "e-icons e-redo",
+                    clicked: function () {
+                      toolbarButtonClick("redo", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Redo Tooltip"
+                      ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          header: "Clipboard",
+          id: "clipboard",
+          showLauncherIcon: true,
+          groupIconCss: "e-icons e-paste",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Large,
+                  buttonSettings: {
+                    iconCss: "e-icons e-paste",
+                    content: "Colar",
+                    clicked: function () {
+                      toolbarButtonClick("Paste", editor);
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-cut",
+                    content: "Cut",
+                    clicked: function () {
+                      toolbarButtonClick("cut", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Cut"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-copy",
+                    content: "Copy",
+                    clicked: function () {
+                      toolbarButtonClick("copy", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Copy"],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          header: "Font",
+          groupIconCss: "e-icons e-bold",
+          cssClass: "font-group",
+          enableGroupOverflow: true,
+          overflowHeader: "More Font Options",
+          orientation: "Row",
+          collections: [
+            {
+              items: [
+                {
+                  type: "ComboBox",
+                  comboBoxSettings: {
+                    dataSource: fontStyle,
+                    label: "Font Style",
+                    width: "115px",
+                    popupWidth: "150px",
+                    index: 3,
+                    allowFiltering: true,
+                    change: function (args: { itemData: { text: string } }) {
+                      if (args.itemData) {
+                        changeFontFamily({ value: args.itemData.text });
+                      }
+                    },
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  comboBoxSettings: {
+                    dataSource: fontSize,
+                    label: "Font Size",
+                    popupWidth: "85px",
+                    width: "65px",
+                    allowFiltering: true,
+                    index: 3,
+                    change: function (args: { itemData: { text: string } }) {
+                      if (args.itemData) {
+                        changeFontSize({ value: Number(args.itemData.text) });
+                      }
+                    },
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  type: "ColorPicker",
+                  allowedSizes: RibbonItemSize.Small,
+                  displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
+                  colorPickerSettings: {
+                    change: function (args: { currentValue: { hex: string } }) {
+                      changeFontColor({
+                        currentValue: { hex: args.currentValue.hex },
+                      });
+                    },
+                    value: "#000",
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Bold",
+                    isToggle: true,
+                    iconCss: "e-icons e-bold",
+                    clicked: function () {
+                      toolbarButtonClick("bold", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Bold Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    isToggle: true,
+                    content: "Italic",
+                    clicked: function () {
+                      toolbarButtonClick("italic", editor);
+                    },
+                    iconCss: "e-icons e-italic",
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Italic Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    isToggle: true,
+                    content: "Underline",
+                    clicked: function () {
+                      toolbarButtonClick("underline", editor);
+                    },
+                    iconCss: "e-icons e-underline",
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Underline Tooltip"
+                      ],
+                  },
+                },
+                {
+                  allowedSizes: RibbonItemSize.Small,
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-strikethrough",
+                    content: "Strikethrough",
+                    isToggle: true,
+                    clicked: function () {
+                      toolbarButtonClick("strikethrough", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Strikethrough"
+                      ],
+                  },
+                },
+                // uppercase button will be implemented
+                // {
+                //   allowedSizes: RibbonItemSize.Small,
+                //   type: "Button",
+                //   buttonSettings: {
+                //     iconCss: "e-icons e-change-case",
+                //     content: "Change Case",
+                //     isToggle: true,
+                //     clicked: function () {
+                //       toolbarButtonClick("ChangeCase", editor);
+                //     },
+                //   },
+                //   ribbonTooltipSettings: {
+                //     title:
+                //       editorContainerLocale.documenteditorcontainer[
+                //         "Change case Tooltip"
+                //       ],
+                //   },
+                // },
+              ],
+            },
+          ],
+        },
+        {
+          id: "paragraph_group",
+          orientation: "Row",
+          header: "Paragraph",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-decrease-indent",
+                    content: "Decrease Indent",
+                    clicked: function () {
+                      toolbarButtonClick("DecreaseIndent", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Decrease indent"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-increase-indent",
+                    content: "Increase Indent",
+                    clicked: function () {
+                      toolbarButtonClick("IncreaseIndent", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Increase indent"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-paragraph",
+                    content: "Paragraph",
+                    clicked: function () {
+                      toolbarButtonClick("ShowParagraphMark", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Paragraph"
+                      ],
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  type: "GroupButton",
+                  allowedSizes: RibbonItemSize.Small,
+                  groupButtonSettings: {
+                    selection: RibbonGroupButtonSelection.Single,
+                    header: "Alignment",
+                    items: [
+                      {
+                        iconCss: "e-icons e-align-left",
+                        selected: true,
+                        click: function () {
+                          toolbarButtonClick("AlignLeft", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align left Tooltip"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-align-center",
+                        click: function () {
+                          toolbarButtonClick("AlignCenter", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align center"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-align-right",
+                        click: function () {
+                          toolbarButtonClick("AlignRight", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align right Tooltip"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-justify",
+                        click: function () {
+                          toolbarButtonClick("Justify", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Justify Tooltip"
+                            ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ];
 
-  return addItemsToolbar;
+  const ribbonSettings: Ribbon = new Ribbon({
+    tabs: tabs,
+    activeLayout: "Simplified",
+    hideLayoutSwitcher: true,
+  });
+
+  return ribbonSettings;
 };

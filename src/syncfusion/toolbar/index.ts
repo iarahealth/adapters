@@ -1,23 +1,36 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
-import { toolBarSettings, toolbarButtonClick } from "./config";
+import { toolBarSettings } from "./config";
 
 export class IaraSyncfusionToolbarManager {
   constructor(private _editorContainer: DocumentEditorContainer) {}
 
   public init(): void {
-    const editorContainerLocale = EJ2_LOCALE["pt-BR"].documenteditorcontainer;
-    const toolbarItems = toolBarSettings(
+    const editorContainerLocale = EJ2_LOCALE["pt-BR"];
+    const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
       editorContainerLocale
     );
-    this._editorContainer.toolbarModule.toolbar.addItems(toolbarItems, 5);
-    this._editorContainer.toolbarClick = this._onClickToolbar.bind(this);
-    this._removePropertiesPane();
-  }
+    const editorToolbarContainer = <HTMLElement>(
+      document.querySelector(".e-de-ctnr-toolbar")
+    );
+    editorToolbarContainer.style.alignItems = "center";
 
-  private _onClickToolbar(arg: { item: { id: string } }): void {
-    toolbarButtonClick(arg, this._editorContainer);
+    const ribbonContainer = document.createElement("div");
+    ribbonContainer.id = "ribbon";
+
+    editorToolbarContainer.appendChild(ribbonContainer);
+
+    toolbarRibbonItems.appendTo("#ribbon");
+    const ribbonMenuElement = <HTMLElement>(
+      document.querySelector(".e-ribbon-tab")
+    );
+
+    const menuRiboon = ribbonMenuElement.firstChild as HTMLElement;
+
+    menuRiboon.style.display = "none";
+
+    this._removePropertiesPane();
   }
 
   private _removePropertiesPane(): void {
