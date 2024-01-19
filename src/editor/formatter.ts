@@ -18,10 +18,15 @@ export class IaraEditorInferenceFormatter {
   }
 
   public _capitalize(text: string, wordBefore: string): string {
+    text = text.trimStart();
+    wordBefore = wordBefore.trimEnd();
+
     const capitalize = !wordBefore.length || /[.:;?!]$/.test(wordBefore);
+    var capitalized_text = `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`;
+
     return capitalize
-      ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
-      : text;
+      ? wordBefore.length == 0 ? capitalized_text : ' ' + capitalized_text
+      : wordBefore.length == 0 ? text : ' ' + text;
   }
 
   protected _estimateVolume(text: string, regex: string): string {
