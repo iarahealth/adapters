@@ -125,8 +125,8 @@ export class IaraEditorInferenceFormatter {
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
 
-    text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
     text = this._capitalize(text, _wordBefore);
+    text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
 
     return text;
   }
