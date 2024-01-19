@@ -260,6 +260,7 @@ export class IaraSyncfusionAdapter
       this._contentManager.getPlainTextContent(),
       this._contentManager.getHtmlContent(),
     ]);
+
     if (contentDate !== this._contentDate) return;
 
     await this._updateReport(content[0], content[1]);
