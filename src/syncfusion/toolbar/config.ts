@@ -1,6 +1,4 @@
 import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import { ComboBox } from "@syncfusion/ej2-dropdowns";
-import { ColorPicker } from "@syncfusion/ej2-inputs";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
   DisplayMode,
@@ -25,10 +23,26 @@ const toolbarButtonClick = (
       editor.documentEditor.editorHistory.redo();
       break;
     case "cut":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.selection.selectAll();
       editor.documentEditor.editor.cut();
+      editor.documentEditor.selection.moveNextPosition();
       break;
     case "copy":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.selection.selectAll();
       editor.documentEditor.selection.copy();
+      editor.documentEditor.selection.moveNextPosition();
+      break;
+    case "Paste":
+      editor.documentEditor.focusIn();
+      editor.documentEditor.enableLocalPaste = true;
+      editor.documentEditor.editor.paste();
+      editor.documentEditor.enableLocalPaste = false;
+      break;
+    case "ChangeCase":
+      editor.documentEditor.selection.characterFormat.allCaps =
+        !editor.documentEditor.selection.characterFormat.allCaps;
       break;
     case "bold":
       //Toggles the bold of selected content
@@ -118,7 +132,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]["documenteditorcontainer"]
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]
 ): Ribbon => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
@@ -184,7 +198,13 @@ export const toolBarSettings = (
       characterformat.underline,
       characterformat.strikethrough,
     ];
-    const toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
+    const toggleBtnId = [
+      "ribbon_tab0_group11_collection15_item17",
+      "ribbon_tab0_group11_collection15_item18",
+      "ribbon_tab0_group11_collection15_item19",
+      "ribbon_tab0_group11_collection15_item20",
+      "ribbon_tab0_group11_collection15_item21",
+    ];
     for (let i = 0; i < properties.length; i++) {
       changeActiveState(properties[i], toggleBtnId[i]);
     }
@@ -195,9 +215,9 @@ export const toolBarSettings = (
       (typeof property == "boolean" && property) ||
       (typeof property == "string" && property !== "None")
     )
-      toggleBtn?.classList.add("e-btn-toggle");
-    else if (toggleBtn?.classList.contains("e-btn-toggle")) {
-      toggleBtn.classList.remove("e-btn-toggle");
+      toggleBtn?.classList.add("e-active");
+    else if (toggleBtn?.classList.contains("e-active")) {
+      toggleBtn.classList.remove("e-active");
     }
   }
   const fontStyle: string[] = [
@@ -238,114 +258,6 @@ export const toolBarSettings = (
     "96",
   ];
 
-  // const tabs: RibbonTabModel[] = [
-  //   {
-  //     header: "Home",
-  //     groups: [
-  //       {
-  //         header: "Clipboard",
-  //         collections: [
-  //           {
-  //             items: [
-  //               {
-  //                 type: RibbonItemType.SplitButton,
-  //                 allowedSizes: RibbonItemSize.Small,
-  //                 splitButtonSettings: {
-  //                   iconCss: "e-icons e-paste",
-  //                   items: [
-  //                     { text: "Keep Source Format" },
-  //                     { text: "Merge format" },
-  //                     { text: "Keep text only" },
-  //                   ],
-  //                   content: "Paste",
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             items: [
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Cut",
-  //                   iconCss: "e-icons e-cut",
-  //                 },
-  //               },
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Copy",
-  //                   iconCss: "e-icons e-copy",
-  //                 },
-  //               },
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Format Painter",
-  //                   iconCss: "e-icons e-format-painter",
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       },
-  //       {
-  //         header: "Font",
-  //         orientation: ItemOrientation.Row,
-  //         collections: [
-  //           {
-  //             items: [
-  //               {
-  //                 type: RibbonItemType.ComboBox,
-  //                 comboBoxSettings: {
-  //                   dataSource: fontStyle,
-  //                   index: 3,
-  //                   allowFiltering: true,
-  //                   width: "150px",
-  //                 },
-  //               },
-  //               {
-  //                 type: RibbonItemType.ComboBox,
-  //                 comboBoxSettings: {
-  //                   dataSource: fontSize,
-  //                   index: 3,
-  //                   width: "65px",
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             items: [
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Bold",
-  //                   iconCss: "e-icons e-bold",
-  //                   clicked: args => toolbarButtonClick(args, editor),
-  //                 },
-  //               },
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Italic",
-  //                   iconCss: "e-icons e-italic",
-  //                 },
-  //               },
-  //               {
-  //                 type: RibbonItemType.Button,
-  //                 buttonSettings: {
-  //                   content: "Underline",
-  //                   iconCss: "e-icons e-underline",
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
-  // ];
-
   const tabs = [
     {
       groups: [
@@ -364,6 +276,12 @@ export const toolBarSettings = (
                       toolbarButtonClick("undo", editor);
                     },
                   },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Undo Tooltip"
+                      ],
+                  },
                 },
                 {
                   type: "Button",
@@ -375,6 +293,12 @@ export const toolBarSettings = (
                     clicked: function () {
                       toolbarButtonClick("redo", editor);
                     },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Redo Tooltip"
+                      ],
                   },
                 },
               ],
@@ -390,23 +314,13 @@ export const toolBarSettings = (
             {
               items: [
                 {
-                  id: "pastebtn",
-                  type: "SplitButton",
+                  type: "Button",
                   allowedSizes: RibbonItemSize.Large,
-                  disabled: true,
-                  splitButtonSettings: {
+                  buttonSettings: {
                     iconCss: "e-icons e-paste",
-                    items: [
-                      { text: "Manter formato da fonte" },
-                      { text: "Mesclar formato de texto" },
-                      { text: "Manter apenas texto" },
-                    ],
-                    content: "Paste",
-                    click: function () {
-                      updateContent("Paste");
-                    },
-                    select: function (args: { item: { text: string } }) {
-                      updateContent("Paste -> " + args.item.text);
+                    content: "Colar",
+                    clicked: function () {
+                      toolbarButtonClick("Paste", editor);
                     },
                   },
                 },
@@ -422,8 +336,10 @@ export const toolBarSettings = (
                     content: "Cut",
                     clicked: function () {
                       toolbarButtonClick("cut", editor);
-                      enablePaste();
                     },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Cut"],
                   },
                 },
                 {
@@ -434,23 +350,10 @@ export const toolBarSettings = (
                     content: "Copy",
                     clicked: function () {
                       toolbarButtonClick("copy", editor);
-                      enablePaste();
                     },
                   },
-                },
-              ],
-            },
-            {
-              items: [
-                {
-                  type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
-                  buttonSettings: {
-                    iconCss: "e-icons e-format-painter",
-                    content: "Format Painter",
-                    clicked: function () {
-                      updateContent("Format Painter");
-                    },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Copy"],
                   },
                 },
               ],
@@ -527,6 +430,12 @@ export const toolBarSettings = (
                       toolbarButtonClick("bold", editor);
                     },
                   },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Bold Tooltip"
+                      ],
+                  },
                 },
                 {
                   type: "Button",
@@ -538,6 +447,12 @@ export const toolBarSettings = (
                       toolbarButtonClick("italic", editor);
                     },
                     iconCss: "e-icons e-italic",
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Italic Tooltip"
+                      ],
                   },
                 },
                 {
@@ -551,6 +466,12 @@ export const toolBarSettings = (
                     },
                     iconCss: "e-icons e-underline",
                   },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Underline Tooltip"
+                      ],
+                  },
                 },
                 {
                   allowedSizes: RibbonItemSize.Small,
@@ -563,19 +484,32 @@ export const toolBarSettings = (
                       toolbarButtonClick("strikethrough", editor);
                     },
                   },
-                },
-                {
-                  allowedSizes: RibbonItemSize.Small,
-                  type: "Button",
-                  buttonSettings: {
-                    iconCss: "e-icons e-change-case",
-                    content: "Change Case",
-                    isToggle: true,
-                    clicked: function () {
-                      updateContent("Change Case");
-                    },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Strikethrough"
+                      ],
                   },
                 },
+                // uppercase button will be implemented
+                // {
+                //   allowedSizes: RibbonItemSize.Small,
+                //   type: "Button",
+                //   buttonSettings: {
+                //     iconCss: "e-icons e-change-case",
+                //     content: "Change Case",
+                //     isToggle: true,
+                //     clicked: function () {
+                //       toolbarButtonClick("ChangeCase", editor);
+                //     },
+                //   },
+                //   ribbonTooltipSettings: {
+                //     title:
+                //       editorContainerLocale.documenteditorcontainer[
+                //         "Change case Tooltip"
+                //       ],
+                //   },
+                // },
               ],
             },
           ],
@@ -598,6 +532,12 @@ export const toolBarSettings = (
                       toolbarButtonClick("DecreaseIndent", editor);
                     },
                   },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Decrease indent"
+                      ],
+                  },
                 },
                 {
                   type: "Button",
@@ -609,6 +549,12 @@ export const toolBarSettings = (
                       toolbarButtonClick("IncreaseIndent", editor);
                     },
                   },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Increase indent"
+                      ],
+                  },
                 },
                 {
                   type: "Button",
@@ -619,6 +565,12 @@ export const toolBarSettings = (
                     clicked: function () {
                       toolbarButtonClick("ShowParagraphMark", editor);
                     },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Paragraph"
+                      ],
                   },
                 },
               ],
@@ -638,11 +590,23 @@ export const toolBarSettings = (
                         click: function () {
                           toolbarButtonClick("AlignLeft", editor);
                         },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align left Tooltip"
+                            ],
+                        },
                       },
                       {
                         iconCss: "e-icons e-align-center",
                         click: function () {
                           toolbarButtonClick("AlignCenter", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align center"
+                            ],
                         },
                       },
                       {
@@ -650,11 +614,23 @@ export const toolBarSettings = (
                         click: function () {
                           toolbarButtonClick("AlignRight", editor);
                         },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Align right Tooltip"
+                            ],
+                        },
                       },
                       {
                         iconCss: "e-icons e-justify",
                         click: function () {
                           toolbarButtonClick("Justify", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                              "Justify Tooltip"
+                            ],
                         },
                       },
                     ],
@@ -666,397 +642,13 @@ export const toolBarSettings = (
         },
       ],
     },
-    // {
-    //   id: "insertTab",
-    //   header: "Insert",
-    //   groups: [
-    //     {
-    //       id: "table",
-    //       header: "Tables",
-    //       isCollapsible: false,
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "DropDown",
-    //               id: "table_item",
-    //               allowedSizes: RibbonItemSize.Large,
-    //               dropDownSettings: {
-    //                 content: "Table",
-    //                 iconCss: "e-icons e-table",
-    //                 items: [
-    //                   { text: "Insert Table" },
-    //                   { text: "Draw Table" },
-    //                   { text: "Convert Table" },
-    //                   { text: "Excel Spreadsheet" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Table -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       id: "illustration",
-    //       header: "Illustrations",
-    //       enableGroupOverflow: true,
-    //       overflowHeader: "Illustrations",
-    //       showLauncherIcon: true,
-    //       orientation: "Row",
-    //       groupIconCss: "e-icons e-image",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "DropDown",
-    //               id: "pictureddl",
-    //               dropDownSettings: {
-    //                 content: "Pictures",
-    //                 target: "#pictureList",
-    //                 iconCss: "e-icons e-image",
-    //               },
-    //             },
-    //             {
-    //               id: "shapes_item",
-    //               type: "DropDown",
-    //               dropDownSettings: {
-    //                 iconCss: "sf-icon-shapes",
-    //                 content: "Shapes",
-    //                 items: [
-    //                   { text: "Lines" },
-    //                   { text: "Rectangles" },
-    //                   { text: "Basic Arrows" },
-    //                   { text: "Basic Shapes" },
-    //                   { text: "FlowChart" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Shapes -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 iconCss: "sf-icon-3d-model",
-    //                 content: "3D Models",
-    //                 clicked: function () {
-    //                   updateContent("3D Models");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 content: "SmartArt",
-    //                 iconCss: "sf-icon-smart-art",
-    //                 clicked: function () {
-    //                   updateContent("SmartArt");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 content: "Chart",
-    //                 iconCss: "sf-icon-chart",
-    //                 clicked: function () {
-    //                   updateContent("Chart");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 content: "Screenshot",
-    //                 iconCss: "sf-icon-screenshot",
-    //                 clicked: function () {
-    //                   updateContent("Screenshot");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       id: "header_footer",
-    //       header: "Header & Footer",
-    //       showLauncherIcon: true,
-    //       groupIconCss: "e-icons e-table",
-    //       orientation: "Column",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "DropDown",
-    //               dropDownSettings: {
-    //                 content: "Header",
-    //                 iconCss: "e-icons e-header",
-    //                 items: [
-    //                   { text: "Insert Header" },
-    //                   { text: "Edit Header" },
-    //                   { text: "Remove Header" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Header -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "DropDown",
-    //               dropDownSettings: {
-    //                 content: "Footer",
-    //                 iconCss: "e-icons e-footer",
-    //                 items: [
-    //                   { text: "Insert Footer" },
-    //                   { text: "Edit Footer" },
-    //                   { text: "Remove Footer" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Footer -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               id: "page_item",
-    //               type: "DropDown",
-    //               dropDownSettings: {
-    //                 content: "Page Number",
-    //                 iconCss: "e-icons e-page-numbering",
-    //                 items: [
-    //                   { text: "Insert Top of page" },
-    //                   { text: "Insert Bottom of page" },
-    //                   { text: "Format Page Number" },
-    //                   { text: "Remove Page Number" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Page Numbering -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       id: "comments_tab",
-    //       isCollapsible: false,
-    //       header: "Comments",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               id: "new_cmnt_item",
-    //               type: "Button",
-    //               allowedSizes: RibbonItemSize.Large,
-    //               buttonSettings: {
-    //                 iconCss: "e-icons e-comment-add",
-    //                 content: "New Comment",
-    //                 clicked: function () {
-    //                   updateContent("New Comment");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       id: "linkGroup",
-    //       header: "Links",
-    //       groupIconCss: "e-icons e-link",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               allowedSizes: RibbonItemSize.Large,
-    //               type: "DropDown",
-    //               id: "link_item",
-    //               dropDownSettings: {
-    //                 content: "Link",
-    //                 iconCss: "e-icons e-link",
-    //                 items: [
-    //                   { text: "Insert Link", iconCss: "e-icons e-link" },
-    //                   { text: "Recent Links", iconCss: "e-icons e-clock" },
-    //                   { text: "Bookmarks", iconCss: "e-icons e-bookmark" },
-    //                 ],
-    //                 select: function (args: { item: { text: string } }) {
-    //                   updateContent("Link -> " + args.item.text);
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
-    // {
-    //   id: "view",
-    //   header: "View",
-    //   groups: [
-    //     {
-    //       header: "Views",
-    //       orientation: "Row",
-    //       groupIconCss: "e-icons e-print",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 iconCss: "sf-icon-read",
-    //                 content: "Read Mode",
-    //                 clicked: function () {
-    //                   updateContent("Read Mode");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 content: "Print Layout",
-    //                 iconCss: "e-print e-icons",
-    //                 clicked: function () {
-    //                   updateContent("Print Layout");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 iconCss: "sf-icon-web-layout",
-    //                 content: "Web Layout",
-    //                 clicked: function () {
-    //                   updateContent("Web Layout");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       header: "Zoom",
-    //       groupIconCss: "e-icons e-zoom-to-fit",
-    //       orientation: "Row",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 iconCss: "e-icons e-zoom-in",
-    //                 content: "Zoom In",
-    //                 clicked: function () {
-    //                   updateContent("Zoom In");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               type: "Button",
-    //               buttonSettings: {
-    //                 iconCss: "e-icons e-zoom-out",
-    //                 content: "Zoom Out",
-    //                 clicked: function () {
-    //                   updateContent("Zoom Out");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       header: "Show",
-    //       isCollapsible: false,
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               type: "CheckBox",
-    //               checkBoxSettings: {
-    //                 label: "Ruler",
-    //                 checked: false,
-    //                 change: function () {
-    //                   updateContent("Ruler");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               id: "gridline",
-    //               type: "CheckBox",
-    //               checkBoxSettings: {
-    //                 checked: false,
-    //                 label: "Gridlines",
-    //                 change: function () {
-    //                   updateContent("Gridlines");
-    //                 },
-    //               },
-    //             },
-    //             {
-    //               id: "nav_pane",
-    //               type: "CheckBox",
-    //               checkBoxSettings: {
-    //                 label: "Navigation Pane",
-    //                 checked: true,
-    //                 change: function () {
-    //                   updateContent("Navigation Pane");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       id: "darkmode_group",
-    //       header: "Dark Mode",
-    //       collections: [
-    //         {
-    //           items: [
-    //             {
-    //               id: "darkmode_item",
-    //               type: "Button",
-    //               allowedSizes: RibbonItemSize.Large,
-    //               buttonSettings: {
-    //                 iconCss: "sf-icon-mode",
-    //                 content: "Dark Mode",
-    //                 clicked: function () {
-    //                   updateContent("Dark Mode");
-    //                 },
-    //               },
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
   ];
-
-  function updateContent(args: string) {
-    console.log(args);
-  }
 
   const ribbonSettings: Ribbon = new Ribbon({
     tabs: tabs,
     activeLayout: "Simplified",
+    hideLayoutSwitcher: true,
   });
 
-  let isPasteDisabled = true;
-  function enablePaste() {
-    if (!isPasteDisabled) {
-      return;
-    }
-    ribbonSettings.enableItem("pastebtn");
-    isPasteDisabled = false;
-  }
-
   return ribbonSettings;
-
-  // return addItemsToolbar;
 };

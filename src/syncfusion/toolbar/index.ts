@@ -6,23 +6,20 @@ export class IaraSyncfusionToolbarManager {
   constructor(private _editorContainer: DocumentEditorContainer) {}
 
   public init(): void {
-    const editorContainerLocale = EJ2_LOCALE["pt-BR"].documenteditorcontainer;
+    const editorContainerLocale = EJ2_LOCALE["pt-BR"];
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
       editorContainerLocale
     );
-    const editorElementContainer = <HTMLElement>(
-      document.querySelector(".e-de-ctn")
+    const editorToolbarContainer = <HTMLElement>(
+      document.querySelector(".e-de-ctnr-toolbar")
     );
-
-    const editorFirstElementContainer = editorElementContainer.firstChild;
+    editorToolbarContainer.style.alignItems = "center";
 
     const ribbonContainer = document.createElement("div");
     ribbonContainer.id = "ribbon";
-    editorElementContainer.insertBefore(
-      ribbonContainer,
-      editorFirstElementContainer
-    );
+
+    editorToolbarContainer.appendChild(ribbonContainer);
 
     toolbarRibbonItems.appendTo("#ribbon");
     const ribbonMenuElement = <HTMLElement>(
