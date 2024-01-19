@@ -170,11 +170,11 @@ export class IaraSyncfusionEditorContentManager {
 
   private async _getSfdtContent(): Promise<IaraSFDT> {
     if (this._isSfdtDirty) {
+      this._isSfdtDirty = false;
       this._sfdt = await IaraSFDT.fromEditor(
         this._editor,
         this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
       );
-      this._isSfdtDirty = false;
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
 
@@ -182,18 +182,25 @@ export class IaraSyncfusionEditorContentManager {
   }
 
   private async _getPlainTextContent(): Promise<string> {
+    console.log(`_getPlainTextContent0`, this._isPlainTextDirty);
     if (this._isPlainTextDirty) {
+      this._isPlainTextDirty = false;
       this._plainText = await this._editor
         .saveAsBlob("Txt")
         .then((blob: Blob) => blob.text());
-      this._isPlainTextDirty = false;
     }
+    console.log(
+      `_getPlainTextContent1`,
+      this._isPlainTextDirty,
+      await this._plainText
+    );
     if (!this._plainText) throw new Error("Invalid plain text content");
 
     return this._plainText;
   }
 
   private _onContentChange(): void {
+    console.log(`_onContentChange`);
     this._isPlainTextDirty = true;
     this._isSfdtDirty = true;
   }

@@ -255,17 +255,18 @@ export class IaraSyncfusionAdapter
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
+    console.log(`_saveReport1`, contentDate);
     const content: string[] = await Promise.all([
       this._contentManager.getPlainTextContent(),
       this._contentManager.getHtmlContent(),
     ]);
-    console.log(`_saveReport2`, contentDate, this._contentDate, content[0]);
+    console.log(`_saveReport2`, contentDate, this._contentDate, content);
 
     if (contentDate !== this._contentDate) return;
 
     await this._updateReport(content[0], content[1]);
+    console.log(`_saveReport3`, contentDate, this._contentDate, content);
     this.savingReportSpan.innerText = "Salvo";
-    console.log(`_saveReport3`, contentDate, this._contentDate);
   }
 
   onTemplateSelectedAtShortCut(
