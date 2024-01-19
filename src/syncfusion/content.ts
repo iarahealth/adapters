@@ -182,25 +182,18 @@ export class IaraSyncfusionEditorContentManager {
   }
 
   private async _getPlainTextContent(): Promise<string> {
-    console.log(`_getPlainTextContent0`, this._isPlainTextDirty);
     if (this._isPlainTextDirty) {
       this._isPlainTextDirty = false;
       this._plainText = await this._editor
         .saveAsBlob("Txt")
         .then((blob: Blob) => blob.text());
     }
-    console.log(
-      `_getPlainTextContent1`,
-      this._isPlainTextDirty,
-      await this._plainText
-    );
     if (!this._plainText) throw new Error("Invalid plain text content");
 
     return this._plainText;
   }
 
   private _onContentChange(): void {
-    console.log(`_onContentChange`);
     this._isPlainTextDirty = true;
     this._isSfdtDirty = true;
   }
