@@ -23,7 +23,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   toggleUnderline(): void {
     this._editor.editor.toggleUnderline("Single");
   }
+
   toggleUppercase(): void {
-    throw new Error("Método não implementado.");
+    this._editor.editor.toggleAllCaps();
   }
 }
