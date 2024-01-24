@@ -378,6 +378,7 @@ export const toolBarSettings = (
                     width: "115px",
                     popupWidth: "150px",
                     index: 3,
+                    value: editor.documentEditor.selection.characterFormat.fontFamily,
                     allowFiltering: true,
                     change: function (args: { itemData: { text: string } }) {
                       if (args.itemData) {
@@ -395,7 +396,9 @@ export const toolBarSettings = (
                     width: "65px",
                     allowFiltering: true,
                     index: 3,
+                    value: editor.documentEditor.selection.characterFormat.fontSize + '',
                     change: function (args: { itemData: { text: string } }) {
+                      console.log(args.itemData);
                       if (args.itemData) {
                         changeFontSize({ value: Number(args.itemData.text) });
                       }
@@ -416,7 +419,7 @@ export const toolBarSettings = (
                         currentValue: { hex: args.currentValue.hex },
                       });
                     },
-                    value: "#000",
+                    value: editor.documentEditor.selection.characterFormat.fontColor ? editor.documentEditor.selection.characterFormat.fontColor : `#000`
                   },
                 },
                 {
