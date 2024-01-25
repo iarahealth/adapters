@@ -6,7 +6,25 @@ export class IaraSyncfusionToolbarManager {
   constructor(private _editorContainer: DocumentEditorContainer) {}
 
   public init(): void {
+    this._addRibbonToolbar();
+    this._removePropertiesPane();
+  }
+
+  private _removePropertiesPane(): void {
+    this._editorContainer.showPropertiesPane = false;
+    const paneButton: HTMLElement | null = document.querySelector(
+      ".e-de-ctnr-properties-pane-btn"
+    );
+    paneButton?.remove();
+    //remove wrapper button
+    const wrapper: HTMLElement | null =
+      document.querySelector(".e-de-tlbr-wrapper");
+    if (wrapper) wrapper.style.width = "100%";
+  }
+
+  private _addRibbonToolbar(): void {
     const editorContainerLocale = EJ2_LOCALE["pt-BR"];
+
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
       editorContainerLocale
@@ -14,7 +32,14 @@ export class IaraSyncfusionToolbarManager {
     const editorToolbarContainer = <HTMLElement>(
       document.querySelector(".e-de-ctnr-toolbar")
     );
-    editorToolbarContainer.style.alignItems = "center";
+
+    const editorContainerViewer = <HTMLElement>(
+      document.querySelector(".e-de-tool-ctnr-properties-pane")
+    );
+    // The height of the container needs to be adjusted because the ribbon is smaller
+    editorToolbarContainer.style.height = "auto";
+
+    editorContainerViewer.style.height = "calc(100% - 84px)";
 
     const ribbonContainer = document.createElement("div");
     ribbonContainer.id = "ribbon";
@@ -29,19 +54,5 @@ export class IaraSyncfusionToolbarManager {
     const menuRiboon = ribbonMenuElement.firstChild as HTMLElement;
 
     menuRiboon.style.display = "none";
-
-    this._removePropertiesPane();
-  }
-
-  private _removePropertiesPane(): void {
-    this._editorContainer.showPropertiesPane = false;
-    const paneButton: HTMLElement | null = document.querySelector(
-      ".e-de-ctnr-properties-pane-btn"
-    );
-    paneButton?.remove();
-    //remove wrapper button
-    const wrapper: HTMLElement | null =
-      document.querySelector(".e-de-tlbr-wrapper");
-    if (wrapper) wrapper.style.width = "100%";
   }
 }
