@@ -6,14 +6,22 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
   }
 
-  setFontFamily(fontFamily: string): void {
+  setSelectionFontFamily(fontFamily: string): void {
     this._editor.selection.characterFormat.fontFamily = fontFamily;
     this._editor.focusIn();
   }
-  setFontSize(fontSize: number): void {
+  setSelectionFontSize(fontSize: number): void {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
+
+  setEditorFontColor(color: string)
+  {
+    this._editor.setDefaultCharacterFormat({ fontColor: color });
+  }
+
+
+
   toggleBold(): void {
     this._editor.editor.toggleBold();
   }
