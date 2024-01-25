@@ -1,6 +1,9 @@
 import { IaraEditorStyleManager } from "../editor/style";
 
 export class IaraTinyMceStyleManager extends IaraEditorStyleManager {
+  printContainer(_isDarkMode: boolean): void {
+    throw new Error("Method not implemented.");
+  }
   setSelectionFontFamily(_fontName: string): void {
     throw new Error("Method not implemented.");
   }

@@ -1,9 +1,12 @@
-import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
+import { DocumentEditor, Print } from "@syncfusion/ej2-documenteditor";
 import { IaraEditorStyleManager } from "../editor/style";
 
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   constructor(private _editor: DocumentEditor) {
     super();
+
+    DocumentEditor.Inject(Print);
+    this._editor.enablePrint = true;
   }
 
   setSelectionFontFamily(fontFamily: string): void {
@@ -14,14 +17,10 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
-
   setEditorFontColor(color: string)
   {
     this._editor.setDefaultCharacterFormat({ fontColor: color });
   }
-
-
-
   toggleBold(): void {
     this._editor.editor.toggleBold();
   }
@@ -33,5 +32,12 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   }
   toggleUppercase(): void {
     throw new Error("Método não implementado.");
+  }
+
+  printContainer(isDarkMode: boolean) : void
+  {
+    if (isDarkMode) this._editor.setDefaultCharacterFormat({ fontColor: '#000' });
+    this._editor.print();
+    if (isDarkMode) this._editor.setDefaultCharacterFormat({ fontColor: '#fff' });
   }
 }

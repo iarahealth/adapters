@@ -1,4 +1,4 @@
-import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import type { DocumentEditorContainer, CharacterFormatProperties } from "@syncfusion/ej2-documenteditor";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
 import {
   Dialog,
@@ -37,13 +37,16 @@ export class IaraSyncfusionAdapter
     return this._contentManager;
   }
 
+  public defaultFormat: CharacterFormatProperties = {};
+
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
     protected _shouldSaveReport = true,
-    replaceToolbar = false
+    replaceToolbar = false,
+    protected _configurationService: any
   ) {
-    super(_editorContainer, _recognition, _shouldSaveReport);
+    super(_editorContainer, _recognition, _shouldSaveReport, _configurationService);
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
@@ -61,6 +64,28 @@ export class IaraSyncfusionAdapter
       _editorContainer.documentEditor
     );
     this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
+
+
+    this.defaultFormat = {
+      fontFamily: this._configurationService.defaultFont,
+      fontSize: parseInt(this._configurationService.defaultFontSize),
+      fontColor: '#000'
+    };
+
+    this._editorContainer.documentEditor.setDefaultCharacterFormat(this.defaultFormat);
+
+    if (this._configurationService.darkMode)
+    {
+      this._editorContainer.documentEditor.documentHelper.backgroundColor = "#444";
+      this._editorContainer.setDefaultCharacterFormat({ fontColor: '#fff' });
+      let FILE = 'https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css';
+      let css = document.createElement('link');
+      css.setAttribute('rel','stylesheet');
+      css.setAttribute('type', 'text/css');
+      css.setAttribute('id', 'dark-theme-css');
+      css.setAttribute('href', FILE);
+      document.getElementsByTagName('head')[0].appendChild(css);
+    }
 
     if (replaceToolbar) this._toolbarManager.init();
 

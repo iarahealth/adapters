@@ -42,10 +42,12 @@ export abstract class EditorAdapter {
     },
   ];
 
+
   constructor(
     protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
-    protected _shouldSaveReport: boolean = true
+    protected _shouldSaveReport: boolean = true,
+    protected _configurationService: any
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
@@ -96,6 +98,10 @@ export abstract class EditorAdapter {
     });
     this._recognition.commands.add("iara maiúsculo", () => {
       this._styleManager.toggleUppercase();
+    });
+
+    this._recognition.commands.add("iara imprimir", () => {
+      this._styleManager.printContainer(this._configurationService.darkMode)
     });
   }
 

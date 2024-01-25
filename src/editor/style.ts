@@ -3,6 +3,7 @@ export abstract class IaraEditorStyleManager {
   abstract toggleItalic(): void;
   abstract toggleUnderline(): void;
   abstract toggleUppercase(): void;
+  abstract printContainer(isDarkMode: boolean): void;
   abstract setSelectionFontFamily(fontName: string): void;
   abstract setSelectionFontSize(fontSize: number): void;
   abstract setEditorFontColor(fontColor: string): void;

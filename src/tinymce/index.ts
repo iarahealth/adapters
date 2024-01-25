@@ -10,9 +10,11 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   constructor(
     protected _editorContainer: Editor,
-    protected _recognition: IaraSpeechRecognition
+    protected _recognition: IaraSpeechRecognition,
+    protected _shouldSaveReport = true,
+    replaceToolbar = false
   ) {
-    super(_editorContainer, _recognition);
+    super(_editorContainer, _recognition, _shouldSaveReport, replaceToolbar);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
     this._editorContainer.on("destroyed", this._onEditorDestroyed.bind(this));
