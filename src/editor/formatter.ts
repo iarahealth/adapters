@@ -6,27 +6,55 @@ export class IaraEditorInferenceFormatter {
     wordAfter: string,
     wordBefore: string
   ): string {
-    const addSpaceBefore =
+    let addSpaceBefore =
       wordBefore.length && !wordBefore.endsWith(" ") && !/^[.,:;?!]/.test(text);
 
-    const addSpaceAfter =
+    //braun
+    // console.log('----------------------------------');
+    // console.log('"'+ wordBefore +'"');
+    // console.log('"' + text + '"');
+    // console.log('"'+ wordAfter + '"');
+
+    // if (text.trimStart() == '.')
+    // {
+    //   text = text.trimStart();
+      // addSpaceBefore = false;
+    // }
+
+
+    let addSpaceAfter =
       wordAfter.length &&
       !wordAfter.startsWith(" ") &&
       !/^[.,:;?!]/.test(wordAfter);
 
-    return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
+  
+    //braun
+      // console.log(addSpaceAfter);
+      // console.log('----------------------------------');
+
+    return `${addSpaceBefore ? " " : ""}${text.trimStart()}${addSpaceAfter ? " " : ""}`;
   }
 
   public _capitalize(text: string, wordBefore: string): string {
     text = text.trimStart();
     wordBefore = wordBefore.trimEnd();
 
-    const capitalize = !wordBefore.length || /[.:;?!]$/.test(wordBefore);
-    var capitalized_text = `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`;
+    const capitalize = !wordBefore.length || /[.:;?!]$/.test(wordBefore.trimStart());
+    let capitalized_text = `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`;
+
+    //braun
+    console.log('capitalize----------------------------');
+    // console.log('"'+wordBefore+'"', 'WORDBEFORE');
+    console.log(/[.:;?!]$/.test(wordBefore.trimStart()));
+    console.log(wordBefore.length, 'LENGTH');
+    console.log(text, 'TEXT');
+    console.log('capitalize fim----------------------------');
+    // console.log('"' + text + '"', 'TEXT');
+
 
     return capitalize
-      ? wordBefore.length == 0 ? capitalized_text : ' ' + capitalized_text
-      : wordBefore.length == 0 ? text : ' ' + text;
+      ? wordBefore.length == 0 ? capitalized_text : ' ' + capitalized_text.trimStart()
+      : (wordBefore.length == 0 || text === '.') ? text : ' ' + text.trimStart();
   }
 
   protected _estimateVolume(text: string, regex: string): string {
@@ -113,20 +141,40 @@ export class IaraEditorInferenceFormatter {
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
 
+    //braun
+    // console.log('--------------------------');
+    // console.log(text);
+
     text = this._parseMeasurements(text);
+
+    // console.log(text);
 
     // expression to estimate volume
     text = this._estimateVolume(
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()"
     );
+
+    // console.log(text);
+
+
     text = this._estimateVolume(
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
 
+    // console.log('"' + text + '"');
+
+    //comeca a adicionar espaço aqui
     text = this._capitalize(text, _wordBefore);
+
+
+    console.log('"'+ text+'"');
+
+
     text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
+
+    console.log('"'+ text+ '"');
 
     return text;
   }
