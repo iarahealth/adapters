@@ -116,12 +116,11 @@ export class IaraEditorInferenceFormatter {
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()"
     );
-
     text = this._estimateVolume(
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
-    
+
     text = this._capitalize(text, _wordBefore);
     text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
 
