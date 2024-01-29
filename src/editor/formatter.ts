@@ -21,8 +21,8 @@ export class IaraEditorInferenceFormatter {
     const capitalize = !wordBefore.length || /[.:;?!]$/.test(wordBefore);
 
     return capitalize
-    ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
-    : text;
+      ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
+      : text;
   }
 
   protected _estimateVolume(text: string, regex: string): string {
