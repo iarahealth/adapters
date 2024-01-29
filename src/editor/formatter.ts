@@ -6,13 +6,23 @@ export class IaraEditorInferenceFormatter {
     wordAfter: string,
     wordBefore: string
   ): string {
+    //nbsp and zwnj can be entered as whitespace
+    //nbsp is a non-breaking space \u00A0.
+    //zwnj is a zero-width non-joiner \u200c.
+    const isNbspOrZwnj =
+      /^(\s*\u00A0\s*)+$/.test(wordBefore) ||
+      /^(\s*\u200c\s*)+$/.test(wordBefore);
+
+    const hasSpace = wordBefore.endsWith(" ") || isNbspOrZwnj;
+
     const addSpaceBefore =
-      wordBefore.length && !wordBefore.endsWith(" ") && !/^[.,:;?!]/.test(text);
+      wordBefore.length && !hasSpace && !/^[.,:;?!]/.test(text);
 
     const addSpaceAfter =
       wordAfter.length &&
       !wordAfter.startsWith(" ") &&
-      !/^[.,:;?!]/.test(wordAfter);
+      !/^[.,:;?!]/.test(wordAfter) &&
+      isNbspOrZwnj;
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
