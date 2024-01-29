@@ -10,11 +10,10 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
-
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
       fontSize: this._config.font?.size,
-      fontColor: "#000",
+      fontColor: this._config.darkMode ? "#fff" : "#000",
     });
   }
 
