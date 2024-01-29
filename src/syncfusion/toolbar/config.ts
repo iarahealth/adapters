@@ -132,7 +132,8 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  _configurationService: any
 ): Ribbon => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
@@ -220,43 +221,20 @@ export const toolBarSettings = (
       toggleBtn.classList.remove("e-active");
     }
   }
-  const fontStyle: string[] = [
-    "Algerian",
-    "Arial",
-    "Calibri",
-    "Cambria",
-    "Cambria Math",
-    "Candara",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Segoe Print",
-    "Segoe Script",
-    "Segoe UI",
-    "Symbol",
-    "Times New Roman",
-    "Verdana",
-    "Windings",
-  ];
-  const fontSize: string[] = [
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "14",
-    "16",
-    "18",
-    "20",
-    "22",
-    "24",
-    "26",
-    "28",
-    "36",
-    "48",
-    "72",
-    "96",
-  ];
+
+  const fontStyleList = _configurationService.availableFonts.map((obj: any) => obj.family).filter((value: any) => {
+    return value;
+  });
+
+  const fontSizeList = [];
+
+  for (const object of _configurationService.availableFontSizes)
+  {
+    fontSizeList.push(object.value.replace('pt',''));
+  }
+
+  const fontStyle: string[] = fontStyleList;
+  const fontSize: string[] = fontSizeList;
 
   const tabs = [
     {

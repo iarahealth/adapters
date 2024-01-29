@@ -3,7 +3,12 @@ import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { toolBarSettings } from "./config";
 
 export class IaraSyncfusionToolbarManager {
-  constructor(private _editorContainer: DocumentEditorContainer) {}
+
+  private _configurationService: any;
+
+  constructor(private _editorContainer: DocumentEditorContainer, _configurationService: any) {
+    this._configurationService = _configurationService;
+  }
 
   public init(): void {
     this._addRibbonToolbar();
@@ -27,7 +32,8 @@ export class IaraSyncfusionToolbarManager {
 
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
-      editorContainerLocale
+      editorContainerLocale,
+      this._configurationService
     );
     const editorToolbarContainer = <HTMLElement>(
       document.querySelector(".e-de-ctnr-toolbar")

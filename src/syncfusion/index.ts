@@ -41,7 +41,8 @@ export class IaraSyncfusionAdapter
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
     protected _shouldSaveReport = true,
-    replaceToolbar = false
+    replaceToolbar = false,
+    protected _configurationService: any
   ) {
     super(_editorContainer, _recognition, _shouldSaveReport);
 
@@ -60,7 +61,7 @@ export class IaraSyncfusionAdapter
     this._styleManager = new IaraSyncfusionStyleManager(
       _editorContainer.documentEditor
     );
-    this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
+    this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer, _configurationService);
 
     if (replaceToolbar) this._toolbarManager.init();
 
