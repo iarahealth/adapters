@@ -73,4 +73,8 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   clearReport(): void {
     throw new Error("Método não implementado.");
   }
+
+  print(): void {
+    throw new Error("Method not implemented.");
+  }
 }

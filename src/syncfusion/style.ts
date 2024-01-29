@@ -1,11 +1,26 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
+import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
-  constructor(private _editor: DocumentEditor) {
+  constructor(
+    private _editor: DocumentEditor,
+    private _config: IaraSyncfusionConfig
+  ) {
     super();
+
+    this.setTheme(this._config.darkMode ? "dark" : "light");
+
+    this._editor.setDefaultCharacterFormat({
+      fontFamily: this._config.font?.family,
+      fontSize: this._config.font?.size,
+      fontColor: "#000",
+    });
   }
 
+  setEditorFontColor(color: string): void {
+    this._editor.setDefaultCharacterFormat({ fontColor: color });
+  }
   setSelectionFontFamily(fontFamily: string): void {
     this._editor.selection.characterFormat.fontFamily = fontFamily;
     this._editor.focusIn();
@@ -14,13 +29,19 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
+  setTheme(theme: "light" | "dark") {
+    if (theme === "light") return;
 
-  setEditorFontColor(color: string)
-  {
-    this._editor.setDefaultCharacterFormat({ fontColor: color });
+    this._editor.documentHelper.backgroundColor = "#444";
+    this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
+    const FILE = "https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css";
+    const css = document.createElement("link");
+    css.setAttribute("rel", "stylesheet");
+    css.setAttribute("type", "text/css");
+    css.setAttribute("id", "dark-theme-css");
+    css.setAttribute("href", FILE);
+    document.getElementsByTagName("head")[0].appendChild(css);
   }
-
-
 
   toggleBold(): void {
     this._editor.editor.toggleBold();
@@ -31,7 +52,6 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   toggleUnderline(): void {
     this._editor.editor.toggleUnderline("Single");
   }
-
   toggleUppercase(): void {
     this._editor.editor.toggleAllCaps();
   }

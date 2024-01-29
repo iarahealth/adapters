@@ -1,4 +1,9 @@
-import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import {
+  type DocumentEditorContainer,
+  type CharacterFormatProperties,
+  DocumentEditor,
+  Print,
+} from "@syncfusion/ej2-documenteditor";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
 import {
   Dialog,
@@ -6,13 +11,17 @@ import {
   hideSpinner,
   showSpinner,
 } from "@syncfusion/ej2-popups";
-import { EditorAdapter } from "../editor";
+import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+
+export interface IaraSyncfusionConfig extends IaraEditorConfig {
+  replaceToolbar: boolean;
+}
 
 export class IaraSyncfusionAdapter
   extends EditorAdapter
@@ -26,7 +35,7 @@ export class IaraSyncfusionAdapter
   private _resetSelection = false;
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _shortcutsManager: IaraSyncfusionShortcutsManager;
-  private _toolbarManager: IaraSyncfusionToolbarManager;
+  private _toolbarManager?: IaraSyncfusionToolbarManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -37,18 +46,23 @@ export class IaraSyncfusionAdapter
     return this._contentManager;
   }
 
+  public defaultFormat: CharacterFormatProperties = {};
+
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
-    protected _shouldSaveReport = true,
-    replaceToolbar = false
+    protected _config: IaraSyncfusionConfig = {
+      darkMode: false,
+      saveReport: true,
+      replaceToolbar: true,
+    }
   ) {
-    super(_editorContainer, _recognition, _shouldSaveReport);
+    super(_editorContainer, _recognition);
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
       _recognition,
-      () => (this._shouldSaveReport ? this._debouncedSaveReport() : undefined)
+      () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
     this._shortcutsManager = new IaraSyncfusionShortcutsManager(
@@ -57,12 +71,19 @@ export class IaraSyncfusionAdapter
       this.onTemplateSelectedAtShortCut.bind(this)
     );
     this._shortcutsManager.init();
-    this._styleManager = new IaraSyncfusionStyleManager(
-      _editorContainer.documentEditor
-    );
-    this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
 
-    if (replaceToolbar) this._toolbarManager.init();
+    this._styleManager = new IaraSyncfusionStyleManager(
+      _editorContainer.documentEditor,
+      this._config
+    );
+
+    if (this._config.replaceToolbar) {
+      this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
+      this._toolbarManager.init();
+    }
+
+    DocumentEditor.Inject(Print);
+    this._editorContainer.documentEditor.enablePrint = true;
 
     this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
@@ -75,28 +96,7 @@ export class IaraSyncfusionAdapter
       target: _editorContainer.editorContainer,
     });
 
-    this._editorContainer.documentEditor.addEventListener(
-      "selectionChange",
-      () => {
-        if (this._resetSelection) {
-          this._resetSelection = false;
-          this._cursorSelection?.resetSelection();
-          this._cursorSelection = undefined;
-        }
-      }
-    );
-
-    this._editorContainer.element.addEventListener("mousedown", event => {
-      if (event.button === 1) {
-        if (!this._selectionManager) {
-          this._resetSelection = true;
-          this._cursorSelection = new IaraSyncfusionSelectionManager(
-            this._editorContainer.documentEditor
-          );
-        }
-        this._recognition.toggleRecording();
-      }
-    });
+    this._setScrollClickHandler();
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -282,6 +282,37 @@ export class IaraSyncfusionAdapter
       this.undo();
       this.insertTemplate(item.content);
       dialogObj.hide();
+    });
+  }
+
+  print(): void {
+    if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
+    this._editorContainer.documentEditor.print();
+    if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
+  }
+
+  private _setScrollClickHandler() {
+    this._editorContainer.documentEditor.addEventListener(
+      "selectionChange",
+      () => {
+        if (this._resetSelection) {
+          this._resetSelection = false;
+          this._cursorSelection?.resetSelection();
+          this._cursorSelection = undefined;
+        }
+      }
+    );
+
+    this._editorContainer.element.addEventListener("mousedown", event => {
+      if (event.button === 1) {
+        if (!this._selectionManager) {
+          this._resetSelection = true;
+          this._cursorSelection = new IaraSyncfusionSelectionManager(
+            this._editorContainer.documentEditor
+          );
+        }
+        this._recognition.toggleRecording();
+      }
     });
   }
 }
