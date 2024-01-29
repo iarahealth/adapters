@@ -1,7 +1,7 @@
 import {
-  type DocumentEditorContainer,
-  type CharacterFormatProperties,
+  CharacterFormatProperties,
   DocumentEditor,
+  DocumentEditorContainer,
   Print,
 } from "@syncfusion/ej2-documenteditor";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
