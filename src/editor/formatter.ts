@@ -28,7 +28,12 @@ export class IaraEditorInferenceFormatter {
   }
 
   public _capitalize(text: string, wordBefore: string): string {
-    const capitalize = !wordBefore.length || /[.:;?!]$/.test(wordBefore);
+    const isNbspOrZwnj =
+      /^(\s*\u00A0\s*)+$/.test(wordBefore) ||
+      /^(\s*\u200c\s*)+$/.test(wordBefore);
+
+    const capitalize =
+      !wordBefore.length || isNbspOrZwnj || /[.:;?!]$/.test(wordBefore);
 
     return capitalize
       ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
