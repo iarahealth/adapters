@@ -6,7 +6,9 @@ import { IaraEditorStyleManager } from "./style";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
-  font?: {
+  font: {
+    availableFamilies: string[];
+    availableSizes: number[];
     family: string;
     size: number;
   };
@@ -54,7 +56,7 @@ export abstract class EditorAdapter {
   constructor(
     protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraEditorConfig = { darkMode: false, saveReport: true }
+    protected _config: IaraEditorConfig
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();

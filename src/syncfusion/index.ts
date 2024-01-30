@@ -1,7 +1,7 @@
+import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import {
   CharacterFormatProperties,
   DocumentEditor,
-  DocumentEditorContainer,
   Print,
 } from "@syncfusion/ej2-documenteditor";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
@@ -51,13 +51,9 @@ export class IaraSyncfusionAdapter
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraSyncfusionConfig = {
-      darkMode: false,
-      saveReport: true,
-      replaceToolbar: true,
-    }
+    protected _config: IaraSyncfusionConfig
   ) {
-    super(_editorContainer, _recognition);
+    super(_editorContainer, _recognition, _config);
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       _editorContainer.documentEditor,
@@ -78,7 +74,10 @@ export class IaraSyncfusionAdapter
     );
 
     if (this._config.replaceToolbar) {
-      this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer);
+      this._toolbarManager = new IaraSyncfusionToolbarManager(
+        _editorContainer,
+        this._config
+      );
       this._toolbarManager.init();
     }
 
