@@ -8,6 +8,7 @@ import {
   RibbonGroupButtonSelection,
   RibbonItemSize,
 } from "@syncfusion/ej2-ribbon";
+import { IaraSyncfusionConfig } from "..";
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
@@ -132,7 +133,8 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"]
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  config: IaraSyncfusionConfig
 ): Ribbon => {
   //To change the font Style of selected content
   const changeFontFamily = (args: { value: string }) => {
@@ -220,43 +222,6 @@ export const toolBarSettings = (
       toggleBtn.classList.remove("e-active");
     }
   }
-  const fontStyle: string[] = [
-    "Algerian",
-    "Arial",
-    "Calibri",
-    "Cambria",
-    "Cambria Math",
-    "Candara",
-    "Courier New",
-    "Georgia",
-    "Impact",
-    "Segoe Print",
-    "Segoe Script",
-    "Segoe UI",
-    "Symbol",
-    "Times New Roman",
-    "Verdana",
-    "Windings",
-  ];
-  const fontSize: string[] = [
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "14",
-    "16",
-    "18",
-    "20",
-    "22",
-    "24",
-    "26",
-    "28",
-    "36",
-    "48",
-    "72",
-    "96",
-  ];
 
   const tabs = [
     {
@@ -373,12 +338,14 @@ export const toolBarSettings = (
                 {
                   type: "ComboBox",
                   comboBoxSettings: {
-                    dataSource: fontStyle,
+                    dataSource: config.font.availableFamilies,
                     label: "Font Style",
                     width: "115px",
                     popupWidth: "150px",
                     index: 3,
-                    value: editor.documentEditor.selection.characterFormat.fontFamily,
+                    value:
+                      editor.documentEditor.selection.characterFormat
+                        .fontFamily,
                     allowFiltering: true,
                     change: function (args: { itemData: { text: string } }) {
                       if (args.itemData) {
@@ -390,15 +357,18 @@ export const toolBarSettings = (
                 {
                   type: "ComboBox",
                   comboBoxSettings: {
-                    dataSource: fontSize,
+                    dataSource: config.font.availableSizes.map(value =>
+                      value.toString()
+                    ),
                     label: "Font Size",
                     popupWidth: "85px",
                     width: "65px",
                     allowFiltering: true,
                     index: 3,
-                    value: editor.documentEditor.selection.characterFormat.fontSize + '',
+                    value:
+                      editor.documentEditor.selection.characterFormat.fontSize +
+                      "",
                     change: function (args: { itemData: { text: string } }) {
-                      console.log(args.itemData);
                       if (args.itemData) {
                         changeFontSize({ value: Number(args.itemData.text) });
                       }
@@ -419,7 +389,11 @@ export const toolBarSettings = (
                         currentValue: { hex: args.currentValue.hex },
                       });
                     },
-                    value: editor.documentEditor.selection.characterFormat.fontColor ? editor.documentEditor.selection.characterFormat.fontColor : `#000`
+                    value: editor.documentEditor.selection.characterFormat
+                      .fontColor
+                      ? editor.documentEditor.selection.characterFormat
+                          .fontColor
+                      : `#000`,
                   },
                 },
                 {
