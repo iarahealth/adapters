@@ -13,16 +13,15 @@ export class IaraEditorInferenceFormatter {
       /^(\s*\u00A0\s*)+$/.test(wordBefore) ||
       /^(\s*\u200c\s*)+$/.test(wordBefore);
 
-    const hasSpace = wordBefore.endsWith(" ") || isNbspOrZwnj;
+    const hasSpaceBefore = wordBefore.endsWith(" ") || isNbspOrZwnj;
 
     const addSpaceBefore =
-      wordBefore.length && !hasSpace && !/^[.,:;?!]/.test(text);
+      wordBefore.length && !hasSpaceBefore && !/^[.,:;?!]/.test(text);
+
+    const hasSpaceAfter = wordAfter.startsWith(" ") || isNbspOrZwnj;
 
     const addSpaceAfter =
-      wordAfter.length &&
-      !wordAfter.startsWith(" ") &&
-      !/^[.,:;?!]/.test(wordAfter) &&
-      isNbspOrZwnj;
+      wordAfter.length && !hasSpaceAfter && !/^[.,:;?!]/.test(wordAfter);
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
