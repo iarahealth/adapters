@@ -1,17 +1,31 @@
-import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
+import { DocumentEditor, ImageFormat } from "@syncfusion/ej2-documenteditor";
 import { IaraSpeechRecognition } from "../speech";
+//braun
+import {
+  PdfBitmap,
+  PdfDocument,
+  PdfPageOrientation,
+  PdfPageSettings,
+  PdfSection,
+  SizeF,
+} from '@syncfusion/ej2-pdf-export';
 
 export enum IaraSyncfusionContentTypes {
   SFDT = "SFDT",
   HTML = "HTML",
   RTF = "RTF",
+  PDF = "PDF",
 }
 
 export class IaraSFDT {
   public html: string | undefined;
   public rtf: string | undefined;
 
-  constructor(public value: string, private _authHeaders: HeadersInit) {}
+  constructor(public value: string, private _authHeaders: HeadersInit) {
+    //braun
+    // let pdfdocument: PdfDocument = new PdfDocument();
+    // let count: number = _editor.pageCount;
+  }
 
   static detectContentType(content: string): IaraSyncfusionContentTypes {
     if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
@@ -106,6 +120,49 @@ export class IaraSFDT {
       }
     ).then(response => response.json());
     return rtf;
+  }
+
+  //braun
+  static toPdf(content: string)
+  {
+    setTimeout(() => {
+      let pdfdocument: PdfDocument = new PdfDocument();
+      let format: ImageFormat = 'image/jpeg' as ImageFormat;
+
+      console.log(content);
+      // Getting pages as image
+      // let image = container.documentEditor.exportAsImage(i, format);
+
+      /* image.onload = function () {
+          let imageHeight = parseInt(
+              image.style.height.toString().replace('px', '')
+          );
+          let imageWidth = parseInt(
+              image.style.width.toString().replace('px', '')
+          );
+          let section: PdfSection = pdfdocument.sections.add() as PdfSection;
+          let settings: PdfPageSettings = new PdfPageSettings(0);
+          if (imageWidth > imageHeight) {
+              settings.orientation = PdfPageOrientation.Landscape;
+          }
+          settings.size = new SizeF(imageWidth, imageHeight);
+          (section as PdfSection).setPageSettings(settings);
+          let page = section.pages.add();
+          let graphics = page.graphics;
+          let imageStr = image.src.replace('data:image/jpeg;base64,', '');
+          let pdfImage = new PdfBitmap(imageStr);
+          graphics.drawImage(pdfImage, 0, 0, imageWidth, imageHeight);
+          loadedPage++;
+          if (loadedPage == count) {
+              // Exporting the document as pdf
+              pdfdocument.save(
+                  (container.documentEditor.documentName === ''
+                      ? 'sample'
+                      : container.documentEditor.documentName) + '.pdf'
+              );
+          }
+      }; */
+    }, 500);
   }
 
   async toHtml(): Promise<string> {
