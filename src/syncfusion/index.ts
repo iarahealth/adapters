@@ -61,7 +61,10 @@ export class IaraSyncfusionAdapter
     this._styleManager = new IaraSyncfusionStyleManager(
       _editorContainer.documentEditor
     );
-    this._toolbarManager = new IaraSyncfusionToolbarManager(_editorContainer, _configurationService);
+    this._toolbarManager = new IaraSyncfusionToolbarManager(
+      _editorContainer,
+      _configurationService
+    );
 
     if (replaceToolbar) this._toolbarManager.init();
 
