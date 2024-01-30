@@ -1,5 +1,5 @@
 import { Editor } from "tinymce";
-import { EditorAdapter } from "../editor";
+import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraEditorInferenceFormatter } from "../editor/formatter";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraTinyMceStyleManager } from "./style";
@@ -10,9 +10,10 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   constructor(
     protected _editorContainer: Editor,
-    protected _recognition: IaraSpeechRecognition
+    protected _recognition: IaraSpeechRecognition,
+    protected _config: IaraEditorConfig
   ) {
-    super(_editorContainer, _recognition);
+    super(_editorContainer, _recognition, _config);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
     this._editorContainer.on("destroyed", this._onEditorDestroyed.bind(this));
@@ -72,5 +73,9 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
 
   clearReport(): void {
     throw new Error("Método não implementado.");
+  }
+
+  print(): void {
+    throw new Error("Method not implemented.");
   }
 }

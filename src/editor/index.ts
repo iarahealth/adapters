@@ -4,6 +4,17 @@ import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
+export interface IaraEditorConfig {
+  darkMode: boolean;
+  font: {
+    availableFamilies: string[];
+    availableSizes: number[];
+    family: string;
+    size: number;
+  };
+  saveReport: boolean;
+}
+
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
@@ -45,14 +56,14 @@ export abstract class EditorAdapter {
   constructor(
     protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
-    protected _shouldSaveReport: boolean = true
+    protected _config: IaraEditorConfig
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
-    if (this._shouldSaveReport && !this._recognition.report["_key"])
+    if (this._config.saveReport && !this._recognition.report["_key"])
       this.beginReport();
   }
 
@@ -61,14 +72,15 @@ export abstract class EditorAdapter {
   abstract copyReport(): Promise<void>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
   abstract getEditorContent(): Promise<[string, string, string, string?]>;
+  abstract print(): void;
 
   beginReport(): string | void {
-    if (!this._shouldSaveReport) return;
+    if (!this._config.saveReport) return;
     return this._recognition.beginReport({ richText: "", text: "" });
   }
 
   async finishReport(): Promise<void> {
-    if (!this._shouldSaveReport) return;
+    if (!this._config.saveReport) return;
     await this.copyReport();
     this.clearReport();
     this._recognition.finishReport();
@@ -96,6 +108,9 @@ export abstract class EditorAdapter {
     });
     this._recognition.commands.add("iara maiúsculo", () => {
       this._styleManager.toggleUppercase();
+    });
+    this._recognition.commands.add("iara imprimir", () => {
+      this.print();
     });
   }
 
