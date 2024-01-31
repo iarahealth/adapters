@@ -66,7 +66,6 @@ export class IaraSyncfusionAdapter
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this)
     );
-    this._shortcutsManager.init();
 
     this._styleManager = new IaraSyncfusionStyleManager(
       _editorContainer.documentEditor,
@@ -279,7 +278,10 @@ export class IaraSyncfusionAdapter
         content: string;
       };
       this.undo();
-      this.insertTemplate(item.content);
+
+      if (item.category === "Template") this.insertTemplate(item.content);
+      else this.insertText(item.content);
+
       dialogObj.hide();
     });
   }

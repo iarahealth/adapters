@@ -15,21 +15,12 @@ export class IaraSyncfusionShortcutsManager {
       listViewInstance: ListView,
       dialogObj: Dialog
     ) => void
-  ) {}
-
-  init(): void {
+  ) {
     this._editor.keyDown = this.onKeyDown.bind(this);
   }
-  onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
-    const key: string = args.event.key;
-    const isShiftKey: boolean =
-      args.event.shiftKey || args.event.metaKey
-        ? true
-        : key === "Shift"
-        ? true
-        : false;
 
-    if (isShiftKey && key === "@") {
+  onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
+    if (args.event.key === "@") {
       const templates = [
         ...Object.values(this._recognition.richTranscriptTemplates.templates),
       ];
