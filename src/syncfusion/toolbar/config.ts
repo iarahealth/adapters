@@ -9,12 +9,14 @@ import {
   RibbonItemSize,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
+import { IaraSFDT } from "../content";
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
 const toolbarButtonClick = (
   arg: string,
-  editor: DocumentEditorContainer
+  editor: DocumentEditorContainer,
+  config?: IaraSyncfusionConfig
 ): void => {
   switch (arg) {
     case "undo":
@@ -120,6 +122,24 @@ const toolbarButtonClick = (
       break;
     case "Double":
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
+      break;
+    case "ExporToPDF":
+      //braun
+      // console.log(config?.darkMode, 'DARKMODE');
+      // if (config?.darkMode) {
+      //   editor.setDefaultCharacterFormat({ fontColor: '#000' });
+      //   editor.documentEditor.selection.characterFormat.fontColor = '#000';
+      //   editor.documentEditor.characterFormat.fontColor = '#000';
+      // }
+
+      setTimeout(() => {
+        IaraSFDT.toPdf(editor, config);
+      }, 100);
+
+      setTimeout(() => {
+        // if (config?.darkMode) editor.setDefaultCharacterFormat({ fontColor: '#fff' });
+      }, 200);
+
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -617,6 +637,44 @@ export const toolBarSettings = (
             },
           ],
         },
+
+
+        //braun
+        {
+          id: "export_group",
+          orientation: "Row",
+          header: "Export to PDF",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-export-pdf",
+                    content: "Export to PDF",
+                    clicked: function () {
+                      toolbarButtonClick("ExporToPDF", editor, config);
+                    },
+
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Export to PDF"
+                      ],
+                  },
+                },
+              ],
+            },
+
+          ],
+        },
+
+
+
+
       ],
     },
   ];
