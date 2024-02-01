@@ -124,22 +124,9 @@ const toolbarButtonClick = (
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
       break;
     case "ExporToPDF":
-      //braun
-      // console.log(config?.darkMode, 'DARKMODE');
-      // if (config?.darkMode) {
-      //   editor.setDefaultCharacterFormat({ fontColor: '#000' });
-      //   editor.documentEditor.selection.characterFormat.fontColor = '#000';
-      //   editor.documentEditor.characterFormat.fontColor = '#000';
-      // }
-
       setTimeout(() => {
         IaraSFDT.toPdf(editor, config);
       }, 100);
-
-      setTimeout(() => {
-        // if (config?.darkMode) editor.setDefaultCharacterFormat({ fontColor: '#fff' });
-      }, 200);
-
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -637,9 +624,6 @@ export const toolBarSettings = (
             },
           ],
         },
-
-
-        //braun
         {
           id: "export_group",
           orientation: "Row",
@@ -657,7 +641,6 @@ export const toolBarSettings = (
                     clicked: function () {
                       toolbarButtonClick("ExporToPDF", editor, config);
                     },
-
                   },
                   ribbonTooltipSettings: {
                     title:
@@ -668,13 +651,8 @@ export const toolBarSettings = (
                 },
               ],
             },
-
           ],
         },
-
-
-
-
       ],
     },
   ];

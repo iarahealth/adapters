@@ -1,6 +1,5 @@
 import { DocumentEditor, ImageFormat } from "@syncfusion/ej2-documenteditor";
 import { IaraSpeechRecognition } from "../speech";
-//braun
 import {
   PdfBitmap,
   PdfDocument,
@@ -9,7 +8,6 @@ import {
   PdfSection,
   SizeF,
 } from '@syncfusion/ej2-pdf-export';
-import { EditorAdapter } from "../editor";
 import { IaraSyncfusionConfig } from ".";
 
 export enum IaraSyncfusionContentTypes {
@@ -24,11 +22,7 @@ export class IaraSFDT {
   public rtf: string | undefined;
   public pdf: string | undefined;
 
-  constructor(public value: string, private _authHeaders: HeadersInit) {
-    //braun
-    // let pdfdocument: PdfDocument = new PdfDocument();
-    // let count: number = _editor.pageCount;
-  }
+  constructor(public value: string, private _authHeaders: HeadersInit) {}
 
   static detectContentType(content: string): IaraSyncfusionContentTypes {
     if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
@@ -125,7 +119,6 @@ export class IaraSFDT {
     return rtf;
   }
 
-  //braun
   static toPdf(content: any, config?: IaraSyncfusionConfig)
   {
     if (config?.darkMode) content.setDefaultCharacterFormat({ fontColor: '#000' });
@@ -133,9 +126,10 @@ export class IaraSFDT {
     let pageTimer = 500;
     let pdfdocument: PdfDocument = new PdfDocument();
     let count: number = content.documentEditor.pageCount;
+    let loadedPage = 0;
+
     content.documentEditor.documentEditorSettings.printDevicePixelRatio = 2;
 
-    let loadedPage = 0;
     for (let i = 1; i <= count; i++)
     {
       setTimeout(() => {
@@ -189,16 +183,6 @@ export class IaraSFDT {
   async toRtf(): Promise<string> {
     return this.rtf ? this.rtf : IaraSFDT.toRtf(this.value, this._authHeaders);
   }
-
-
-
-
-  // async toPdf()
-  // {
-  //   //braun
-  //   IaraSFDT.toPdf();
-  //   console.log(this.html);
-  // }
 
   toString(): string {
     return this.value;
