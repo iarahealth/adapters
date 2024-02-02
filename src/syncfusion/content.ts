@@ -127,7 +127,9 @@ export class IaraSFDT {
     let pdfdocument: PdfDocument = new PdfDocument();
     let count: number = content.documentEditor.pageCount;
     let loadedPage = 0;
-
+    content.documentEditor.selection.select("0;0;0", "0;0;200");
+    let docTitle = content.documentEditor.selection.text;
+    let pdfFileName = 'iara-' + (new Date()).toISOString().split('T')[0] + '--' + docTitle;
     content.documentEditor.documentEditorSettings.printDevicePixelRatio = 2;
 
     for (let i = 1; i <= count; i++)
@@ -160,7 +162,7 @@ export class IaraSFDT {
                   // Exporting the document as pdf
                   pdfdocument.save(
                       (content.documentEditor.documentName === ''
-                          ? 'sample'
+                          ? pdfFileName
                           : content.documentEditor.documentName) + '.pdf'
                   );
               }
@@ -168,10 +170,13 @@ export class IaraSFDT {
       }, pageTimer);
     }
 
-    setTimeout(() => {
-      content.documentEditor.focusIn();
-      content.setDefaultCharacterFormat({ fontColor: '#fff' });
-    }, ((count * pageTimer) + 200));
+    if (config?.darkMode)
+    {
+      setTimeout(() => {
+          content.documentEditor.focusIn();
+          content.setDefaultCharacterFormat({ fontColor: '#fff' });
+      }, ((count * pageTimer) + 200));
+    }
   }
 
   async toHtml(): Promise<string> {

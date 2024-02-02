@@ -123,10 +123,8 @@ const toolbarButtonClick = (
     case "Double":
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
       break;
-    case "ExporToPDF":
-      setTimeout(() => {
-        IaraSFDT.toPdf(editor, config);
-      }, 100);
+    case "ExportToPDF":
+      IaraSFDT.toPdf(editor, config);
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -639,7 +637,7 @@ export const toolBarSettings = (
                     iconCss: "e-icons e-export-pdf",
                     content: "Export to PDF",
                     clicked: function () {
-                      toolbarButtonClick("ExporToPDF", editor, config);
+                      toolbarButtonClick("ExportToPDF", editor, config);
                     },
                   },
                   ribbonTooltipSettings: {
