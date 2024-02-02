@@ -32,9 +32,7 @@ export class IaraSyncfusionAdapter
   private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
   private _initialUndoStackSize = 0;
-  private _resetSelection = false;
   private _selectionManager?: IaraSyncfusionSelectionManager;
-  private _shortcutsManager: IaraSyncfusionShortcutsManager;
   private _toolbarManager?: IaraSyncfusionToolbarManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
@@ -61,7 +59,7 @@ export class IaraSyncfusionAdapter
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
-    this._shortcutsManager = new IaraSyncfusionShortcutsManager(
+    new IaraSyncfusionShortcutsManager(
       _editorContainer.documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this)
