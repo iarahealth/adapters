@@ -75,7 +75,7 @@ export class IaraSFDT {
     content: string,
     authHeaders: HeadersInit
   ): Promise<string> {
-    const { html } = await fetch(
+    let { html } = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
       {
         method: "POST",
@@ -86,6 +86,7 @@ export class IaraSFDT {
         body: content,
       }
     ).then(response => response.json());
+    html = html.replace(`<?xml version="1.0" encoding="utf-8"?>`, "");
 
     return html;
   }
