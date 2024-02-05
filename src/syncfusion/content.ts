@@ -126,9 +126,15 @@ export class IaraSFDT {
     let pdfdocument: PdfDocument = new PdfDocument();
     let count: number = content.documentEditor.pageCount;
     let loadedPage = 0;
-    content.documentEditor.selection.select("0;0;0", "0;0;200");
-    let docTitle = content.documentEditor.selection.text ? content.documentEditor.selection.text : 'sem-titulo';
-    let pdfFileName = 'iara-' + (new Date()).toISOString().split('T')[0] + '--' + docTitle;
+
+    let currentDate = new Date();
+    let timeZone = currentDate.getTimezoneOffset() / -60;
+    currentDate.setHours(currentDate.getHours() + timeZone);
+    let dateString = currentDate.toISOString().split('T');
+    let timeArray = dateString[1].split(':');
+    let timeString = timeArray[0] + '-' + timeArray[1];
+    let pdfFileName = 'iara-' + dateString[0] + '--' + timeString;
+
     content.documentEditor.documentEditorSettings.printDevicePixelRatio = 2;
 
     for (let i = 1; i <= count; i++)
