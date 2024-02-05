@@ -152,12 +152,13 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
+      if (this._editorContainer.documentEditor.selection.text.length) {
+        this._editorContainer.documentEditor.editor.delete();
+      }
       this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
 
-      if (this._editorContainer.documentEditor.selection.text.length)
-        this._editorContainer.documentEditor.editor.delete();
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
       const undoStackSize = this.getUndoStackSize();
@@ -203,7 +204,8 @@ export class IaraSyncfusionAdapter
     if (!this._selectionManager) return;
 
     const wordBefore = this._selectionManager.getWordBeforeSelection();
-    const wordAfter = this._selectionManager.getWordAfterSelection();
+    const isLineStart = /[\n\r\v]$/.test(wordBefore) || wordBefore.length === 0;
+    const wordAfter = this._selectionManager.getWordAfterSelection(isLineStart);
     this._selectionManager.resetSelection();
 
     const text = this._inferenceFormatter.format(
