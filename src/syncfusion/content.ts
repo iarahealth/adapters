@@ -14,7 +14,6 @@ export enum IaraSyncfusionContentTypes {
   SFDT = "SFDT",
   HTML = "HTML",
   RTF = "RTF",
-  PDF = "PDF",
 }
 
 export class IaraSFDT {
