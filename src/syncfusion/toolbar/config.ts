@@ -9,12 +9,14 @@ import {
   RibbonItemSize,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
+import { IaraSFDT } from "../content";
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
 const toolbarButtonClick = (
   arg: string,
-  editor: DocumentEditorContainer
+  editor: DocumentEditorContainer,
+  config?: IaraSyncfusionConfig
 ): void => {
   switch (arg) {
     case "undo":
@@ -120,6 +122,9 @@ const toolbarButtonClick = (
       break;
     case "Double":
       editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
+      break;
+    case "ExportToPDF":
+      IaraSFDT.toPdf(editor, config);
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -611,6 +616,32 @@ export const toolBarSettings = (
                         },
                       },
                     ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "export_group",
+          orientation: "Row",
+          header: "Export to PDF",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-export-pdf",
+                    content: "Export to PDF",
+                    clicked: function () {
+                      toolbarButtonClick("ExportToPDF", editor, config);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: "Exportar para PDF"
                   },
                 },
               ],

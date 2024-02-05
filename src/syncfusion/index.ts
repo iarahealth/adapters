@@ -289,7 +289,7 @@ export class IaraSyncfusionAdapter
   print(): void {
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
     this._editorContainer.documentEditor.print();
-    if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
+    if (this._config.darkMode) this._styleManager.setEditorFontColor("#fff");
   }
 
   private _setScrollClickHandler() {
