@@ -641,10 +641,7 @@ export const toolBarSettings = (
                     },
                   },
                   ribbonTooltipSettings: {
-                    title:
-                      editorContainerLocale.documenteditorcontainer[
-                        "Export to PDF"
-                      ],
+                    title: "Exportar para PDF"
                   },
                 },
               ],

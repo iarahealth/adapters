@@ -128,7 +128,7 @@ export class IaraSFDT {
     let count: number = content.documentEditor.pageCount;
     let loadedPage = 0;
     content.documentEditor.selection.select("0;0;0", "0;0;200");
-    let docTitle = content.documentEditor.selection.text;
+    let docTitle = content.documentEditor.selection.text ? content.documentEditor.selection.text : 'sem-titulo';
     let pdfFileName = 'iara-' + (new Date()).toISOString().split('T')[0] + '--' + docTitle;
     content.documentEditor.documentEditorSettings.printDevicePixelRatio = 2;
 
