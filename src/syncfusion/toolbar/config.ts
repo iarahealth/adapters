@@ -179,7 +179,7 @@ export const toolBarSettings = (
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
-      getEditorStyleConfig(ribbonConfig, editor);
+      getReportStyleConfig(ribbonConfig, editor);
 
       enableDisableFontOptions(characterFormat);
     }
@@ -188,7 +188,7 @@ export const toolBarSettings = (
   return ribbonConfig;
 };
 
-const getEditorStyleConfig = (
+const getReportStyleConfig = (
   ribbon: Ribbon,
   editor: DocumentEditorContainer
 ) => {
