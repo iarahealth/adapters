@@ -7,17 +7,23 @@ import {
   RibbonTabModel,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { RibbonFontMethods } from "./config";
+import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
   toolbarButtonClick: (arg: string, editor: DocumentEditorContainer) => void,
   editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig,
-  ribbonFontConfig: (editor: DocumentEditorContainer) => RibbonFontMethods
+  ribbonMethods: {
+    ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
+    ribbonParagraphMethods: (
+      editor: DocumentEditorContainer
+    ) => RibbonParagraphMethods;
+  }
 ): RibbonTabModel[] => {
   const { changeFontColor, changeFontSize, changeFontFamily } =
-    ribbonFontConfig(editor);
+    ribbonMethods.ribbonFontMethods(editor);
+  const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
   const tabs = [
     {
       groups: [
@@ -153,6 +159,7 @@ export const tabsConfig = (
                 },
                 {
                   type: "ComboBox",
+                  id: "fontSizeSelect",
                   comboBoxSettings: {
                     dataSource: config.font.availableSizes.map(value =>
                       value.toString()
@@ -179,6 +186,7 @@ export const tabsConfig = (
               items: [
                 {
                   type: "ColorPicker",
+                  id: "fontColorSelect",
                   allowedSizes: RibbonItemSize.Small,
                   displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
                   colorPickerSettings: {
@@ -329,6 +337,27 @@ export const tabsConfig = (
                       editorContainerLocale.documenteditorcontainer[
                         "Increase indent"
                       ],
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  id: "lineSpacingSelect",
+                  comboBoxSettings: {
+                    dataSource: ["1", "1.15", "1.5", "2"],
+                    label: "Line Spacing",
+                    popupWidth: "85px",
+                    width: "70px",
+                    value: editor.documentEditor.selection.paragraphFormat
+                      .lineSpacing
+                      ? editor.documentEditor.selection.paragraphFormat
+                          .lineSpacing + ""
+                      : editor.documentEditor.documentHelper.paragraphFormat
+                          .lineSpacing + "",
+                    change: function (args: { itemData: { text: number } }) {
+                      if (args.itemData) {
+                        changeLineSpacing({ value: args.itemData.text });
+                      }
+                    },
                   },
                 },
                 {

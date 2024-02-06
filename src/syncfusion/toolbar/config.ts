@@ -10,6 +10,7 @@ import {
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
 import { tabsConfig } from "./ribbonTabs";
+import { IaraSFDT } from "../content";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -18,19 +19,27 @@ export interface RibbonFontMethods {
     },
     ribbon?: Ribbon
   ) => void;
-  changeFontSize: (args: { value: number }) => void;
-  changeFontColor: (args: {
-    currentValue: {
-      hex: string;
-    };
-  }) => void;
+  changeFontSize: (args: { value: number }, ribbon?: Ribbon) => void;
+  changeFontColor: (
+    args: {
+      currentValue: {
+        hex: string;
+      };
+    },
+    ribbon?: Ribbon
+  ) => void;
+}
+
+export interface RibbonParagraphMethods {
+  changeLineSpacing: (args: { value: number }, ribbon?: Ribbon) => void;
 }
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
 const toolbarButtonClick = (
   arg: string,
-  editor: DocumentEditorContainer
+  editor: DocumentEditorContainer,
+  config?: IaraSyncfusionConfig
 ): void => {
   switch (arg) {
     case "undo":
@@ -125,17 +134,8 @@ const toolbarButtonClick = (
       //To clear list
       editor.documentEditor.editor.clearList();
       break;
-    case "Single":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
-      break;
-    case "1.15":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
-      break;
-    case "1.5":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
-      break;
-    case "Double":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
+    case "ExportToPDF":
+      IaraSFDT.toPdf(editor, config);
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -157,13 +157,18 @@ export const toolBarSettings = (
       onSelectionChange();
     }, 20);
   };
+
+  const ribbonMethods = {
+    ribbonFontMethods: () => ribbonFontMethods(editor),
+    ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
+  };
   const ribbonConfig: Ribbon = new Ribbon({
     tabs: tabsConfig(
       editor,
       toolbarButtonClick,
       editorContainerLocale,
       config,
-      () => ribbonFontMethods(editor)
+      ribbonMethods
     ),
     activeLayout: "Simplified",
     hideLayoutSwitcher: true,
@@ -174,7 +179,7 @@ export const toolBarSettings = (
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
-      getEditorStyleConfig(characterFormat, ribbonConfig, editor);
+      getEditorStyleConfig(ribbonConfig, editor);
 
       enableDisableFontOptions(characterFormat);
     }
@@ -184,18 +189,31 @@ export const toolBarSettings = (
 };
 
 const getEditorStyleConfig = (
-  characterFormat: SelectionCharacterFormat,
   ribbon: Ribbon,
   editor: DocumentEditorContainer
 ) => {
+  const paragraphFormat = editor.documentEditor.selection.paragraphFormat;
+  const characterFormat = editor.documentEditor.selection.characterFormat;
+
   ribbonFontMethods(editor).changeFontFamily(
     { value: characterFormat.fontFamily },
     ribbon
   );
-  ribbonFontMethods(editor).changeFontSize({ value: characterFormat.fontSize });
-  ribbonFontMethods(editor).changeFontColor({
-    currentValue: { hex: characterFormat.fontColor },
-  });
+  ribbonFontMethods(editor).changeFontSize(
+    { value: characterFormat.fontSize },
+    ribbon
+  );
+  ribbonFontMethods(editor).changeFontColor(
+    {
+      currentValue: { hex: characterFormat.fontColor },
+    },
+    ribbon
+  );
+  ribbonParagraphMethods(editor).changeLineSpacing(
+    { value: paragraphFormat.lineSpacing },
+    ribbon
+  );
+  console.log(paragraphFormat, "FORMATA");
 };
 
 const ribbonFontMethods = (
@@ -215,17 +233,44 @@ const ribbonFontMethods = (
     editor.documentEditor.focusIn();
   };
   //To Change the font Size of selected content
-  const changeFontSize = (args: { value: number }) => {
+  const changeFontSize = (args: { value: number }, ribbon?: Ribbon) => {
     editor.documentEditor.selection.characterFormat.fontSize = args.value;
+    if (ribbon) {
+      ribbon.updateItem({
+        id: "fontSizeSelect",
+        comboBoxSettings: {
+          value: String(args.value),
+        },
+      });
+    }
     editor.documentEditor.focusIn();
   };
   //To Change the font Color of selected content
   const changeFontColor = (args: { currentValue: { hex: string } }) => {
     editor.documentEditor.selection.characterFormat.fontColor =
       args.currentValue.hex;
+
     editor.documentEditor.focusIn();
   };
   return { changeFontFamily, changeFontSize, changeFontColor };
+};
+
+const ribbonParagraphMethods = (
+  editor: DocumentEditorContainer
+): RibbonParagraphMethods => {
+  const changeLineSpacing = (args: { value: number }, ribbon?: Ribbon) => {
+    editor.documentEditor.selection.paragraphFormat.lineSpacing = args.value;
+    if (ribbon) {
+      ribbon.updateItem({
+        id: "lineSpacingSelect",
+        comboBoxSettings: {
+          value: String(args.value),
+        },
+      });
+    }
+    editor.documentEditor.focusIn();
+  };
+  return { changeLineSpacing };
 };
 
 const ribbonParagraphToggleConfigs = (editor: DocumentEditorContainer) => {
