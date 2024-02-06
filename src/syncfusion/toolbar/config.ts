@@ -109,8 +109,6 @@ const toolbarButtonClick = (
       //To clear list
       editor.documentEditor.editor.clearList();
       break;
-
-    //braun -> comandos do linespacing
     // case "Single":
     //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
     //   break;
@@ -123,11 +121,6 @@ const toolbarButtonClick = (
     // case "Double":
     //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
     //   break;
-
-
-    
-
-
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
@@ -166,17 +159,10 @@ export const toolBarSettings = (
     }, 20);
   };
 
-  //braun
   const changeLineSpacing = (args: { value: number }) => {
-    // console.log(editor.documentEditor.documentHelper.paragraphFormat.lineSpacing);
-    // console.log(editor.documentEditor.selection.paragraphFormat.lineSpacing);
-    console.log(args.value);
-
     editor.documentEditor.selection.paragraphFormat.lineSpacing = args.value;
     editor.documentEditor.focusIn();
   };
-
-
 
   //Selection change to retrieve formatting
   const onSelectionChange = () => {
@@ -553,24 +539,21 @@ export const toolBarSettings = (
                       ],
                   },
                 },
-
-
-
-                //braun
                 {
                   type: "ComboBox",
                   comboBoxSettings: {
                     dataSource: [
-                      1,
-                      1.15,
-                      1.5,
-                      2
+                      '1',
+                      '1.15',
+                      '1.5',
+                      '2'
                     ],
                     label: "Line Spacing",
                     popupWidth: "85px",
                     width: "70px",
-                    value: editor.documentEditor.documentHelper.paragraphFormat.lineSpacing,
-                    allowFiltering: false,
+                    value: editor.documentEditor.selection.paragraphFormat.lineSpacing
+                      ? editor.documentEditor.selection.paragraphFormat.lineSpacing + ''
+                      : editor.documentEditor.documentHelper.paragraphFormat.lineSpacing + '',
                     change: function (args: { itemData: { text: number } }) {
                       if (args.itemData) {
                         changeLineSpacing({ value: args.itemData.text });
@@ -578,11 +561,6 @@ export const toolBarSettings = (
                     },
                   },
                 },
-
-
-
-
-
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
