@@ -111,21 +111,9 @@ const toolbarButtonClick = (
       //To clear list
       editor.documentEditor.editor.clearList();
       break;
-    case "Single":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
-      break;
-    case "1.15":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
-      break;
-    case "1.5":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
-      break;
-    case "Double":
-      editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
-      break;
     case "ExportToPDF":
-      IaraSFDT.toPdf(editor, config);
-      break;
+        IaraSFDT.toPdf(editor, config);
+        break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
@@ -163,6 +151,12 @@ export const toolBarSettings = (
       onSelectionChange();
     }, 20);
   };
+
+  const changeLineSpacing = (args: { value: number }) => {
+    editor.documentEditor.selection.paragraphFormat.lineSpacing = args.value;
+    editor.documentEditor.focusIn();
+  };
+
   //Selection change to retrieve formatting
   const onSelectionChange = () => {
     if (editor.documentEditor.selection) {
@@ -536,6 +530,28 @@ export const toolBarSettings = (
                       editorContainerLocale.documenteditorcontainer[
                         "Increase indent"
                       ],
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  comboBoxSettings: {
+                    dataSource: [
+                      '1',
+                      '1.15',
+                      '1.5',
+                      '2'
+                    ],
+                    label: "Line Spacing",
+                    popupWidth: "85px",
+                    width: "70px",
+                    value: editor.documentEditor.selection.paragraphFormat.lineSpacing
+                      ? editor.documentEditor.selection.paragraphFormat.lineSpacing + ''
+                      : editor.documentEditor.documentHelper.paragraphFormat.lineSpacing + '',
+                    change: function (args: { itemData: { text: number } }) {
+                      if (args.itemData) {
+                        changeLineSpacing({ value: args.itemData.text });
+                      }
+                    },
                   },
                 },
                 {
