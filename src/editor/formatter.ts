@@ -6,34 +6,21 @@ export class IaraEditorInferenceFormatter {
     wordAfter: string,
     wordBefore: string
   ): string {
-    //nbsp and zwnj can be entered as whitespace
-    //nbsp is a non-breaking space \u00A0.
-    //zwnj is a zero-width non-joiner \u200c.
-    const isNbspOrZwnj =
-      /^(\s*\u00A0\s*)+$/.test(wordBefore) ||
-      /^(\s*\u200c\s*)+$/.test(wordBefore);
-
-    const hasSpaceBefore = wordBefore.endsWith(" ") || isNbspOrZwnj;
-
     const addSpaceBefore =
-      wordBefore.length && !hasSpaceBefore && !/^[.,:;?!]/.test(text);
-
-    const hasSpaceAfter = wordAfter.startsWith(" ") || isNbspOrZwnj;
+      wordBefore.length &&
+      !/[\s\n\r\v]$/.test(wordBefore) &&
+      !/^[.,:;?!]/.test(text);
 
     const addSpaceAfter =
-      wordAfter.length && !hasSpaceAfter && !/^[.,:;?!]/.test(wordAfter);
+      wordAfter.length &&
+      !wordAfter.startsWith(" ") &&
+      !/^[.,:;?!]/.test(wordAfter);
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
 
   public _capitalize(text: string, wordBefore: string): string {
-    const isNbspOrZwnj =
-      /^(\s*\u00A0\s*)+$/.test(wordBefore) ||
-      /^(\s*\u200c\s*)+$/.test(wordBefore);
-
-    const capitalize =
-      !wordBefore.length || isNbspOrZwnj || /[.:;?!]$/.test(wordBefore);
-
+    const capitalize = !wordBefore.length || /[.:;?!\n\r\v]$/.test(wordBefore);
     return capitalize
       ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
       : text;

@@ -48,40 +48,64 @@ export class IaraSyncfusionSelectionManager {
     };
   }
 
-  public getWordAfterSelection(): string {
+  public getWordAfterSelection(isLineStart = false): string {
     this._editor.selection.extendToWordEnd();
-    const wordAfter = this._editor.selection.text.trimEnd();
+    //nbsp is a non-breaking space \u00A0.
+    //zwnj is a zero-width non-joiner \u200c.
+    const isNbspOrZwnj =
+      /^\u00A0/.test(this._editor.selection.text) ||
+      /^\u200c/.test(this._editor.selection.text);
+
+    if (isLineStart || isNbspOrZwnj) {
+      //at line start extendsToWordEnd may return /r instead of the word
+      this._editor.selection.extendToWordEnd();
+    }
+    const wordAfter = this._editor.selection.text;
+
+    this.resetSelection(false);
     return wordAfter;
   }
 
   public getWordBeforeSelection(): string {
     this._editor.selection.extendToWordStart();
-    const wordBefore = this._editor.selection.text.trimStart();
+    //nbsp is a non-breaking space \u00A0.
+    //zwnj is a zero-width non-joiner \u200c.
+    const isNbspOrZwnj =
+      /^\u00A0/.test(this._editor.selection.text) ||
+      /^\u200c/.test(this._editor.selection.text);
+
+    //we want to ignore nbsp or zwnj as they are not rendered
+    if (isNbspOrZwnj) this._editor.selection.extendToWordStart();
+
+    const wordBefore = this._editor.selection.text;
+
+    this.resetSelection(false);
     return wordBefore;
   }
 
-  public resetSelection() {
+  public resetSelection(resetStyles = true): void {
     this._editor.selection.select(
       this._initialSelectionData.startOffset,
       this._initialSelectionData.endOffset
     );
+    if (resetStyles) {
+      const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
+        "allCaps",
+        "baselineAlignment",
+        "bold",
+        "fontColor",
+        "fontFamily",
+        "fontSize",
+        "highlightColor",
+        "italic",
+        "strikethrough",
+        "underline",
+      ];
 
-    const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
-      "allCaps",
-      "baselineAlignment",
-      "bold",
-      "fontColor",
-      "fontFamily",
-      "fontSize",
-      "highlightColor",
-      "italic",
-      "strikethrough",
-      "underline",
-    ];
-
-    charFormatProps.forEach(prop => {
-      (this._editor.selection.characterFormat as any)[prop] =
-        this._initialSelectionData.characterFormat[prop];
-    });
+      charFormatProps.forEach(prop => {
+        (this._editor.selection.characterFormat as any)[prop] =
+          this._initialSelectionData.characterFormat[prop];
+      });
+    }
   }
 }
