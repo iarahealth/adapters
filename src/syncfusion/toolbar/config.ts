@@ -9,7 +9,6 @@ import {
   RibbonItemSize,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { IaraSFDT } from "../content";
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
