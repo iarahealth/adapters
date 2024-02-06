@@ -9,6 +9,7 @@ import {
   RibbonItemSize,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
+import { IaraSFDT } from "../content";
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
@@ -110,6 +111,9 @@ const toolbarButtonClick = (
       //To clear list
       editor.documentEditor.editor.clearList();
       break;
+    case "ExportToPDF":
+        IaraSFDT.toPdf(editor, config);
+        break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
