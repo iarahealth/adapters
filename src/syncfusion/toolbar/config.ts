@@ -109,18 +109,6 @@ const toolbarButtonClick = (
       //To clear list
       editor.documentEditor.editor.clearList();
       break;
-    // case "Single":
-    //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 1;
-    //   break;
-    // case "1.15":
-    //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.15;
-    //   break;
-    // case "1.5":
-    //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 1.5;
-    //   break;
-    // case "Double":
-    //   editor.documentEditor.selection.paragraphFormat.lineSpacing = 2;
-    //   break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
