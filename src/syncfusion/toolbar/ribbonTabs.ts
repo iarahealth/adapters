@@ -204,6 +204,7 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
+                  id: "bold",
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     content: "Bold",
@@ -223,6 +224,7 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
+                  id: "italic",
                   buttonSettings: {
                     isToggle: true,
                     content: "Italic",
@@ -241,6 +243,7 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
+                  id: "underline",
                   buttonSettings: {
                     isToggle: true,
                     content: "Underline",
@@ -259,6 +262,7 @@ export const tabsConfig = (
                 {
                   allowedSizes: RibbonItemSize.Small,
                   type: "Button",
+                  id: "strikethrough",
                   buttonSettings: {
                     iconCss: "e-icons e-strikethrough",
                     content: "Strikethrough",

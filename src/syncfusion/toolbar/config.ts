@@ -213,7 +213,6 @@ const getReportStyleConfig = (
     { value: paragraphFormat.lineSpacing },
     ribbon
   );
-  console.log(paragraphFormat, "FORMATA");
 };
 
 const ribbonFontMethods = (
@@ -312,13 +311,7 @@ const enableDisableFontOptions = (
     characterformat.strikethrough,
   ];
 
-  const toggleBtnId = [
-    "ribbon_tab0_group11_collection15_item16",
-    "ribbon_tab0_group11_collection15_item17",
-    "ribbon_tab0_group11_collection15_item18",
-    "ribbon_tab0_group11_collection15_item19",
-    "ribbon_tab0_group11_collection15_item20",
-  ];
+  const toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
 
   for (let i = 0; i < properties.length; i++) {
     changeActiveState(properties[i], toggleBtnId[i]);
