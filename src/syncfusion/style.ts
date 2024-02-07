@@ -40,6 +40,11 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     css.setAttribute("id", "dark-theme-css");
     css.setAttribute("href", FILE);
     document.getElementsByTagName("head")[0].appendChild(css);
+
+    const styleNode = document.createElement("style");
+    document.getElementsByTagName("head")[0].appendChild(styleNode);
+    styleNode.sheet?.insertRule(".e-de-blink-cursor { border-left: 1px solid #fff !important; }");
+    styleNode.sheet?.insertRule(".e-de-status-bar span { color: #fff !important; }");
   }
 
   toggleBold(): void {
