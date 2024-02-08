@@ -31,6 +31,27 @@ export const tabsConfig = (
           collections: [
             {
               items: [
+
+              //braun
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Open",
+                    isToggle: true,
+                    iconCss: "e-icons e-folder-open",
+                    clicked: function () {
+                      toolbarButtonClick("open", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Open"
+                      ],
+                  },
+                },
+
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -67,6 +88,56 @@ export const tabsConfig = (
                       ],
                   },
                 },
+
+              ],
+            },
+            {
+              items: [
+
+
+
+
+                //braun
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Image",
+                    // isToggle: true,
+                    iconCss: "e-icons e-image",
+                    clicked: function () {
+                      toolbarButtonClick("image", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Image"
+                      ],
+                  },
+                },
+
+                //braun
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Table",
+                    // isToggle: true,
+                    iconCss: "e-icons e-table",
+                    clicked: function () {
+                      toolbarButtonClick("table", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Table"
+                      ],
+                  },
+                },
+
+
               ],
             },
           ],
@@ -364,6 +435,49 @@ export const tabsConfig = (
                     },
                   },
                 },
+
+                //braun -> 2 novos botoes
+
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-unordered-3",
+                    content: "Bullets",
+                    clicked: function () {
+                      toolbarButtonClick("Bullets", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Bullets"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-ordered",
+                    content: "Numbering",
+                    clicked: function () {
+                      toolbarButtonClick("Numbering", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Numbering"
+                      ],
+                  },
+                },
+
+
+
+
+
+
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
