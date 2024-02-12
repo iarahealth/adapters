@@ -78,6 +78,10 @@ export class IaraSyncfusionAdapter
       this._toolbarManager.init();
     }
 
+    this._editorContainer.documentEditorSettings.formFieldSettings = {
+      formFillingMode: "Inline",
+    };
+
     DocumentEditor.Inject(Print);
     this._editorContainer.documentEditor.enablePrint = true;
 

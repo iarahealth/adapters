@@ -149,7 +149,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
@@ -174,8 +174,27 @@ export const toolBarSettings = (
     hideLayoutSwitcher: true,
   });
 
+  const handleFieldSelection = (editorContainer: DocumentEditorContainer) => {
+    if (
+      editorContainer.documentEditor.selection.isInField &&
+      !editorContainer.documentEditor.editor.documentHelper.isDocumentProtected
+    ) {
+      editorContainer.documentEditor.editor.enforceProtection(
+        "",
+        "FormFieldsOnly"
+      );
+    } else if (
+      !editorContainer.documentEditor.selection.isInField &&
+      editorContainer.documentEditor.editor.documentHelper.isDocumentProtected
+    ) {
+      editorContainer.documentEditor.editor.stopProtection("");
+    }
+  };
+
   const onSelectionChange = () => {
     if (editor.documentEditor.selection) {
+      handleFieldSelection(editor);
+
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
