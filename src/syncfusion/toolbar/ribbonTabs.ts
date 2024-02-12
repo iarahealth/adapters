@@ -12,6 +12,7 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 export const tabsConfig = (
   editor: DocumentEditorContainer,
   toolbarButtonClick: (arg: string, editor: DocumentEditorContainer) => void,
+  toolbarOpenFile: (arg: string, editor: DocumentEditorContainer) => void,
   editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
@@ -41,12 +42,12 @@ export const tabsConfig = (
                     isToggle: true,
                     iconCss: "e-icons e-folder-open",
                     clicked: function () {
-                      toolbarButtonClick("open", editor);
+                      toolbarOpenFile("open", editor);
                     },
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
+                      editorContainerLocale.PdfViewer[
                         "Open"
                       ],
                   },
@@ -106,13 +107,13 @@ export const tabsConfig = (
                     // isToggle: true,
                     iconCss: "e-icons e-image",
                     clicked: function () {
-                      toolbarButtonClick("image", editor);
+                      toolbarOpenFile("image", editor);
                     },
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                        "Image"
+                      editorContainerLocale.richtexteditor[
+                        "image"
                       ],
                   },
                 },
@@ -126,13 +127,13 @@ export const tabsConfig = (
                     // isToggle: true,
                     iconCss: "e-icons e-table",
                     clicked: function () {
-                      toolbarButtonClick("table", editor);
+                      toolbarButtonClick("insertTable", editor);
                     },
                   },
                   ribbonTooltipSettings: {
                     title:
                       editorContainerLocale.documenteditorcontainer[
-                        "Table"
+                        "Insert a table into the document"
                       ],
                   },
                 },

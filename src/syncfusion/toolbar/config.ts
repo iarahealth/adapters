@@ -36,45 +36,109 @@ export interface RibbonParagraphMethods {
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
+//braun
+const toolbarOpenFile = (
+  arg: string,
+  editorContainer: DocumentEditorContainer,
+): void => {
+  switch (arg)
+  {
+    case "open":
+      const filePicker = document.createElement('input') as HTMLInputElement;
+      filePicker.setAttribute('type', 'file');
+      filePicker.setAttribute('accept', '.doc,.docx,.rtf,.txt,.htm,.html,.sfdt');
+      filePicker.onchange = (e: any): void => {
+        let file = filePicker.files![0];
+
+        if (!file.name.endsWith('.sfdt'))
+        {
+          loadFile(file, editorContainer);
+        }
+      };
+
+      filePicker.click();
+      break;
+
+    case "image":
+      const imagePicker = document.createElement('input') as HTMLInputElement;
+      imagePicker.setAttribute('type', 'file');
+      imagePicker.setAttribute('accept', '.jpg,.jpeg,.png');
+
+      imagePicker.onchange = (e: any): void => {
+        let file = imagePicker.files![0];
+        onInsertImage(file, editorContainer);
+      };
+
+      imagePicker.click();
+      break;
+  }
+};
+
+//braun
+function loadFile(file: File, editorContainer: DocumentEditorContainer): void
+{
+  let ajax: XMLHttpRequest = new XMLHttpRequest();
+  ajax.open('POST', 'https://services.syncfusion.com/js/production/api/documenteditor/import', true);
+  ajax.onreadystatechange = () => {
+      if (ajax.readyState === 4) {
+          if (ajax.status === 200 || ajax.status === 304) {
+              //Open SFDT text in Document Editor
+              editorContainer.documentEditor.open(ajax.responseText);
+          }
+      }
+  }
+  let formData: FormData = new FormData();
+  formData.append('files', file);
+  //Send the selected file to web api for converting it into sfdt.
+  ajax.send(formData);
+}
+
+
+//braun
+function onInsertImage(file: any, editorContainer: DocumentEditorContainer): void {
+  if (
+    navigator.userAgent.match('Chrome') ||
+    navigator.userAgent.match('Firefox') ||
+    navigator.userAgent.match('Edge') ||
+    navigator.userAgent.match('MSIE') ||
+    navigator.userAgent.match('.NET')
+  )
+  {
+    if (file)
+    {
+      let path = file;
+      let reader = new FileReader();
+      reader.onload = function (frEvent: any) {
+          let base64String = frEvent.target.result;
+          let image = document.createElement('img');
+        image.addEventListener('load', function () {
+          editorContainer.documentEditor.editor.insertImage(base64String, this.width, this.height);
+        });
+          image.src = base64String;
+      };
+      reader.readAsDataURL(path);
+    }
+    //Safari does not Support FileReader Class
+  }
+  else
+  {
+    let image = document.createElement('img');
+    image.addEventListener('load', function () {
+      editorContainer.documentEditor.editor.insertImage(file.target.result);
+    })
+    image.src = file;
+  }
+}
+
+
+
+
 const toolbarButtonClick = (
   arg: string,
   editor: DocumentEditorContainer,
   config?: IaraSyncfusionConfig
 ): void => {
   switch (arg) {
-
-    case "open":
-
-      console.log('OPEN');
-
-      // document.getElementsByClassName('e-folder-open')[0].setAttribute('accept', '.dotx,.docx,.docm,.dot,.doc,.rtf,.txt,.xml,.sfdt');
-
-      document.getElementsByClassName('e-folder-open')[0].setAttribute('accept', '.sfdt');
-
-      document.getElementsByClassName('e-folder-open')[0].addEventListener("click", (e: any): void => {
-        console.log('OPEN222222222222222222222');
-        if (e.target.files[0]) {
-            //Get the selected file.
-            let file = e.target.files[0];
-            if (file.name.substr(file.name.lastIndexOf('.')) === '.sfdt') {
-                let fileReader: FileReader = new FileReader();
-                fileReader.onload = (e: any) => {
-                    let contents: string = e.target.result;
-                    //Open the sfdt document in the Document Editor.
-                    editor.documentEditor.open(contents);
-                };
-                //Read the file content.
-                fileReader.readAsText(file);
-                editor.documentEditor.documentName = file.name.substr(0, file.name.lastIndexOf('.'));
-            }
-          }
-      });
-
-      break;
-    case "image":
-      console.log('Image');
-      //onInsertImage(arg, editor);
-      break;
     case "undo":
       editor.documentEditor.editorHistory.undo();
       break;
@@ -161,11 +225,16 @@ const toolbarButtonClick = (
       break;
     case "Numbering":
       //To create numbering list
-      editor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
+      //braun
+      // editor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
+      editor.documentEditor.editor.applyNumbering("%1)");
       break;
     case "clearlist":
       //To clear list
       editor.documentEditor.editor.clearList();
+      break;
+    case "insertTable":
+      editor.documentEditor.editor.insertTable();
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
@@ -191,38 +260,6 @@ export const toolBarSettings = (
     }, 20);
   };
 
-
-  //braun
-  const onInsertImage = (args: any): void => {
-    if (navigator.userAgent.match('Chrome') || navigator.userAgent.match('Firefox') || navigator.userAgent.match('Edge') || navigator.userAgent.match('MSIE') || navigator.userAgent.match('.NET')) {
-        if (args.target.files[0]) {
-            let path = args.target.files[0];
-            let reader = new FileReader();
-            reader.onload = function (frEvent: any) {
-                let base64String = frEvent.target.result;
-                let image = document.createElement('img');
-                image.addEventListener('load', function () {
-                    //Insert image.
-                    editor.documentEditor.editor.insertImage(base64String, this.width, this.height);
-                })
-                image.src = base64String;
-            };
-            reader.readAsDataURL(path);
-        }
-        //Safari does not Support FileReader Class
-    } else {
-        let image = document.createElement('img');
-        image.addEventListener('load', function () {
-          editor.documentEditor.editor.insertImage(args.target.value);
-        })
-        image.src = args.target.value;
-    }
-}
-
-
-
-
-
   const ribbonMethods = {
     ribbonFontMethods: () => ribbonFontMethods(editor),
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
@@ -231,6 +268,7 @@ export const toolBarSettings = (
     tabs: tabsConfig(
       editor,
       toolbarButtonClick,
+      toolbarOpenFile,
       editorContainerLocale,
       config,
       ribbonMethods
