@@ -32,8 +32,6 @@ export const tabsConfig = (
           collections: [
             {
               items: [
-
-              //braun
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -52,7 +50,6 @@ export const tabsConfig = (
                       ],
                   },
                 },
-
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -89,16 +86,10 @@ export const tabsConfig = (
                       ],
                   },
                 },
-
               ],
             },
             {
               items: [
-
-
-
-
-                //braun
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -117,14 +108,11 @@ export const tabsConfig = (
                       ],
                   },
                 },
-
-                //braun
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     content: "Table",
-                    // isToggle: true,
                     iconCss: "e-icons e-table",
                     clicked: function () {
                       toolbarButtonClick("insertTable", editor);
@@ -137,8 +125,6 @@ export const tabsConfig = (
                       ],
                   },
                 },
-
-
               ],
             },
           ],
@@ -436,9 +422,6 @@ export const tabsConfig = (
                     },
                   },
                 },
-
-                //braun -> 2 novos botoes
-
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -473,12 +456,6 @@ export const tabsConfig = (
                       ],
                   },
                 },
-
-
-
-
-
-
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,

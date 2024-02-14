@@ -36,7 +36,6 @@ export interface RibbonParagraphMethods {
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
-//braun
 const toolbarOpenFile = (
   arg: string,
   editorContainer: DocumentEditorContainer,
@@ -47,9 +46,9 @@ const toolbarOpenFile = (
       const filePicker = document.createElement('input') as HTMLInputElement;
       filePicker.setAttribute('type', 'file');
       filePicker.setAttribute('accept', '.doc,.docx,.rtf,.txt,.htm,.html,.sfdt');
+
       filePicker.onchange = (e: any): void => {
         let file = filePicker.files![0];
-
         if (!file.name.endsWith('.sfdt'))
         {
           loadFile(file, editorContainer);
@@ -58,7 +57,6 @@ const toolbarOpenFile = (
 
       filePicker.click();
       break;
-
     case "image":
       const imagePicker = document.createElement('input') as HTMLInputElement;
       imagePicker.setAttribute('type', 'file');
@@ -74,27 +72,24 @@ const toolbarOpenFile = (
   }
 };
 
-//braun
 function loadFile(file: File, editorContainer: DocumentEditorContainer): void
 {
   let ajax: XMLHttpRequest = new XMLHttpRequest();
   ajax.open('POST', 'https://services.syncfusion.com/js/production/api/documenteditor/import', true);
   ajax.onreadystatechange = () => {
-      if (ajax.readyState === 4) {
-          if (ajax.status === 200 || ajax.status === 304) {
-              //Open SFDT text in Document Editor
-              editorContainer.documentEditor.open(ajax.responseText);
-          }
+    if (ajax.readyState === 4)
+    {
+      if (ajax.status === 200 || ajax.status === 304)
+      {
+        editorContainer.documentEditor.open(ajax.responseText);
       }
+    }
   }
   let formData: FormData = new FormData();
   formData.append('files', file);
-  //Send the selected file to web api for converting it into sfdt.
   ajax.send(formData);
 }
 
-
-//braun
 function onInsertImage(file: any, editorContainer: DocumentEditorContainer): void {
   if (
     navigator.userAgent.match('Chrome') ||
@@ -118,7 +113,6 @@ function onInsertImage(file: any, editorContainer: DocumentEditorContainer): voi
       };
       reader.readAsDataURL(path);
     }
-    //Safari does not Support FileReader Class
   }
   else
   {
@@ -129,9 +123,6 @@ function onInsertImage(file: any, editorContainer: DocumentEditorContainer): voi
     image.src = file;
   }
 }
-
-
-
 
 const toolbarButtonClick = (
   arg: string,
@@ -225,8 +216,6 @@ const toolbarButtonClick = (
       break;
     case "Numbering":
       //To create numbering list
-      //braun
-      // editor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
       editor.documentEditor.editor.applyNumbering("%1)");
       break;
     case "clearlist":
