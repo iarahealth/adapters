@@ -446,8 +446,66 @@ export const tabsConfig = (
                 },
               ],
             },
+
+
+
+
+
+
+
+
           ],
         },
+
+
+
+        //braun
+        {
+          id: "form_fields",
+          orientation: "Row",
+          header: "FormFields",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              //braun
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-text-form",
+                    // content: "Decrease Indent",
+                    clicked: function () {
+                      toolbarButtonClick("insertFormFieldText", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditor[
+                        "Navigation"
+                      ],
+                  },
+                }
+                //braun
+                // {
+                //   iconCss: "e-icons e-text-form",
+                //   click: function () {
+                //     toolbarButtonClick("Justify", editor);
+                //   },
+                //   ribbonTooltipSettings: {
+                //     title:
+                //       editorContainerLocale.documenteditorcontainer[
+                //         "Justify Tooltip"
+                //       ],
+                //   },
+                // },
+              ],
+            },
+          ]
+        }
+
+
+
       ],
     },
   ];

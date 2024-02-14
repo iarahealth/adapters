@@ -137,6 +137,10 @@ const toolbarButtonClick = (
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
       break;
+    //braun
+    case "insertFormFieldText":
+      editor.documentEditor.editor.insertFormField('Text');
+      break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
