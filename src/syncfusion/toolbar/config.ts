@@ -47,7 +47,7 @@ const toolbarOpenFile = (
       filePicker.setAttribute('type', 'file');
       filePicker.setAttribute('accept', '.doc,.docx,.rtf,.txt,.htm,.html,.sfdt');
 
-      filePicker.onchange = (e: any): void => {
+      filePicker.onchange = (): void => {
         let file = filePicker.files![0];
         if (!file.name.endsWith('.sfdt'))
         {
@@ -62,7 +62,7 @@ const toolbarOpenFile = (
       imagePicker.setAttribute('type', 'file');
       imagePicker.setAttribute('accept', '.jpg,.jpeg,.png');
 
-      imagePicker.onchange = (e: any): void => {
+      imagePicker.onchange = (): void => {
         let file = imagePicker.files![0];
         onInsertImage(file, editorContainer);
       };
