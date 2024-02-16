@@ -72,22 +72,16 @@ const toolbarOpenFile = (
   }
 };
 
-function loadFile(file: File, editorContainer: DocumentEditorContainer): void
-{
-  let ajax: XMLHttpRequest = new XMLHttpRequest();
-  ajax.open('POST', 'https://services.syncfusion.com/js/production/api/documenteditor/import', true);
-  ajax.onreadystatechange = () => {
-    if (ajax.readyState === 4)
-    {
-      if (ajax.status === 200 || ajax.status === 304)
-      {
-        editorContainer.documentEditor.open(ajax.responseText);
-      }
-    }
-  }
-  let formData: FormData = new FormData();
+function loadFile(file: File, editorContainer: DocumentEditorContainer) {
+  const formData = new FormData();
   formData.append('files', file);
-  ajax.send(formData);
+
+  fetch('https://services.syncfusion.com/js/production/api/documenteditor/import', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(text => editorContainer.documentEditor.open(text));
 }
 
 function onInsertImage(file: any, editorContainer: DocumentEditorContainer): void {
