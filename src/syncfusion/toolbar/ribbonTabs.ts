@@ -11,7 +11,7 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
-  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer) => void,
+  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer, config?: IaraSyncfusionConfig) => void,
   editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
@@ -442,6 +442,32 @@ export const tabsConfig = (
                         },
                       },
                     ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "export_group",
+          orientation: "Row",
+          header: "Export to PDF",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-export-pdf",
+                    content: "Export to PDF",
+                    clicked: function () {
+                      toolbarButtonClick("ExportToPDF", editor, config);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: "Exportar para PDF"
                   },
                 },
               ],
