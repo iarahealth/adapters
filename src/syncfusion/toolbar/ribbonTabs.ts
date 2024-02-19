@@ -11,7 +11,7 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
-  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer, config: IaraSyncfusionConfig) => void,
+  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer, config?: IaraSyncfusionConfig) => void,
   editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
