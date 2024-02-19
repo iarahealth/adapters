@@ -137,49 +137,8 @@ const toolbarButtonClick = (
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
       break;
-
-    //braun
     case "insertFormFieldText":
-
-      // if (!editor.documentEditor.editor.documentHelper.isDocumentProtected)
-      // {
-      //   editor.documentEditor.editor.enforceProtection(
-      //           "",
-      //           "FormFieldsOnly"
-      //         );
-      // }
-
-      setInterval(() => {
-        console.log(editor.documentEditor.editor.documentHelper.isDocumentProtected);
-      }, 400);
-
       editor.documentEditor.editor.insertFormField('Text');
-
-      // setTimeout(() => {
-        //editor.documentEditor.editor.insertFormField('Text');
-        // editor.documentEditor.editor.stopProtection("");
-      // }, 100);
-
-
-
-
-      // if (editor.documentEditor.selection)
-      // {
-      //   if (
-      //     editor.documentEditor.selection.isInField &&
-      //     !editor.documentEditor.editor.documentHelper.isDocumentProtected
-      //   ) {
-      //     editor.documentEditor.editor.enforceProtection(
-      //       "",
-      //       "FormFieldsOnly"
-      //     );
-      //   } else if (
-      //     !editor.documentEditor.selection.isInField &&
-      //     editor.documentEditor.editor.documentHelper.isDocumentProtected
-      //   ) {
-      //     editor.documentEditor.editor.stopProtection("");
-      //   }
-      // }
       break;
     case "ShowParagraphMark":
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
@@ -196,9 +155,6 @@ export const toolBarSettings = (
   editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
-  //braun
-  let afterClick = true;
-
   editor.selectionChange = () => {
     setTimeout(() => {
       onSelectionChange();
@@ -222,33 +178,19 @@ export const toolBarSettings = (
   });
 
   const handleFieldSelection = (editorContainer: DocumentEditorContainer) => {
-
-    //braun
-    console.log(editorContainer.documentEditor.selection.isInField, !editorContainer.documentEditor.editor.documentHelper.isDocumentProtected);
-
-
     if (
       editorContainer.documentEditor.selection.isInField &&
       !editorContainer.documentEditor.editor.documentHelper.isDocumentProtected
     ) {
-      // console.log('afterclick:', afterClick);
-      // if (afterClick)
-      // {
-      //   afterClick = false;
-      // }
-      // else
-      // {
-      //   editorContainer.documentEditor.editor.enforceProtection(
-      //   "",
-      //   "FormFieldsOnly"
-      //   );
-      // }
-
+        editorContainer.documentEditor.editor.enforceProtection(
+        "",
+        "FormFieldsOnly"
+      );
     } else if (
       !editorContainer.documentEditor.selection.isInField &&
       editorContainer.documentEditor.editor.documentHelper.isDocumentProtected
     ) {
-      // editorContainer.documentEditor.editor.stopProtection("");
+      editorContainer.documentEditor.editor.stopProtection("");
     }
   };
 

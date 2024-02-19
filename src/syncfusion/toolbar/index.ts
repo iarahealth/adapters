@@ -2,8 +2,6 @@ import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { toolBarSettings } from "./config";
 import { IaraSyncfusionConfig } from "..";
-
-//braun
 import { MenuItemModel } from '@syncfusion/ej2-navigations';
 
 export class IaraSyncfusionToolbarManager {
@@ -11,20 +9,16 @@ export class IaraSyncfusionToolbarManager {
     private _editorContainer: DocumentEditorContainer,
     private _config: IaraSyncfusionConfig
   ) {
-    //braun
     let menuItems: MenuItemModel[] = [
       {
         text: "Navegação",
         id: "form-field-navigation",
         iconCss: 'e-icons e-text-form'
       }];
-
     this._editorContainer.documentEditor.contextMenu.addCustomMenu(menuItems, false, true);
-
     this._editorContainer.documentEditor.customContextMenuSelect = (args: any): void => {
       let item: string = args.id;
       let id: string = this._editorContainer.documentEditor.element.id;
-
       switch (item)
       {
         case id + 'form-field-navigation':
@@ -32,7 +26,6 @@ export class IaraSyncfusionToolbarManager {
           break;
       }
     };
-
   }
 
   public init(): void {
