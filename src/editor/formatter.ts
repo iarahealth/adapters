@@ -12,9 +12,7 @@ export class IaraEditorInferenceFormatter {
       !/^[.,:;?!]/.test(text);
 
     const addSpaceAfter =
-      wordAfter.length &&
-      !wordAfter.startsWith(" ") &&
-      !/^[.,:;?!]/.test(wordAfter);
+      wordAfter.length && !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
