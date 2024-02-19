@@ -540,6 +540,45 @@ export const tabsConfig = (
             },
           ],
         },
+
+
+
+        //braun
+        {
+          id: "find_group",
+          orientation: "Row",
+          header: "Find",
+          groupIconCss: "e-icons e-find",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-search",
+                    content: "Find in Document",
+                    clicked: function () {
+                      toolbarButtonClick("FindInDocument", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.PdfViewer[
+                        "Find in document"
+                      ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+
+
+
+
+
+
       ],
     },
   ];

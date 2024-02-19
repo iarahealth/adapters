@@ -80,7 +80,9 @@ export class IaraSyncfusionAdapter
 
     DocumentEditor.Inject(Print);
     this._editorContainer.documentEditor.enablePrint = true;
-
+    this._editorContainer.documentEditor.enableSelection = true;
+    this._editorContainer.documentEditor.enableSearch = true;
+    this._editorContainer.documentEditor.enableOptionsPane = true;
     this._editorContainer.documentEditor.enableImageResizer = true;
 
     this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));

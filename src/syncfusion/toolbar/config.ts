@@ -219,6 +219,14 @@ const toolbarButtonClick = (
     case "insertTable":
       editor.documentEditor.editor.insertTable();
       break;
+
+    //braun
+    case "FindInDocument":
+      const searchPanel = document.getElementsByClassName('e-search')[0];
+      searchPanel?.addEventListener('click', () => {
+        editor.documentEditor.showOptionsPane();
+      });
+      break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
       break;
