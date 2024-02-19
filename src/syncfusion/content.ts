@@ -7,7 +7,7 @@ import {
   PdfPageSettings,
   PdfSection,
   SizeF,
-} from '@syncfusion/ej2-pdf-export';
+} from "@syncfusion/ej2-pdf-export";
 import { IaraSyncfusionConfig } from ".";
 
 export enum IaraSyncfusionContentTypes {
@@ -119,69 +119,67 @@ export class IaraSFDT {
     return rtf;
   }
 
-  static toPdf(content: any, config?: IaraSyncfusionConfig)
-  {
-    if (config?.darkMode) content.setDefaultCharacterFormat({ fontColor: '#000' });
+  static toPdf(content: any, config?: IaraSyncfusionConfig) {
+    if (config?.darkMode)
+      content.setDefaultCharacterFormat({ fontColor: "#000" });
 
-    let pageTimer = 500;
-    let pdfdocument: PdfDocument = new PdfDocument();
-    let count: number = content.documentEditor.pageCount;
+    const pageTimer = 500;
+    const pdfdocument: PdfDocument = new PdfDocument();
+    const count: number = content.documentEditor.pageCount;
     let loadedPage = 0;
 
-    let currentDate = new Date();
-    let timeZone = currentDate.getTimezoneOffset() / -60;
+    const currentDate = new Date();
+    const timeZone = currentDate.getTimezoneOffset() / -60;
     currentDate.setHours(currentDate.getHours() + timeZone);
-    let dateString = currentDate.toISOString().split('T');
-    let timeArray = dateString[1].split(':');
-    let timeString = timeArray[0] + '-' + timeArray[1];
-    let pdfFileName = 'iara-' + dateString[0] + '--' + timeString;
+    const dateString = currentDate.toISOString().split("T");
+    const timeArray = dateString[1].split(":");
+    const timeString = timeArray[0] + "-" + timeArray[1];
+    const pdfFileName = "iara-" + dateString[0] + "--" + timeString;
 
     content.documentEditor.documentEditorSettings.printDevicePixelRatio = 2;
 
-    for (let i = 1; i <= count; i++)
-    {
+    for (let i = 1; i <= count; i++) {
       setTimeout(() => {
-          let format: ImageFormat = 'image/jpeg' as ImageFormat;
-          // Getting pages as image
-          let image = content.documentEditor.exportAsImage(i, format);
-          image.onload = function () {
-              let imageHeight = parseInt(
-                  image.style.height.toString().replace('px', '')
-              );
-              let imageWidth = parseInt(
-                  image.style.width.toString().replace('px', '')
-              );
-              let section: PdfSection = pdfdocument.sections.add() as PdfSection;
-              let settings: PdfPageSettings = new PdfPageSettings(0);
-              if (imageWidth > imageHeight) {
-                  settings.orientation = PdfPageOrientation.Landscape;
-              }
-              settings.size = new SizeF(imageWidth, imageHeight);
-              (section as PdfSection).setPageSettings(settings);
-              let page = section.pages.add();
-              let graphics = page.graphics;
-              let imageStr = image.src.replace('data:image/jpeg;base64,', '');
-              let pdfImage = new PdfBitmap(imageStr);
-              graphics.drawImage(pdfImage, 0, 0, imageWidth, imageHeight);
-              loadedPage++;
-              if (loadedPage == count) {
-                  // Exporting the document as pdf
-                  pdfdocument.save(
-                      (content.documentEditor.documentName === ''
-                          ? pdfFileName
-                          : content.documentEditor.documentName) + '.pdf'
-                  );
-              }
-          };
+        const format: ImageFormat = "image/jpeg" as ImageFormat;
+        // Getting pages as image
+        const image = content.documentEditor.exportAsImage(i, format);
+        image.onload = function () {
+          const imageHeight = parseInt(
+            image.style.height.toString().replace("px", "")
+          );
+          const imageWidth = parseInt(
+            image.style.width.toString().replace("px", "")
+          );
+          const section: PdfSection = pdfdocument.sections.add() as PdfSection;
+          const settings: PdfPageSettings = new PdfPageSettings(0);
+          if (imageWidth > imageHeight) {
+            settings.orientation = PdfPageOrientation.Landscape;
+          }
+          settings.size = new SizeF(imageWidth, imageHeight);
+          (section as PdfSection).setPageSettings(settings);
+          const page = section.pages.add();
+          const graphics = page.graphics;
+          const imageStr = image.src.replace("data:image/jpeg;base64,", "");
+          const pdfImage = new PdfBitmap(imageStr);
+          graphics.drawImage(pdfImage, 0, 0, imageWidth, imageHeight);
+          loadedPage++;
+          if (loadedPage == count) {
+            // Exporting the document as pdf
+            pdfdocument.save(
+              (content.documentEditor.documentName === ""
+                ? pdfFileName
+                : content.documentEditor.documentName) + ".pdf"
+            );
+          }
+        };
       }, pageTimer);
     }
 
-    if (config?.darkMode)
-    {
+    if (config?.darkMode) {
       setTimeout(() => {
-          content.documentEditor.focusIn();
-          content.setDefaultCharacterFormat({ fontColor: '#fff' });
-      }, ((count * pageTimer) + 200));
+        content.documentEditor.focusIn();
+        content.setDefaultCharacterFormat({ fontColor: "#fff" });
+      }, count * pageTimer + 200);
     }
   }
 
