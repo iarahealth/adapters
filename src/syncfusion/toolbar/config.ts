@@ -36,6 +36,88 @@ export interface RibbonParagraphMethods {
 
 Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
+const toolbarOpenFile = (
+  arg: string,
+  editorContainer: DocumentEditorContainer,
+): void => {
+  switch (arg)
+  {
+    case "open":
+      const filePicker = document.createElement('input') as HTMLInputElement;
+      filePicker.setAttribute('type', 'file');
+      filePicker.setAttribute('accept', '.doc,.docx,.rtf,.txt,.htm,.html,.sfdt');
+
+      filePicker.onchange = (): void => {
+        let file = filePicker.files![0];
+        if (!file.name.endsWith('.sfdt'))
+        {
+          loadFile(file, editorContainer);
+        }
+      };
+
+      filePicker.click();
+      break;
+    case "image":
+      const imagePicker = document.createElement('input') as HTMLInputElement;
+      imagePicker.setAttribute('type', 'file');
+      imagePicker.setAttribute('accept', '.jpg,.jpeg,.png');
+
+      imagePicker.onchange = (): void => {
+        let file = imagePicker.files![0];
+        onInsertImage(file, editorContainer);
+      };
+
+      imagePicker.click();
+      break;
+  }
+};
+
+function loadFile(file: File, editorContainer: DocumentEditorContainer) {
+  const formData = new FormData();
+  formData.append('files', file);
+
+  fetch('https://services.syncfusion.com/js/production/api/documenteditor/import', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(text => editorContainer.documentEditor.open(text));
+}
+
+function onInsertImage(file: any, editorContainer: DocumentEditorContainer): void {
+  if (
+    navigator.userAgent.match('Chrome') ||
+    navigator.userAgent.match('Firefox') ||
+    navigator.userAgent.match('Edge') ||
+    navigator.userAgent.match('MSIE') ||
+    navigator.userAgent.match('.NET')
+  )
+  {
+    if (file)
+    {
+      let path = file;
+      let reader = new FileReader();
+      reader.onload = function (frEvent: any) {
+          let base64String = frEvent.target.result;
+          let image = document.createElement('img');
+        image.addEventListener('load', function () {
+          editorContainer.documentEditor.editor.insertImage(base64String, this.width, this.height);
+        });
+          image.src = base64String;
+      };
+      reader.readAsDataURL(path);
+    }
+  }
+  else
+  {
+    let image = document.createElement('img');
+    image.addEventListener('load', function () {
+      editorContainer.documentEditor.editor.insertImage(file.target.result);
+    })
+    image.src = file;
+  }
+}
+
 const toolbarButtonClick = (
   arg: string,
   editor: DocumentEditorContainer,
@@ -128,11 +210,14 @@ const toolbarButtonClick = (
       break;
     case "Numbering":
       //To create numbering list
-      editor.documentEditor.editor.applyNumbering("%1)", "UpRoman");
+      editor.documentEditor.editor.applyNumbering("%1)");
       break;
     case "clearlist":
       //To clear list
       editor.documentEditor.editor.clearList();
+      break;
+    case "insertTable":
+      editor.documentEditor.editor.insertTable();
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
@@ -166,6 +251,7 @@ export const toolBarSettings = (
     tabs: tabsConfig(
       editor,
       toolbarButtonClick,
+      toolbarOpenFile,
       editorContainerLocale,
       config,
       ribbonMethods

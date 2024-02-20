@@ -11,8 +11,13 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
-  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer, config?: IaraSyncfusionConfig) => void,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  toolbarOpenFile: (arg: string, editor: DocumentEditorContainer) => void,
+  toolbarButtonClick: (
+    arg: string,
+    editor: DocumentEditorContainer,
+    config?: IaraSyncfusionConfig
+  ) => void,
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -31,6 +36,21 @@ export const tabsConfig = (
           collections: [
             {
               items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Open",
+                    isToggle: true,
+                    iconCss: "e-icons e-folder-open",
+                    clicked: function () {
+                      toolbarOpenFile("open", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.PdfViewer["Open"],
+                  },
+                },
                 {
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
@@ -64,6 +84,42 @@ export const tabsConfig = (
                     title:
                       editorContainerLocale.documenteditorcontainer[
                         "Redo Tooltip"
+                      ],
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Image",
+                    // isToggle: true,
+                    iconCss: "e-icons e-image",
+                    clicked: function () {
+                      toolbarOpenFile("image", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.richtexteditor["image"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Table",
+                    iconCss: "e-icons e-table",
+                    clicked: function () {
+                      toolbarButtonClick("insertTable", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Insert a table into the document"
                       ],
                   },
                 },
@@ -368,6 +424,38 @@ export const tabsConfig = (
                   type: "Button",
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
+                    iconCss: "e-icons e-list-unordered-3",
+                    content: "Bullets",
+                    clicked: function () {
+                      toolbarButtonClick("Bullets", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer["Bullets"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-ordered",
+                    content: "Numbering",
+                    clicked: function () {
+                      toolbarButtonClick("Numbering", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Numbering"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
                     iconCss: "e-icons e-paragraph",
                     content: "Paragraph",
                     clicked: function () {
@@ -467,7 +555,7 @@ export const tabsConfig = (
                     },
                   },
                   ribbonTooltipSettings: {
-                    title: "Exportar para PDF"
+                    title: "Exportar para PDF",
                   },
                 },
               ],
