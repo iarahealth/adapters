@@ -31,8 +31,8 @@ export class IaraSyncfusionAdapter
   private _contentDate?: Date;
   private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
-  private _initialUndoStackSize = 0;
   private _selectionManager?: IaraSyncfusionSelectionManager;
+  private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
@@ -121,12 +121,6 @@ export class IaraSyncfusionAdapter
     return this._contentManager.getContent();
   }
 
-  getUndoStackSize(): number {
-    return (
-      this._editorContainer.documentEditor.editorHistory.undoStack?.length || 0
-    );
-  }
-
   insertParagraph(): void {
     this._editorContainer.documentEditor.editor.insertText("\n");
   }
@@ -160,13 +154,13 @@ export class IaraSyncfusionAdapter
       this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
-
-      this._initialUndoStackSize = this.getUndoStackSize();
-    } else {
-      const undoStackSize = this.getUndoStackSize();
-      for (let i = 0; i < undoStackSize - this._initialUndoStackSize; i++)
-        this.undo();
+    } else if (this._selectionManager) {
+      this._editorContainer.documentEditor.selection.select(
+        this._selectionManager.initialSelectionData.startOffset,
+        this._inferenceEndOffset
+      );
     }
+    if (!this._selectionManager) return;
 
     if (
       inference.richTranscriptModifiers?.length &&
@@ -202,27 +196,16 @@ export class IaraSyncfusionAdapter
         return;
       }
     }
-
-    if (!this._selectionManager) return;
-
-    const wordBefore = this._selectionManager.getWordBeforeSelection();
-    const isLineStart = /[\n\r\v]$/.test(wordBefore) || wordBefore.length === 0;
-    const wordAfter = this._selectionManager.getWordAfterSelection(isLineStart);
-    this._selectionManager.resetSelection();
-
-    const text = this._inferenceFormatter.format(
+    let text = this._inferenceFormatter.format(
       inference,
-      wordBefore,
-      wordAfter
+      this._selectionManager.wordBeforeSelection,
+      this._selectionManager.wordAfterSelection
     );
 
-    const [firstLine, ...lines]: string[] = text.split("</div><div>");
-    this.insertText(firstLine);
-    lines.forEach(line => {
-      this.insertParagraph();
-      line = line.trimStart();
-      if (line) this.insertText(line);
-    });
+    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
+    this.insertText(text);
+    this._inferenceEndOffset =
+      this._editorContainer.documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
   }
@@ -298,7 +281,8 @@ export class IaraSyncfusionAdapter
     this._editorContainer.element.addEventListener("mousedown", event => {
       if (event.button === 1) {
         this._cursorSelection = new IaraSyncfusionSelectionManager(
-          this._editorContainer.documentEditor
+          this._editorContainer.documentEditor,
+          false
         );
       }
     });
