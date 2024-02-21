@@ -38,19 +38,20 @@ Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
 const toolbarOpenFile = (
   arg: string,
-  editorContainer: DocumentEditorContainer,
+  editorContainer: DocumentEditorContainer
 ): void => {
-  switch (arg)
-  {
+  switch (arg) {
     case "open":
-      const filePicker = document.createElement('input') as HTMLInputElement;
-      filePicker.setAttribute('type', 'file');
-      filePicker.setAttribute('accept', '.doc,.docx,.rtf,.txt,.htm,.html,.sfdt');
+      const filePicker = document.createElement("input") as HTMLInputElement;
+      filePicker.setAttribute("type", "file");
+      filePicker.setAttribute(
+        "accept",
+        ".doc,.docx,.rtf,.txt,.htm,.html,.sfdt"
+      );
 
       filePicker.onchange = (): void => {
-        let file = filePicker.files![0];
-        if (!file.name.endsWith('.sfdt'))
-        {
+        const file = filePicker.files![0];
+        if (!file.name.endsWith(".sfdt")) {
           loadFile(file, editorContainer);
         }
       };
@@ -58,12 +59,12 @@ const toolbarOpenFile = (
       filePicker.click();
       break;
     case "image":
-      const imagePicker = document.createElement('input') as HTMLInputElement;
-      imagePicker.setAttribute('type', 'file');
-      imagePicker.setAttribute('accept', '.jpg,.jpeg,.png');
+      const imagePicker = document.createElement("input") as HTMLInputElement;
+      imagePicker.setAttribute("type", "file");
+      imagePicker.setAttribute("accept", ".jpg,.jpeg,.png");
 
       imagePicker.onchange = (): void => {
-        let file = imagePicker.files![0];
+        const file = imagePicker.files![0];
         onInsertImage(file, editorContainer);
       };
 
@@ -74,46 +75,52 @@ const toolbarOpenFile = (
 
 function loadFile(file: File, editorContainer: DocumentEditorContainer) {
   const formData = new FormData();
-  formData.append('files', file);
+  formData.append("files", file);
 
-  fetch('https://services.syncfusion.com/js/production/api/documenteditor/import', {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.text())
-  .then(text => editorContainer.documentEditor.open(text));
+  fetch(
+    "https://services.syncfusion.com/js/production/api/documenteditor/import",
+    {
+      method: "POST",
+      body: formData,
+    }
+  )
+    .then(response => response.text())
+    .then(text => editorContainer.documentEditor.open(text));
 }
 
-function onInsertImage(file: any, editorContainer: DocumentEditorContainer): void {
+function onInsertImage(
+  file: any,
+  editorContainer: DocumentEditorContainer
+): void {
   if (
-    navigator.userAgent.match('Chrome') ||
-    navigator.userAgent.match('Firefox') ||
-    navigator.userAgent.match('Edge') ||
-    navigator.userAgent.match('MSIE') ||
-    navigator.userAgent.match('.NET')
-  )
-  {
-    if (file)
-    {
-      let path = file;
-      let reader = new FileReader();
+    navigator.userAgent.match("Chrome") ||
+    navigator.userAgent.match("Firefox") ||
+    navigator.userAgent.match("Edge") ||
+    navigator.userAgent.match("MSIE") ||
+    navigator.userAgent.match(".NET")
+  ) {
+    if (file) {
+      const path = file;
+      const reader = new FileReader();
       reader.onload = function (frEvent: any) {
-          let base64String = frEvent.target.result;
-          let image = document.createElement('img');
-        image.addEventListener('load', function () {
-          editorContainer.documentEditor.editor.insertImage(base64String, this.width, this.height);
+        const base64String = frEvent.target.result;
+        const image = document.createElement("img");
+        image.addEventListener("load", function () {
+          editorContainer.documentEditor.editor.insertImage(
+            base64String,
+            this.width,
+            this.height
+          );
         });
-          image.src = base64String;
+        image.src = base64String;
       };
       reader.readAsDataURL(path);
     }
-  }
-  else
-  {
-    let image = document.createElement('img');
-    image.addEventListener('load', function () {
+  } else {
+    const image = document.createElement("img");
+    image.addEventListener("load", function () {
       editorContainer.documentEditor.editor.insertImage(file.target.result);
-    })
+    });
     image.src = file;
   }
 }
@@ -234,7 +241,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
@@ -250,8 +257,8 @@ export const toolBarSettings = (
   const ribbonConfig: Ribbon = new Ribbon({
     tabs: tabsConfig(
       editor,
-      toolbarButtonClick,
       toolbarOpenFile,
+      toolbarButtonClick,
       editorContainerLocale,
       config,
       ribbonMethods
