@@ -10,6 +10,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
+
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
       fontSize: this._config.font?.size,
@@ -28,23 +29,33 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
-  setTheme(theme: "light" | "dark") {
+
+  setTheme(theme: "light" | "dark")
+  {
     if (theme === "light") return;
 
+    IaraSyncfusionStyleManager.loadThemeCss(theme);
     this._editor.documentHelper.backgroundColor = "#444";
     this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
-    const FILE = "https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css";
-    const css = document.createElement("link");
-    css.setAttribute("rel", "stylesheet");
-    css.setAttribute("type", "text/css");
-    css.setAttribute("id", "dark-theme-css");
-    css.setAttribute("href", FILE);
-    document.getElementsByTagName("head")[0].appendChild(css);
+  }
 
-    const styleNode = document.createElement("style");
-    document.getElementsByTagName("head")[0].appendChild(styleNode);
-    styleNode.sheet?.insertRule(".e-de-blink-cursor { border-left: 1px solid #fff !important; }");
-    styleNode.sheet?.insertRule(".e-de-status-bar span { color: #fff !important; }");
+  static loadThemeCss(theme: "light" | "dark")
+  {
+    if (theme === 'dark')
+    {
+      const FILE = "https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css";
+      const css = document.createElement("link");
+      css.setAttribute("rel", "stylesheet");
+      css.setAttribute("type", "text/css");
+      css.setAttribute("id", "dark-theme-css");
+      css.setAttribute("href", FILE);
+      document.getElementsByTagName("head")[0].appendChild(css);
+
+      const styleNode = document.createElement("style");
+      document.getElementsByTagName("head")[0].appendChild(styleNode);
+      styleNode.sheet?.insertRule(".e-de-blink-cursor { border-left: 1px solid #fff !important; }");
+      styleNode.sheet?.insertRule(".e-de-status-bar span { color: #fff !important; }");
+    }
   }
 
   toggleBold(): void {
