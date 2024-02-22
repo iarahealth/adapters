@@ -30,7 +30,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.focusIn();
   }
 
-  setTheme(theme: "light" | "dark", loadCss?: boolean)
+  setTheme(theme: "light" | "dark")
   {
     if (theme === "light") return;
 
