@@ -17,7 +17,7 @@ export const tabsConfig = (
     editor: DocumentEditorContainer,
     config?: IaraSyncfusionConfig
   ) => void,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -38,9 +38,8 @@ export const tabsConfig = (
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Open",
+                    content: "Abrir",
                     isToggle: true,
                     iconCss: "e-icons e-folder-open",
                     clicked: function () {
@@ -53,9 +52,8 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Undo",
+                    content: "Desfazer",
                     isToggle: true,
                     iconCss: "e-icons e-undo",
                     clicked: function () {
@@ -71,9 +69,8 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Redo",
+                    content: "Refazer",
                     isToggle: true,
                     iconCss: "e-icons e-redo",
                     clicked: function () {
@@ -89,14 +86,18 @@ export const tabsConfig = (
                 },
               ],
             },
+          ],
+        },
+        {
+          header: "Inserir",
+          id: "insert",
+          collections: [
             {
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     content: "Image",
-                    // isToggle: true,
                     iconCss: "e-icons e-image",
                     clicked: function () {
                       toolbarOpenFile("image", editor);
@@ -106,11 +107,14 @@ export const tabsConfig = (
                     title: editorContainerLocale.richtexteditor["image"],
                   },
                 },
+              ],
+            },
+            {
+              items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Table",
+                    content: "Tabela",
                     iconCss: "e-icons e-table",
                     clicked: function () {
                       toolbarButtonClick("insertTable", editor);
@@ -128,19 +132,17 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Clipboard",
+          header: "Área de transferência",
           id: "clipboard",
-          showLauncherIcon: true,
           groupIconCss: "e-icons e-paste",
           collections: [
             {
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Large,
                   buttonSettings: {
                     iconCss: "e-icons e-paste",
-                    content: "Colar",
+                    content: editorContainerLocale.filemanager["Tooltip-Paste"],
                     clicked: function () {
                       toolbarButtonClick("Paste", editor);
                     },
@@ -152,10 +154,9 @@ export const tabsConfig = (
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-cut",
-                    content: "Cut",
+                    content: editorContainerLocale.filemanager["Tooltip-Cut"],
                     clicked: function () {
                       toolbarButtonClick("cut", editor);
                     },
@@ -166,10 +167,9 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-copy",
-                    content: "Copy",
+                    content: editorContainerLocale.filemanager["Tooltip-Copy"],
                     clicked: function () {
                       toolbarButtonClick("copy", editor);
                     },
@@ -183,7 +183,7 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Font",
+          header: "Fonte",
           groupIconCss: "e-icons e-bold",
           cssClass: "font-group",
           overflowHeader: "More Font Options",
@@ -243,7 +243,6 @@ export const tabsConfig = (
                 {
                   type: "ColorPicker",
                   id: "fontColorSelect",
-                  allowedSizes: RibbonItemSize.Small,
                   displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
                   colorPickerSettings: {
                     change: function (args: { currentValue: { hex: string } }) {
@@ -360,7 +359,7 @@ export const tabsConfig = (
         {
           id: "paragraph_group",
           orientation: "Row",
-          header: "Paragraph",
+          header: "Parágrafo",
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
@@ -539,14 +538,13 @@ export const tabsConfig = (
         {
           id: "export_group",
           orientation: "Row",
-          header: "Export to PDF",
+          header: "Exportação",
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-export-pdf",
                     content: "Export to PDF",
