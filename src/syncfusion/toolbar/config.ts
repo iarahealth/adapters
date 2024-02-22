@@ -41,7 +41,7 @@ const toolbarOpenFile = (
   editorContainer: DocumentEditorContainer
 ): void => {
   switch (arg) {
-    case "open":
+    case "open": {
       const filePicker = document.createElement("input") as HTMLInputElement;
       filePicker.setAttribute("type", "file");
       filePicker.setAttribute(
@@ -58,7 +58,8 @@ const toolbarOpenFile = (
 
       filePicker.click();
       break;
-    case "image":
+    }
+    case "image": {
       const imagePicker = document.createElement("input") as HTMLInputElement;
       imagePicker.setAttribute("type", "file");
       imagePicker.setAttribute("accept", ".jpg,.jpeg,.png");
@@ -70,6 +71,7 @@ const toolbarOpenFile = (
 
       imagePicker.click();
       break;
+    }
   }
 };
 
@@ -241,7 +243,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
@@ -263,8 +265,6 @@ export const toolBarSettings = (
       config,
       ribbonMethods
     ),
-    activeLayout: "Simplified",
-    hideLayoutSwitcher: true,
   });
 
   const onSelectionChange = () => {
