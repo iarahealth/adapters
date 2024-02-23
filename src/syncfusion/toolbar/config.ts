@@ -226,7 +226,7 @@ const toolbarButtonClick = (
       editor.documentEditor.editor.clearList();
       break;
     case "insertTable":
-      editor.documentEditor.editor.insertTable();
+      editor.documentEditor.showDialog("Table");
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
