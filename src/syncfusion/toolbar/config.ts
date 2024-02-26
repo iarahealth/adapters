@@ -1,6 +1,7 @@
 import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
+  BorderSettings 
 } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
@@ -227,6 +228,13 @@ const toolbarButtonClick = (
       break;
     case "insertTable":
       editor.documentEditor.showDialog("Table");
+
+      let borderSettings: BorderSettings = {
+        type: 'AllBorders',
+        lineWidth: 12,
+        borderColor: '#ffffff'
+      };
+      editor.documentEditor.editor.applyBorders(borderSettings);
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
