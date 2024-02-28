@@ -154,10 +154,18 @@ export class IaraSyncfusionAdapter
       this._selectionManager = new IaraSyncfusionSelectionManager(
         this._editorContainer.documentEditor
       );
+      console.log(
+        this._selectionManager.initialSelectionData.startOffset,
+        "STARRT-IF"
+      );
     } else if (this._selectionManager) {
       this._editorContainer.documentEditor.selection.select(
         this._selectionManager.initialSelectionData.startOffset,
         this._inferenceEndOffset
+      );
+      console.log(
+        this._selectionManager.initialSelectionData.startOffset,
+        "STARRT-ELSE"
       );
     }
     if (!this._selectionManager) return;
@@ -196,14 +204,29 @@ export class IaraSyncfusionAdapter
         return;
       }
     }
-    let text = this._inferenceFormatter.format(
+    const text = this._inferenceFormatter.format(
       inference,
       this._selectionManager.wordBeforeSelection,
       this._selectionManager.wordAfterSelection
     );
 
-    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
-    this.insertText(text);
+    const startsWithPunct = /^[.,:;?!]/.test(text);
+    if (
+      /\s$/.test(this._selectionManager.wordBeforeSelection) &&
+      startsWithPunct
+    ) {
+      this._editorContainer.documentEditor.selection.extendBackward();
+      console.log(
+        this._editorContainer.documentEditor.selection.startOffset,
+        "ENTROU"
+      );
+      this._selectionManager.initialSelectionData.startOffset = "0;0;5";
+      // this._editorContainer.documentEditor.selection.startOffset;
+    }
+
+    if (text.length) this.insertText(text);
+    else this._editorContainer.documentEditor.editor.delete();
+
     this._inferenceEndOffset =
       this._editorContainer.documentEditor.selection.endOffset;
 

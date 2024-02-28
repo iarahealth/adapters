@@ -7,17 +7,21 @@ export class IaraEditorInferenceFormatter {
     wordBefore: string
   ): string {
     const addSpaceBefore =
-      wordBefore.length &&
+      !!wordBefore.length &&
       !/[\s\n\r\v]$/.test(wordBefore) &&
       !/^[.,:;?!]/.test(text);
 
     const addSpaceAfter =
-      wordAfter.length && !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
-
+      !!text.length &&
+      !!wordAfter.length &&
+      !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
+    console.log(`${wordBefore}-ANTES ${addSpaceBefore}`);
+    console.log(`${wordAfter}-DEPOIS ${addSpaceAfter}`);
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
 
   public _capitalize(text: string, wordBefore: string): string {
+    wordBefore = wordBefore.trim();
     const capitalize = !wordBefore.length || /[.:;?!\n\r\v]$/.test(wordBefore);
     return capitalize
       ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
@@ -106,7 +110,8 @@ export class IaraEditorInferenceFormatter {
   ): string {
     let text = inference.richTranscript
       .replace(/^<div>/, "")
-      .replace(/<\/div>$/, "");
+      .replace(/<\/div>$/, "")
+      .replace(/\s*<\/div><div>\s*/g, "\n");
 
     text = this._parseMeasurements(text);
 
@@ -119,7 +124,7 @@ export class IaraEditorInferenceFormatter {
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
-
+    text = text.trim();
     text = this._capitalize(text, _wordBefore);
     text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
 
