@@ -1,7 +1,8 @@
 import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
-  BorderSettings 
+  BorderSettings,
+  TableWidget
 } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
@@ -39,21 +40,19 @@ Ribbon.Inject(RibbonFileMenu, RibbonColorPicker);
 
 const toolbarOpenFile = (
   arg: string,
-  editorContainer: DocumentEditorContainer
+  editorContainer: DocumentEditorContainer,
+  config?: IaraSyncfusionConfig
 ): void => {
   switch (arg) {
     case "open": {
       const filePicker = document.createElement("input") as HTMLInputElement;
       filePicker.setAttribute("type", "file");
-      filePicker.setAttribute(
-        "accept",
-        ".doc,.docx,.rtf,.txt,.htm,.html,.sfdt"
-      );
+      filePicker.setAttribute("accept", ".doc,.docx,.rtf,.txt,.htm,.html,.sfdt");
 
       filePicker.onchange = (): void => {
         const file = filePicker.files![0];
         if (!file.name.endsWith(".sfdt")) {
-          loadFile(file, editorContainer);
+          loadFile(file, editorContainer, config);
         }
       };
 
@@ -76,7 +75,12 @@ const toolbarOpenFile = (
   }
 };
 
-function loadFile(file: File, editorContainer: DocumentEditorContainer) {
+function loadFile(
+  file: File,
+  editorContainer: DocumentEditorContainer,
+  config?: IaraSyncfusionConfig
+)
+{
   const formData = new FormData();
   formData.append("files", file);
 
@@ -88,7 +92,14 @@ function loadFile(file: File, editorContainer: DocumentEditorContainer) {
     }
   )
     .then(response => response.text())
-    .then(text => editorContainer.documentEditor.open(text));
+    .then(text => editorContainer.documentEditor.open(text))
+    .then(() => {
+      if (config?.darkMode)
+      {
+        editorContainer.documentEditor.documentHelper.backgroundColor = "#444";
+        editorContainer.documentEditor.focusIn();
+      }
+    });
 }
 
 function onInsertImage(
@@ -229,12 +240,23 @@ const toolbarButtonClick = (
     case "insertTable":
       editor.documentEditor.showDialog("Table");
 
-      let borderSettings: BorderSettings = {
-        type: 'AllBorders',
-        lineWidth: 12,
-        borderColor: '#ffffff'
-      };
-      editor.documentEditor.editor.applyBorders(borderSettings);
+      //braun
+      setTimeout(() => {
+        let borderSettings: BorderSettings = {
+          type: 'AllBorders',
+          // lineWidth: 12,
+          borderColor: '#ffffff'
+        };
+
+        // editor.documentEditor.selection.tableFormat.background = '#ffffff';
+        editor.documentEditor.editor.applyBorders(borderSettings);
+
+
+
+
+
+      },5000);
+
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);

@@ -11,7 +11,7 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
-  toolbarOpenFile: (arg: string, editor: DocumentEditorContainer) => void,
+  toolbarOpenFile: (arg: string, editor: DocumentEditorContainer, config?: IaraSyncfusionConfig) => void,
   toolbarButtonClick: (
     arg: string,
     editor: DocumentEditorContainer,
@@ -43,7 +43,7 @@ export const tabsConfig = (
                     isToggle: true,
                     iconCss: "e-icons e-folder-open",
                     clicked: function () {
-                      toolbarOpenFile("open", editor);
+                      toolbarOpenFile("open", editor, config);
                     },
                   },
                   ribbonTooltipSettings: {

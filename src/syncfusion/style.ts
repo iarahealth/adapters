@@ -55,6 +55,13 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
       document.getElementsByTagName("head")[0].appendChild(styleNode);
       styleNode.sheet?.insertRule(".e-de-blink-cursor { border-left: 1px solid #fff !important; }");
       styleNode.sheet?.insertRule(".e-de-status-bar span { color: #fff !important; }");
+
+      //braun
+      styleNode.sheet?.insertRule(".e-rte-content .e-rte-table.e-no-border td,.e-rte-content .e-rte-table.e-no-border th {border: 1px solid #ffffff !important;}");
+      styleNode.sheet?.insertRule(".e-table .e-table-header, .e-table .e-row, .e-table .e-row .e-cell {border-color: #ffffff !important;}");
+      styleNode.sheet?.insertRule("table, table td, table th {border-color: #fff !important;}");
+      styleNode.sheet?.insertRule(".e-de-table table, .e-de-table table td, .e-de-table table th {border-color: #fff !important;}");
+
     }
   }
 
