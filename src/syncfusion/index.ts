@@ -196,13 +196,11 @@ export class IaraSyncfusionAdapter
         return;
       }
     }
-    let text = this._inferenceFormatter.format(
+    const text = this._inferenceFormatter.format(
       inference,
       this._selectionManager.wordBeforeSelection,
       this._selectionManager.wordAfterSelection
     );
-
-    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
 
     if (text.length) this.insertText(text);
     else this._editorContainer.documentEditor.editor.delete();

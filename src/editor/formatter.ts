@@ -10,7 +10,6 @@ export class IaraEditorInferenceFormatter {
       wordBefore.length &&
       !/[\s\n\r\v]$/.test(wordBefore) &&
       !/^[.,:;?!]/.test(text);
-
     const addSpaceAfter =
       wordAfter.length && !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
 
@@ -108,6 +107,9 @@ export class IaraEditorInferenceFormatter {
     let text = inference.richTranscript
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
+    text = text.trim();
+    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
+
     if (text.length === 0) return text;
 
     text = this._parseMeasurements(text);
