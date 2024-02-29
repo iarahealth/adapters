@@ -203,7 +203,10 @@ export class IaraSyncfusionAdapter
     );
 
     text = text.replace(/\s*<\/div><div>\s*/g, "\n");
-    this.insertText(text);
+
+    if (text.length) this.insertText(text);
+    else this._editorContainer.documentEditor.editor.delete();
+
     this._inferenceEndOffset =
       this._editorContainer.documentEditor.selection.endOffset;
 

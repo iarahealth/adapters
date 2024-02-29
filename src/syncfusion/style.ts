@@ -30,8 +30,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.focusIn();
   }
 
-  setTheme(theme: "light" | "dark")
-  {
+  setTheme(theme: "light" | "dark") {
     if (theme === "light") return;
 
     IaraSyncfusionStyleManager.loadThemeCss(theme);
@@ -39,10 +38,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
   }
 
-  static loadThemeCss(theme: "light" | "dark")
-  {
-    if (theme === 'dark')
-    {
+  static loadThemeCss(theme: "light" | "dark") {
+    if (theme === "dark") {
       const FILE = "https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css";
       const css = document.createElement("link");
       css.setAttribute("rel", "stylesheet");
@@ -53,8 +50,12 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
       const styleNode = document.createElement("style");
       document.getElementsByTagName("head")[0].appendChild(styleNode);
-      styleNode.sheet?.insertRule(".e-de-blink-cursor { border-left: 1px solid #fff !important; }");
-      styleNode.sheet?.insertRule(".e-de-status-bar span { color: #fff !important; }");
+      styleNode.sheet?.insertRule(
+        ".e-de-blink-cursor { border-left: 1px solid #fff !important; }"
+      );
+      styleNode.sheet?.insertRule(
+        ".e-de-status-bar span { color: #fff !important; }"
+      );
     }
   }
 

@@ -107,6 +107,7 @@ export class IaraEditorInferenceFormatter {
     let text = inference.richTranscript
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
+    if (text.length === 0) return text;
 
     text = this._parseMeasurements(text);
 
