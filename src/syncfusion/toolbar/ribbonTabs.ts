@@ -89,7 +89,7 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Inserir",
+          header: editorContainerLocale.documenteditor["Insert"],
           id: "insert",
           collections: [
             {
@@ -97,7 +97,8 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Image",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Image"],
                     iconCss: "e-icons e-image",
                     clicked: function () {
                       toolbarOpenFile("image", editor);
@@ -114,7 +115,7 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Tabela",
+                    content: "Inserir Tabela",
                     iconCss: "e-icons e-table",
                     clicked: function () {
                       toolbarButtonClick("insertTable", editor);
@@ -132,7 +133,8 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Área de transferência",
+          header:
+            editorContainerLocale.documenteditorcontainer["Local Clipboard"],
           id: "clipboard",
           groupIconCss: "e-icons e-paste",
           collections: [
@@ -146,6 +148,9 @@ export const tabsConfig = (
                     clicked: function () {
                       toolbarButtonClick("Paste", editor);
                     },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Paste"],
                   },
                 },
               ],
@@ -183,7 +188,7 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Fonte",
+          header: editorContainerLocale.documenteditor["Font"],
           groupIconCss: "e-icons e-bold",
           cssClass: "font-group",
           overflowHeader: "More Font Options",
@@ -359,7 +364,7 @@ export const tabsConfig = (
         {
           id: "paragraph_group",
           orientation: "Row",
-          header: "Parágrafo",
+          header: editorContainerLocale.documenteditorcontainer["Paragraph"],
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
@@ -538,7 +543,7 @@ export const tabsConfig = (
         {
           id: "export_group",
           orientation: "Row",
-          header: "Exportação",
+          header: editorContainerLocale.grid["Export"],
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
@@ -547,13 +552,13 @@ export const tabsConfig = (
                   type: "Button",
                   buttonSettings: {
                     iconCss: "e-icons e-export-pdf",
-                    content: "Export to PDF",
+                    content: "PDF",
                     clicked: function () {
                       toolbarButtonClick("ExportToPDF", editor, config);
                     },
                   },
                   ribbonTooltipSettings: {
-                    title: "Exportar para PDF",
+                    title: editorContainerLocale.grid["Pdfexport"],
                   },
                 },
               ],
