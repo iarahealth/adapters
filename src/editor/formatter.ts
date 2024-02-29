@@ -18,6 +18,7 @@ export class IaraEditorInferenceFormatter {
   }
 
   public _capitalize(text: string, wordBefore: string): string {
+    wordBefore = wordBefore.trim();
     const capitalize = !wordBefore.length || /[.:;?!\n\r\v]$/.test(wordBefore);
     return capitalize
       ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
