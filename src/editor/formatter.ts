@@ -15,12 +15,16 @@ export class IaraEditorInferenceFormatter {
     const addSpaceBefore =
       !textStartsWithPunctuation && !wordBeforeEndsInSpace && !isAtStartOfLine;
 
-    const wordAfterStartsWithSpaceOrLine = /^[\s\u00A0\u200C]/.test(wordAfter);
+    const wordAfterStartsWithSpaceOrNewLine = /^[\s\u00A0\u200C]/.test(
+      wordAfter
+    );
     const wordAfterStartsWithPunctuation = /^[.,:;?!]/.test(wordAfter);
+    const textEndsWithSpaceOrNewLine = /\s$/.test(text);
     const addSpaceAfter =
       wordAfter.length &&
-      !wordAfterStartsWithSpaceOrLine &&
-      !wordAfterStartsWithPunctuation;
+      !wordAfterStartsWithSpaceOrNewLine &&
+      !wordAfterStartsWithPunctuation &&
+      !textEndsWithSpaceOrNewLine;
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
