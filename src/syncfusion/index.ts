@@ -136,6 +136,19 @@ export class IaraSyncfusionAdapter
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
+
+    this._editorContainer.documentEditor.selection.moveToDocumentStart();
+
+    // Set the default editor format after inserting the template
+    this._editorContainer.documentEditor.setDefaultCharacterFormat({
+      fontFamily:
+        this._editorContainer.documentEditor.selection.characterFormat
+          .fontFamily,
+      fontSize:
+        this._editorContainer.documentEditor.selection.characterFormat.fontSize,
+    });
+
+    this._editorContainer.documentEditor.selection.moveToDocumentEnd();
   }
 
   insertText(text: string): void {
