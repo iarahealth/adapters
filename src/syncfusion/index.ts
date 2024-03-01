@@ -199,7 +199,8 @@ export class IaraSyncfusionAdapter
     const text = this._inferenceFormatter.format(
       inference,
       this._selectionManager.wordBeforeSelection,
-      this._selectionManager.wordAfterSelection
+      this._selectionManager.wordAfterSelection,
+      this._selectionManager.isAtStartOfLine
     );
 
     if (text.length) this.insertText(text);

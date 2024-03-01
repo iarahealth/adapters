@@ -29,6 +29,7 @@ export class IaraSyncfusionSelectionManager {
   public initialSelectionData: SelectionData;
   public wordAfterSelection = "";
   public wordBeforeSelection = "";
+  public isAtStartOfLine = false;
 
   constructor(private _editor: DocumentEditor, getSurrondingWords = true) {
     const characterFormat = this._editor.selection.characterFormat;
@@ -48,6 +49,7 @@ export class IaraSyncfusionSelectionManager {
       endOffset: this._editor.selection.endOffset,
       startOffset: this._editor.selection.startOffset,
     };
+    this.isAtStartOfLine = this._editor.selection.startOffset.endsWith(";0");
 
     if (!getSurrondingWords) return;
 

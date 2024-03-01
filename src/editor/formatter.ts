@@ -4,14 +4,23 @@ export class IaraEditorInferenceFormatter {
   public _addTrailingSpaces(
     text: string,
     wordAfter: string,
-    wordBefore: string
+    wordBefore: string,
+    isAtStartOfLine: boolean
   ): string {
+    //\u00A0\u200C are non-breaking space and zero-width non-joiner respectively
+    const wordBeforeEndsInSpace = /([ \u00A0\u200C]+)([\n\r\v]+)?$/.test(
+      wordBefore
+    );
+    const textStartsWithPunctuation = /^[.,:;?!]/.test(text);
     const addSpaceBefore =
-      wordBefore.length &&
-      !/[\s\n\r\v]$/.test(wordBefore) &&
-      !/^[.,:;?!]/.test(text);
+      !textStartsWithPunctuation && !wordBeforeEndsInSpace && !isAtStartOfLine;
+
+    const wordAfterStartsWithSpaceOrLine = /^[\s\u00A0\u200C]/.test(wordAfter);
+    const wordAfterStartsWithPunctuation = /^[.,:;?!]/.test(wordAfter);
     const addSpaceAfter =
-      wordAfter.length && !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
+      wordAfter.length &&
+      !wordAfterStartsWithSpaceOrLine &&
+      !wordAfterStartsWithPunctuation;
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
@@ -101,8 +110,9 @@ export class IaraEditorInferenceFormatter {
 
   format(
     inference: IaraSpeechRecognitionDetail,
-    _wordBefore: string,
-    _wordAfter: string
+    wordBefore: string,
+    wordAfter: string,
+    isAtStartOfLine: boolean
   ): string {
     let text = inference.richTranscript
       .replace(/^<div>/, "")
@@ -124,8 +134,13 @@ export class IaraEditorInferenceFormatter {
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
 
-    text = this._capitalize(text, _wordBefore);
-    text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
+    text = this._capitalize(text, wordBefore);
+    text = this._addTrailingSpaces(
+      text,
+      wordAfter,
+      wordBefore,
+      isAtStartOfLine
+    );
 
     return text;
   }
