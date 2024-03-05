@@ -136,6 +136,19 @@ export class IaraSyncfusionAdapter
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
+
+    this._editorContainer.documentEditor.selection.moveToDocumentStart();
+
+    // Set the default editor format after inserting the template
+    this._editorContainer.documentEditor.setDefaultCharacterFormat({
+      fontFamily:
+        this._editorContainer.documentEditor.selection.characterFormat
+          .fontFamily,
+      fontSize:
+        this._editorContainer.documentEditor.selection.characterFormat.fontSize,
+    });
+
+    this._editorContainer.documentEditor.selection.moveToDocumentEnd();
   }
 
   insertText(text: string): void {
@@ -148,12 +161,7 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      if (this._editorContainer.documentEditor.selection.text.length) {
-        this._editorContainer.documentEditor.editor.delete();
-      }
-      this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._editorContainer.documentEditor
-      );
+      this._handleFirstInference();
     } else if (this._selectionManager) {
       this._editorContainer.documentEditor.selection.select(
         this._selectionManager.initialSelectionData.startOffset,
@@ -166,44 +174,19 @@ export class IaraSyncfusionAdapter
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
     ) {
-      const phraseOrTemplate =
-        this._recognition.richTranscriptTemplates.templates[
-          inference.richTranscriptModifiers[0]
-        ];
-      const metadata = phraseOrTemplate.metadata as { category?: string };
-      if (metadata.category === "Template" || !metadata.category) {
-        const index: number | undefined =
-          inference.richTranscriptWithoutModifiers.match(
-            new RegExp(
-              `iara texto ${inference.richTranscriptModifiers[0]}`,
-              "ui"
-            )
-          )?.index;
-
-        const templatePrefix = inference.richTranscript
-          .slice(0, index)
-          .replace(/^<div>/, "");
-        const template = inference.richTranscript
-          .slice(index)
-          .replace(/<\/div>$/, "");
-
-        this.insertInference({
-          ...inference,
-          ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
-        });
-        this.insertTemplate(template);
-
-        return;
-      }
+      const insertedTemplate = this._handleTemplateInference(inference);
+      if (insertedTemplate) return;
     }
-    let text = this._inferenceFormatter.format(
+    const text = this._inferenceFormatter.format(
       inference,
       this._selectionManager.wordBeforeSelection,
-      this._selectionManager.wordAfterSelection
+      this._selectionManager.wordAfterSelection,
+      this._selectionManager.isAtStartOfLine
     );
 
-    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
-    this.insertText(text);
+    if (text.length) this.insertText(text);
+    else this._editorContainer.documentEditor.editor.delete();
+
     this._inferenceEndOffset =
       this._editorContainer.documentEditor.selection.endOffset;
 
@@ -295,5 +278,61 @@ export class IaraSyncfusionAdapter
         this._recognition.toggleRecording();
       }
     });
+  }
+
+  private _handleFirstInference(): void {
+    if (this._editorContainer.documentEditor.selection.text.length) {
+      this._editorContainer.documentEditor.editor.delete();
+    }
+    this._selectionManager = new IaraSyncfusionSelectionManager(
+      this._editorContainer.documentEditor
+    );
+
+    if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
+      this._editorContainer.documentEditor.selection.extendBackward();
+      this._editorContainer.documentEditor.editor.delete();
+      this._selectionManager = new IaraSyncfusionSelectionManager(
+        this._editorContainer.documentEditor
+      );
+    }
+  }
+
+  private _handleTemplateInference(
+    inference: IaraSpeechRecognitionDetail
+  ): boolean {
+    if (
+      !inference.richTranscriptModifiers?.length ||
+      !inference.richTranscriptWithoutModifiers
+    )
+      return false;
+
+    const phraseOrTemplate =
+      this._recognition.richTranscriptTemplates.templates[
+        inference.richTranscriptModifiers[0]
+      ];
+    const metadata = phraseOrTemplate.metadata as { category?: string };
+    if (metadata.category === "Template" || !metadata.category) {
+      const index: number | undefined =
+        inference.richTranscriptWithoutModifiers.match(
+          new RegExp(`iara texto ${inference.richTranscriptModifiers[0]}`, "ui")
+        )?.index;
+
+      const templatePrefix = inference.richTranscript
+        .slice(0, index)
+        .replace(/^<div>/, "");
+      const template = inference.richTranscript
+        .slice(index)
+        .replace(/<\/div>$/, "");
+
+      this.insertInference({
+        ...inference,
+        ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
+      });
+      this.insertTemplate(template);
+
+      return true;
+    }
+
+    return false;
   }
 }

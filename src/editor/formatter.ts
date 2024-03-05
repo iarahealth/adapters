@@ -4,20 +4,33 @@ export class IaraEditorInferenceFormatter {
   public _addTrailingSpaces(
     text: string,
     wordAfter: string,
-    wordBefore: string
+    wordBefore: string,
+    isAtStartOfLine: boolean
   ): string {
+    //\u00A0\u200C are non-breaking space and zero-width non-joiner respectively
+    const wordBeforeEndsInSpace = /([ \u00A0\u200C]+)([\n\r\v]+)?$/.test(
+      wordBefore
+    );
+    const textStartsWithPunctuation = /^[.,:;?!]/.test(text);
     const addSpaceBefore =
-      wordBefore.length &&
-      !/[\s\n\r\v]$/.test(wordBefore) &&
-      !/^[.,:;?!]/.test(text);
+      !textStartsWithPunctuation && !wordBeforeEndsInSpace && !isAtStartOfLine;
 
+    const wordAfterStartsWithSpaceOrNewLine = /^[\s\u00A0\u200C]/.test(
+      wordAfter
+    );
+    const wordAfterStartsWithPunctuation = /^[.,:;?!]/.test(wordAfter);
+    const textEndsWithSpaceOrNewLine = /\s$/.test(text);
     const addSpaceAfter =
-      wordAfter.length && !/^[\s\n\r\v.,:;?!]/.test(wordAfter);
+      wordAfter.length &&
+      !wordAfterStartsWithSpaceOrNewLine &&
+      !wordAfterStartsWithPunctuation &&
+      !textEndsWithSpaceOrNewLine;
 
     return `${addSpaceBefore ? " " : ""}${text}${addSpaceAfter ? " " : ""}`;
   }
 
   public _capitalize(text: string, wordBefore: string): string {
+    wordBefore = wordBefore.trim();
     const capitalize = !wordBefore.length || /[.:;?!\n\r\v]$/.test(wordBefore);
     return capitalize
       ? `${text.charAt(0).toLocaleUpperCase()}${text.slice(1)}`
@@ -101,12 +114,17 @@ export class IaraEditorInferenceFormatter {
 
   format(
     inference: IaraSpeechRecognitionDetail,
-    _wordBefore: string,
-    _wordAfter: string
+    wordBefore: string,
+    wordAfter: string,
+    isAtStartOfLine: boolean
   ): string {
     let text = inference.richTranscript
       .replace(/^<div>/, "")
       .replace(/<\/div>$/, "");
+    text = text.trim();
+    text = text.replace(/\s*<\/div><div>\s*/g, "\n");
+
+    if (text.length === 0) return text;
 
     text = this._parseMeasurements(text);
 
@@ -120,8 +138,13 @@ export class IaraEditorInferenceFormatter {
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
 
-    text = this._capitalize(text, _wordBefore);
-    text = this._addTrailingSpaces(text, _wordAfter, _wordBefore);
+    text = this._capitalize(text, wordBefore);
+    text = this._addTrailingSpaces(
+      text,
+      wordAfter,
+      wordBefore,
+      isAtStartOfLine
+    );
 
     return text;
   }
