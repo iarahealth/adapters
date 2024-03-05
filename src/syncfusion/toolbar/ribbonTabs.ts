@@ -448,6 +448,30 @@ export const tabsConfig = (
             },
           ],
         },
+        {
+          id: "navigation_fields",
+          header: "Marcadores",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-bookmark e-align-center",
+                    content: "Campos de navegação",
+                    clicked: function () {
+                      toolbarButtonClick("navigationFields", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: "Campos de navegação",
+                  },
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];

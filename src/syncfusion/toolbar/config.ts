@@ -11,6 +11,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { tabsConfig } from "./ribbonTabs";
 import { IaraSFDT } from "../content";
+import { createNavigationFields } from "../navigationFields";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -93,6 +94,9 @@ const toolbarButtonClick = (
     case "superscript":
       //Toggles the superscript of selected content
       editor.documentEditor.editor.toggleSuperscript();
+      break;
+    case "navigationFields":
+      createNavigationFields(editor);
       break;
     case "AlignLeft":
       //Toggle the Left alignment for selected or current paragraph
