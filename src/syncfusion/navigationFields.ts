@@ -22,19 +22,22 @@ export const createNavigationFields: (editor: DocumentEditorContainer) => void =
       `Bookmark${bookmarksCount}`,
       true
     );
-    selectTitle(editor);
+    selectTitle(editor, content);
   };
 
-const selectTitle = (editor: DocumentEditorContainer) => {
+const selectTitle = (editor: DocumentEditorContainer, content: string) => {
   const startOffset = editor.documentEditor.selection.startOffset.split(";");
+  //add 2 positions so as not to select [ or <
   startOffset[2] = String(
     Number(editor.documentEditor.selection.startOffset.split(";")[2]) + 2
   );
   const start = startOffset.join(";");
 
   const endOffset = editor.documentEditor.selection.endOffset.split(";");
+  //remove the content size plus 2 positions so as not to select > or ]
   endOffset[2] = String(
-    Number(editor.documentEditor.selection.endOffset.split(";")[2]) - 27
+    Number(editor.documentEditor.selection.endOffset.split(";")[2]) -
+      (content.length + 2)
   );
   const end = endOffset.join(";");
   editor.documentEditor.selection.select(start, end);
