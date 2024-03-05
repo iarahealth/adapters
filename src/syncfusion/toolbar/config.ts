@@ -226,7 +226,14 @@ const toolbarButtonClick = (
       editor.documentEditor.editor.clearList();
       break;
     case "insertTable":
-      editor.documentEditor.showDialog("Table");
+      editor.documentEditor.editor.insertTable(2, 2);
+      editor.documentEditor.selection.selectTable();
+      editor.documentEditor.editor.applyBorders({
+        borderColor: editor.documentEditor.characterFormat.fontColor,
+        borderStyle: "Single",
+        lineWidth: 1,
+        type: "AllBorders",
+      });
       break;
     case "ExportToPDF":
       IaraSFDT.toPdf(editor, config);
@@ -243,7 +250,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
