@@ -26,11 +26,14 @@ interface SelectionCharacterFormatData {
 }
 
 export class IaraSyncfusionSelectionManager {
-  private _initialSelectionData: SelectionData;
+  public initialSelectionData: SelectionData;
+  public wordAfterSelection = "";
+  public wordBeforeSelection = "";
+  public isAtStartOfLine = false;
 
-  constructor(private _editor: DocumentEditor) {
+  constructor(private _editor: DocumentEditor, getSurrondingWords = true) {
     const characterFormat = this._editor.selection.characterFormat;
-    this._initialSelectionData = {
+    this.initialSelectionData = {
       characterFormat: {
         allCaps: characterFormat.allCaps,
         baselineAlignment: characterFormat.baselineAlignment,
@@ -46,9 +49,22 @@ export class IaraSyncfusionSelectionManager {
       endOffset: this._editor.selection.endOffset,
       startOffset: this._editor.selection.startOffset,
     };
+    this.isAtStartOfLine = this._editor.selection.startOffset.endsWith(";0");
+
+    if (!getSurrondingWords) return;
+
+    this.wordBeforeSelection = this._getWordBeforeSelection();
+    this.resetSelection(false);
+
+    const isLineStart =
+      /[\n\r\v]$/.test(this.wordBeforeSelection) ||
+      this.wordBeforeSelection.length === 0;
+
+    this.wordAfterSelection = this._getWordAfterSelection(isLineStart);
+    this.resetSelection();
   }
 
-  public getWordAfterSelection(isLineStart = false): string {
+  private _getWordAfterSelection(isLineStart = false): string {
     this._editor.selection.extendToWordEnd();
     //nbsp is a non-breaking space \u00A0.
     //zwnj is a zero-width non-joiner \u200c.
@@ -61,12 +77,10 @@ export class IaraSyncfusionSelectionManager {
       this._editor.selection.extendToWordEnd();
     }
     const wordAfter = this._editor.selection.text;
-
-    this.resetSelection(false);
     return wordAfter;
   }
 
-  public getWordBeforeSelection(): string {
+  private _getWordBeforeSelection(): string {
     this._editor.selection.extendToWordStart();
     //nbsp is a non-breaking space \u00A0.
     //zwnj is a zero-width non-joiner \u200c.
@@ -78,15 +92,13 @@ export class IaraSyncfusionSelectionManager {
     if (isNbspOrZwnj) this._editor.selection.extendToWordStart();
 
     const wordBefore = this._editor.selection.text;
-
-    this.resetSelection(false);
     return wordBefore;
   }
 
   public resetSelection(resetStyles = true): void {
     this._editor.selection.select(
-      this._initialSelectionData.startOffset,
-      this._initialSelectionData.endOffset
+      this.initialSelectionData.startOffset,
+      this.initialSelectionData.endOffset
     );
     if (resetStyles) {
       const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
@@ -104,7 +116,7 @@ export class IaraSyncfusionSelectionManager {
 
       charFormatProps.forEach(prop => {
         (this._editor.selection.characterFormat as any)[prop] =
-          this._initialSelectionData.characterFormat[prop];
+          this.initialSelectionData.characterFormat[prop];
       });
     }
   }

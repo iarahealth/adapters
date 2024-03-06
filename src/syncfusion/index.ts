@@ -31,8 +31,8 @@ export class IaraSyncfusionAdapter
   private _contentDate?: Date;
   private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
-  private _initialUndoStackSize = 0;
   private _selectionManager?: IaraSyncfusionSelectionManager;
+  private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
@@ -81,6 +81,8 @@ export class IaraSyncfusionAdapter
     DocumentEditor.Inject(Print);
     this._editorContainer.documentEditor.enablePrint = true;
 
+    this._editorContainer.documentEditor.enableImageResizer = true;
+
     this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
     this._editorContainer.addEventListener(
@@ -119,12 +121,6 @@ export class IaraSyncfusionAdapter
     return this._contentManager.getContent();
   }
 
-  getUndoStackSize(): number {
-    return (
-      this._editorContainer.documentEditor.editorHistory.undoStack?.length || 0
-    );
-  }
-
   insertParagraph(): void {
     this._editorContainer.documentEditor.editor.insertText("\n");
   }
@@ -140,6 +136,19 @@ export class IaraSyncfusionAdapter
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
+
+    this._editorContainer.documentEditor.selection.moveToDocumentStart();
+
+    // Set the default editor format after inserting the template
+    this._editorContainer.documentEditor.setDefaultCharacterFormat({
+      fontFamily:
+        this._editorContainer.documentEditor.selection.characterFormat
+          .fontFamily,
+      fontSize:
+        this._editorContainer.documentEditor.selection.characterFormat.fontSize,
+    });
+
+    this._editorContainer.documentEditor.selection.moveToDocumentEnd();
   }
 
   insertText(text: string): void {
@@ -152,75 +161,41 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      if (this._editorContainer.documentEditor.selection.text.length) {
-        this._editorContainer.documentEditor.editor.delete();
-      }
-      this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._editorContainer.documentEditor
+      this._handleFirstInference();
+    } else if (this._selectionManager) {
+      this._editorContainer.documentEditor.selection.select(
+        this._selectionManager.initialSelectionData.startOffset,
+        this._inferenceEndOffset
       );
-
-      this._initialUndoStackSize = this.getUndoStackSize();
-    } else {
-      const undoStackSize = this.getUndoStackSize();
-      for (let i = 0; i < undoStackSize - this._initialUndoStackSize; i++)
-        this.undo();
     }
+    if (!this._selectionManager) return;
 
     if (
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
     ) {
-      const phraseOrTemplate =
-        this._recognition.richTranscriptTemplates.templates[
-          inference.richTranscriptModifiers[0]
-        ];
-      const metadata = phraseOrTemplate.metadata as { category?: string };
-      if (metadata.category === "Template" || !metadata.category) {
-        const index: number | undefined =
-          inference.richTranscriptWithoutModifiers.match(
-            new RegExp(
-              `iara texto ${inference.richTranscriptModifiers[0]}`,
-              "ui"
-            )
-          )?.index;
-
-        const templatePrefix = inference.richTranscript
-          .slice(0, index)
-          .replace(/^<div>/, "");
-        const template = inference.richTranscript
-          .slice(index)
-          .replace(/<\/div>$/, "");
-
-        this.insertInference({
-          ...inference,
-          ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
-        });
-        this.insertTemplate(template);
-
-        return;
-      }
+      const insertedTemplate = this._handleTemplateInference(inference);
+      if (insertedTemplate) return;
     }
-
-    if (!this._selectionManager) return;
-
-    const wordBefore = this._selectionManager.getWordBeforeSelection();
-    const isLineStart = /[\n\r\v]$/.test(wordBefore) || wordBefore.length === 0;
-    const wordAfter = this._selectionManager.getWordAfterSelection(isLineStart);
-    this._selectionManager.resetSelection();
-
     const text = this._inferenceFormatter.format(
       inference,
-      wordBefore,
-      wordAfter
+      this._selectionManager.wordBeforeSelection,
+      this._selectionManager.wordAfterSelection,
+      this._selectionManager.isAtStartOfLine
     );
 
-    const [firstLine, ...lines]: string[] = text.split("</div><div>");
-    this.insertText(firstLine);
-    lines.forEach(line => {
-      this.insertParagraph();
-      line = line.trimStart();
-      if (line) this.insertText(line);
-    });
+    if (text.length) {
+      const [firstLine, ...lines]: string[] = text.split("\n");
+      this.insertText(firstLine);
+      lines.forEach(line => {
+        this.insertParagraph();
+        line = line.trimStart();
+        if (line) this.insertText(line);
+      });
+    } else this._editorContainer.documentEditor.editor.delete();
+
+    this._inferenceEndOffset =
+      this._editorContainer.documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
   }
@@ -296,7 +271,8 @@ export class IaraSyncfusionAdapter
     this._editorContainer.element.addEventListener("mousedown", event => {
       if (event.button === 1) {
         this._cursorSelection = new IaraSyncfusionSelectionManager(
-          this._editorContainer.documentEditor
+          this._editorContainer.documentEditor,
+          false
         );
       }
     });
@@ -309,5 +285,61 @@ export class IaraSyncfusionAdapter
         this._recognition.toggleRecording();
       }
     });
+  }
+
+  private _handleFirstInference(): void {
+    if (this._editorContainer.documentEditor.selection.text.length) {
+      this._editorContainer.documentEditor.editor.delete();
+    }
+    this._selectionManager = new IaraSyncfusionSelectionManager(
+      this._editorContainer.documentEditor
+    );
+
+    if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
+      this._editorContainer.documentEditor.selection.extendBackward();
+      this._editorContainer.documentEditor.editor.delete();
+      this._selectionManager = new IaraSyncfusionSelectionManager(
+        this._editorContainer.documentEditor
+      );
+    }
+  }
+
+  private _handleTemplateInference(
+    inference: IaraSpeechRecognitionDetail
+  ): boolean {
+    if (
+      !inference.richTranscriptModifiers?.length ||
+      !inference.richTranscriptWithoutModifiers
+    )
+      return false;
+
+    const phraseOrTemplate =
+      this._recognition.richTranscriptTemplates.templates[
+        inference.richTranscriptModifiers[0]
+      ];
+    const metadata = phraseOrTemplate.metadata as { category?: string };
+    if (metadata.category === "Template" || !metadata.category) {
+      const index: number | undefined =
+        inference.richTranscriptWithoutModifiers.match(
+          new RegExp(`iara texto ${inference.richTranscriptModifiers[0]}`, "ui")
+        )?.index;
+
+      const templatePrefix = inference.richTranscript
+        .slice(0, index)
+        .replace(/^<div>/, "");
+      const template = inference.richTranscript
+        .slice(index)
+        .replace(/<\/div>$/, "");
+
+      this.insertInference({
+        ...inference,
+        ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
+      });
+      this.insertTemplate(template);
+
+      return true;
+    }
+
+    return false;
   }
 }

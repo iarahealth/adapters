@@ -11,8 +11,13 @@ import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
-  toolbarButtonClick: (arg: string, editor: DocumentEditorContainer) => void,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  toolbarOpenFile: (arg: string, editor: DocumentEditorContainer) => void,
+  toolbarButtonClick: (
+    arg: string,
+    editor: DocumentEditorContainer,
+    config?: IaraSyncfusionConfig
+  ) => void,
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -33,9 +38,22 @@ export const tabsConfig = (
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Undo",
+                    content: "Abrir",
+                    isToggle: true,
+                    iconCss: "e-icons e-folder-open",
+                    clicked: function () {
+                      toolbarOpenFile("open", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.PdfViewer["Open"],
+                  },
+                },
+                {
+                  type: "Button",
+                  buttonSettings: {
+                    content: "Desfazer",
                     isToggle: true,
                     iconCss: "e-icons e-undo",
                     clicked: function () {
@@ -51,9 +69,8 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Redo",
+                    content: "Refazer",
                     isToggle: true,
                     iconCss: "e-icons e-redo",
                     clicked: function () {
@@ -72,22 +89,23 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Clipboard",
-          id: "clipboard",
-          showLauncherIcon: true,
-          groupIconCss: "e-icons e-paste",
+          header: editorContainerLocale.documenteditor["Insert"],
+          id: "insert",
           collections: [
             {
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Large,
                   buttonSettings: {
-                    iconCss: "e-icons e-paste",
-                    content: "Colar",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Image"],
+                    iconCss: "e-icons e-image",
                     clicked: function () {
-                      toolbarButtonClick("Paste", editor);
+                      toolbarOpenFile("image", editor);
                     },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.richtexteditor["image"],
                   },
                 },
               ],
@@ -96,10 +114,54 @@ export const tabsConfig = (
               items: [
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Inserir Tabela",
+                    iconCss: "e-icons e-table",
+                    clicked: function () {
+                      toolbarButtonClick("insertTable", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Insert a table into the document"
+                      ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          header:
+            editorContainerLocale.documenteditorcontainer["Local Clipboard"],
+          id: "clipboard",
+          groupIconCss: "e-icons e-paste",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-paste",
+                    content: editorContainerLocale.filemanager["Tooltip-Paste"],
+                    clicked: function () {
+                      toolbarButtonClick("Paste", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.filemanager["Tooltip-Paste"],
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  type: "Button",
                   buttonSettings: {
                     iconCss: "e-icons e-cut",
-                    content: "Cut",
+                    content: editorContainerLocale.filemanager["Tooltip-Cut"],
                     clicked: function () {
                       toolbarButtonClick("cut", editor);
                     },
@@ -110,10 +172,9 @@ export const tabsConfig = (
                 },
                 {
                   type: "Button",
-                  allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-copy",
-                    content: "Copy",
+                    content: editorContainerLocale.filemanager["Tooltip-Copy"],
                     clicked: function () {
                       toolbarButtonClick("copy", editor);
                     },
@@ -127,7 +188,7 @@ export const tabsConfig = (
           ],
         },
         {
-          header: "Font",
+          header: editorContainerLocale.documenteditor["Font"],
           groupIconCss: "e-icons e-bold",
           cssClass: "font-group",
           overflowHeader: "More Font Options",
@@ -187,7 +248,6 @@ export const tabsConfig = (
                 {
                   type: "ColorPicker",
                   id: "fontColorSelect",
-                  allowedSizes: RibbonItemSize.Small,
                   displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
                   colorPickerSettings: {
                     change: function (args: { currentValue: { hex: string } }) {
@@ -304,7 +364,7 @@ export const tabsConfig = (
         {
           id: "paragraph_group",
           orientation: "Row",
-          header: "Paragraph",
+          header: editorContainerLocale.documenteditorcontainer["Paragraph"],
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
@@ -362,6 +422,38 @@ export const tabsConfig = (
                         changeLineSpacing({ value: args.itemData.text });
                       }
                     },
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-unordered-3",
+                    content: "Bullets",
+                    clicked: function () {
+                      toolbarButtonClick("Bullets", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer["Bullets"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-ordered",
+                    content: "Numbering",
+                    clicked: function () {
+                      toolbarButtonClick("Numbering", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Numbering"
+                      ],
                   },
                 },
                 {
@@ -466,6 +558,31 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title: "Campos de navegação",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "export_group",
+          orientation: "Row",
+          header: editorContainerLocale.grid["Export"],
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-export-pdf",
+                    content: "PDF",
+                    clicked: function () {
+                      toolbarButtonClick("ExportToPDF", editor, config);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.grid["Pdfexport"],
                   },
                 },
               ],
