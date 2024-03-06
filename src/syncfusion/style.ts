@@ -69,6 +69,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.editor.toggleUnderline("Single");
   }
   toggleUppercase(): void {
+    //braun
+    console.log('all caps');
     this._editor.editor.toggleAllCaps();
   }
 }
