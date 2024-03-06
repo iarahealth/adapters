@@ -51,6 +51,7 @@ export class IaraSFDT {
   }
 
   static async fromHtml(content: string, authHeaders: HeadersInit) {
+    content = content.replace("<br>", "<br/>");
     const response = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/",
       {
