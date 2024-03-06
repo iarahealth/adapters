@@ -25,7 +25,8 @@ export class IaraSFDT {
 
   static detectContentType(content: string): IaraSyncfusionContentTypes {
     if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
-    else if (content.startsWith("{")) return IaraSyncfusionContentTypes.SFDT;
+    else if (content.startsWith('{"sfdt":'))
+      return IaraSyncfusionContentTypes.SFDT;
     else if (content.startsWith("<")) return IaraSyncfusionContentTypes.HTML;
     else throw new Error("Content type not recognized.");
   }
@@ -50,7 +51,7 @@ export class IaraSFDT {
   }
 
   static async fromHtml(content: string, authHeaders: HeadersInit) {
-    const sfdt = await fetch(
+    const response = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/",
       {
         method: "POST",
@@ -60,13 +61,17 @@ export class IaraSFDT {
         },
         body: JSON.stringify({ html: content }),
       }
-    ).then(response => response.text());
+    );
+    const responseText = await response.text();
+    if (!response.ok) {
+      throw new Error(responseText);
+    }
 
-    return new IaraSFDT(sfdt, authHeaders);
+    return new IaraSFDT(responseText, authHeaders);
   }
 
   static async fromRtf(content: string, authHeaders: HeadersInit) {
-    const sfdt = await fetch(
+    const response = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/rtf_to_sfdt/",
       {
         method: "POST",
@@ -76,16 +81,20 @@ export class IaraSFDT {
         },
         body: JSON.stringify({ rtf: content }),
       }
-    ).then(response => response.text());
+    );
+    const responseText = await response.text();
+    if (!response.ok) {
+      throw new Error(responseText);
+    }
 
-    return new IaraSFDT(sfdt, authHeaders);
+    return new IaraSFDT(responseText, authHeaders);
   }
 
   static async toHtml(
     content: string,
     authHeaders: HeadersInit
   ): Promise<string> {
-    let { html } = await fetch(
+    const response = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
       {
         method: "POST",
@@ -95,8 +104,17 @@ export class IaraSFDT {
         },
         body: content,
       }
-    ).then(response => response.json());
-    html = html.replace(`<?xml version="1.0" encoding="utf-8"?>`, "");
+    );
+    const responseJson = await response.json();
+    if (!response.ok) {
+      throw new Error(responseJson);
+    }
+
+    let { html } = responseJson;
+    html = responseJson.html.replace(
+      `<?xml version="1.0" encoding="utf-8"?>`,
+      ""
+    );
 
     return html;
   }
@@ -105,7 +123,7 @@ export class IaraSFDT {
     content: string,
     authHeaders: HeadersInit
   ): Promise<string> {
-    const { rtf } = await fetch(
+    const response = await fetch(
       "https://api.iarahealth.com/speech/syncfusion/sfdt_to_rtf/",
       {
         method: "POST",
@@ -115,7 +133,13 @@ export class IaraSFDT {
         },
         body: content,
       }
-    ).then(response => response.json());
+    );
+    const responseJson = await response.json();
+    if (!response.ok) {
+      throw new Error(responseJson);
+    }
+
+    const { rtf } = responseJson;
     return rtf;
   }
 
