@@ -184,8 +184,15 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text);
-    else this._editorContainer.documentEditor.editor.delete();
+    if (text.length) {
+      const [firstLine, ...lines]: string[] = text.split("\n");
+      this.insertText(firstLine);
+      lines.forEach(line => {
+        this.insertParagraph();
+        line = line.trimStart();
+        if (line) this.insertText(line);
+      });
+    } else this._editorContainer.documentEditor.editor.delete();
 
     this._inferenceEndOffset =
       this._editorContainer.documentEditor.selection.endOffset;
