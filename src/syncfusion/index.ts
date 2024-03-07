@@ -267,6 +267,20 @@ export class IaraSyncfusionAdapter
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#fff");
   }
 
+  replaceParagraph(
+    sectionIndex: number,
+    paragraphIndex: number,
+    content: string
+  ) {
+    this._editorContainer.documentEditor.selection.select(
+      `${sectionIndex};${paragraphIndex};0`,
+      `${sectionIndex};${paragraphIndex};0`
+    );
+
+    this._editorContainer.documentEditor.selection.extendToParagraphEnd();
+    this.insertText(content);
+  }
+
   private _setScrollClickHandler() {
     this._editorContainer.element.addEventListener("mousedown", event => {
       if (event.button === 1) {
