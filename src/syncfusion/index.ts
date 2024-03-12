@@ -18,6 +18,7 @@ import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -34,6 +35,7 @@ export class IaraSyncfusionAdapter
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
+  private _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -59,12 +61,6 @@ export class IaraSyncfusionAdapter
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
-    new IaraSyncfusionShortcutsManager(
-      _editorContainer.documentEditor,
-      _recognition,
-      this.onTemplateSelectedAtShortCut.bind(this)
-    );
-
     this._styleManager = new IaraSyncfusionStyleManager(
       _editorContainer.documentEditor,
       this._config
@@ -88,6 +84,17 @@ export class IaraSyncfusionAdapter
     this._editorContainer.addEventListener(
       "destroyed",
       this._onEditorDestroyed.bind(this)
+    );
+
+    this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
+      _editorContainer
+    );
+
+    new IaraSyncfusionShortcutsManager(
+      _editorContainer.documentEditor,
+      _recognition,
+      this.onTemplateSelectedAtShortCut.bind(this),
+      this._navigationFieldManager
     );
 
     createSpinner({
@@ -149,6 +156,7 @@ export class IaraSyncfusionAdapter
     });
 
     this._editorContainer.documentEditor.selection.moveToDocumentEnd();
+    this._navigationFieldManager.getBookmarksReport();
   }
 
   insertText(text: string): void {

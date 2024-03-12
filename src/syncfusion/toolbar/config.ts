@@ -9,9 +9,8 @@ import {
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { tabsConfig } from "./ribbonTabs";
 import { IaraSFDT } from "../content";
-import { createNavigationFields } from "../navigationFields";
+import { tabsConfig } from "./ribbonTabs";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -186,9 +185,6 @@ const toolbarButtonClick = (
       //Toggles the superscript of selected content
       editor.documentEditor.editor.toggleSuperscript();
       break;
-    case "navigationFields":
-      createNavigationFields(editor);
-      break;
     case "AlignLeft":
       //Toggle the Left alignment for selected or current paragraph
       editor.documentEditor.editor.toggleTextAlignment("Left");
@@ -254,7 +250,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
