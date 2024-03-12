@@ -107,7 +107,14 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
     const content = await this._contentManager.getContent();
-    this._recognition.automation.copyText(content[0], content[1], content[2]);
+
+    // By pretending our html comes from google docs, we can paste it into
+    // tinymce without losing the formatting for some reason.
+    const htmlContent = content[1].replace(
+      '<div class="Section0">',
+      '<div class="Section0" id="docs-internal-guid-iara">'
+    );
+    this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
