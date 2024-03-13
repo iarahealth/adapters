@@ -95,6 +95,34 @@ export class IaraSyncfusionAdapter
     });
 
     this._setScrollClickHandler();
+
+
+
+
+
+
+    // //braun
+    // const zoomConfig: any = this._configurationService.defaultZoomFactor;
+
+    // if (zoomConfig.match('Fit one page'))
+    // {
+    //   this.editorContainer.documentEditor.fitPage('FitOnePage');
+    //   console.log('FitOnePage');
+    // }
+    // else if (zoomConfig.match('Fit page width'))
+    // {
+    //   this.editorContainer.documentEditor.fitPage('FitPageWidth');
+    //   console.log('FitPageWidth');
+    // }
+    // else
+    // {
+    //   const zoomFactor = parseInt(this._configurationService.defaultZoomFactor, 0) / 100;
+    //   this.editorContainer.documentEditor.zoomFactor = Number(zoomFactor);
+    //   console.log(zoomFactor);
+    // }
+
+    // Math.round(this.editorContainer.documentEditor.zoomFactor * 100) + '%';
+
   }
 
   blockEditorWhileSpeaking(status: boolean): void {

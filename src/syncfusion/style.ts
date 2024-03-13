@@ -10,6 +10,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
+    this.setZoomFactor(this._config.zoomFactor);
 
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
@@ -36,6 +37,24 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     IaraSyncfusionStyleManager.loadThemeCss(theme);
     this._editor.documentHelper.backgroundColor = "#444";
     this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
+  }
+
+  public setZoomFactor(zoomFactor: string)
+  {
+    //braun aqui
+    if (zoomFactor.match('Fit one page'))
+    {
+      this._editor.fitPage('FitOnePage');
+    }
+    else if (zoomFactor.match('Fit page width'))
+    {
+      this._editor.fitPage('FitPageWidth');
+    }
+    else
+    {
+      let zoomFactorFixed = parseInt(zoomFactor, 0) / 100;
+      this._editor.zoomFactor = Number(zoomFactorFixed);
+    }
   }
 
   static loadThemeCss(theme: "light" | "dark") {
