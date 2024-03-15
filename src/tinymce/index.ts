@@ -3,9 +3,11 @@ import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraEditorInferenceFormatter } from "../editor/formatter";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraTinyMceStyleManager } from "./style";
+import { IaraTinyMceNavigationFieldManager } from "./navigationFields";
 
 export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   protected _styleManager: IaraTinyMceStyleManager;
+  protected _navigationFieldManager: IaraTinyMceNavigationFieldManager;
   private _initialUndoStackSize = 0;
 
   constructor(
@@ -16,6 +18,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     super(_editorContainer, _recognition, _config);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
+    this._navigationFieldManager = new IaraTinyMceNavigationFieldManager();
     this._editorContainer.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
@@ -76,6 +79,13 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   print(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  nextField(): void {
+    throw new Error("Method not implemented.");
+  }
+  previousField(): void {
     throw new Error("Method not implemented.");
   }
 }

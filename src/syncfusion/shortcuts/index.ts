@@ -27,8 +27,7 @@ export class IaraSyncfusionShortcutsManager {
         this.shortcutByAt();
         break;
       case "Tab":
-        this._navigationFieldManager.navigationToNextField();
-        args.event.preventDefault();
+        this.shortcutByTabAndShiftTab(args);
         break;
       default:
         break;
@@ -63,5 +62,15 @@ export class IaraSyncfusionShortcutsManager {
       }
     });
     new IaraSyncfusionTemplateSearch(sortOrder, this.onTemplateSelected);
+  }
+
+  shortcutByTabAndShiftTab(args: DocumentEditorKeyDownEventArgs): void {
+    if (args.event.shiftKey && args.event.key == "Tab") {
+      this._navigationFieldManager.previousField(true);
+      args.event.preventDefault();
+    } else if (args.event.key == "Tab") {
+      this._navigationFieldManager.nextField(true);
+      args.event.preventDefault();
+    }
   }
 }

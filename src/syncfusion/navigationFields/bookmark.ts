@@ -2,7 +2,7 @@ export interface IaraBookmark {
   name: string;
   content: string;
   title: string;
-  position: {
+  offset: {
     start: string;
     end: string;
   };

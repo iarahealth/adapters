@@ -35,7 +35,7 @@ export class IaraSyncfusionAdapter
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
-  private _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
+  protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -156,7 +156,7 @@ export class IaraSyncfusionAdapter
     });
 
     this._editorContainer.documentEditor.selection.moveToDocumentEnd();
-    this._navigationFieldManager.getBookmarksReport();
+    this._navigationFieldManager.getBookmarks();
   }
 
   insertText(text: string): void {

@@ -4,6 +4,8 @@ import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
+
 export interface IaraEditorConfig {
   darkMode: boolean;
   font: {
@@ -19,6 +21,7 @@ export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
+  protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   private _listeners = [
     {
       key: "iaraSpeechRecognitionResult",
@@ -111,6 +114,15 @@ export abstract class EditorAdapter {
     });
     this._recognition.commands.add("iara imprimir", () => {
       this.print();
+    });
+    this._recognition.commands.add("iara próximo campo", () => {
+      this._navigationFieldManager.nextField();
+    });
+    this._recognition.commands.add("iara campo anterior", () => {
+      this._navigationFieldManager.previousField();
+    });
+    this._recognition.commands.add("next", () => {
+      this._navigationFieldManager.nextField();
     });
   }
 
