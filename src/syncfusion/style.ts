@@ -10,7 +10,13 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
-    this.setZoomFactor(this._config.zoomFactor);
+
+    console.log(this._config);
+
+    setTimeout(() => {
+      this.setZoomFactor(this._config.zoomFactor ?? '100%' );
+    },500);
+
 
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
@@ -41,7 +47,6 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
   public setZoomFactor(zoomFactor: string)
   {
-    //braun aqui
     if (zoomFactor.match('Fit one page'))
     {
       this._editor.fitPage('FitOnePage');
