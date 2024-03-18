@@ -122,6 +122,7 @@ export class IaraSyncfusionAdapter
   clearReport(): void {
     this._editorContainer.documentEditor.selection.selectAll();
     this._editorContainer.documentEditor.editor.delete();
+    this._styleManager.setEditorDefaultFont();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
