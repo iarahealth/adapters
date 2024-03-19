@@ -124,6 +124,16 @@ export abstract class EditorAdapter {
     this._recognition.commands.add("next", () => {
       this._navigationFieldManager.nextField();
     });
+    this._recognition.commands.add(
+      `para (\\p{Letter}+)`,
+      (detail, command, param, groups) => {
+        try {
+          this._navigationFieldManager.goToField(groups ? groups[1] : "");
+        } catch (e) {
+          this.onIaraCommand?.("iara teste");
+        }
+      }
+    );
   }
 
   private _initListeners(): void {

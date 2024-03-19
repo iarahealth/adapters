@@ -88,4 +88,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   previousField(): void {
     throw new Error("Method not implemented.");
   }
+  goToField(title: string): void {
+    throw new Error("Method not implemented.");
+  }
 }

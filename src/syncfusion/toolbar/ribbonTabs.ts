@@ -17,7 +17,7 @@ export const tabsConfig = (
     editor: DocumentEditorContainer,
     config?: IaraSyncfusionConfig
   ) => void,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -549,6 +549,7 @@ export const tabsConfig = (
               items: [
                 {
                   type: "DropDown",
+
                   dropDownSettings: {
                     iconCss: "e-icons e-bookmark",
                     content: "Campos de navegação",
