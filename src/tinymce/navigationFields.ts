@@ -8,6 +8,7 @@ export class IaraTinyMceNavigationFieldManager extends IaraEditorNavigationField
     throw new Error("Method not implemented.");
   }
   goToField(title: string): void {
-    throw new Error("Method not implemented.");
+    console.log(title);
+    throw new Error(`Method not implemented.`);
   }
 }
