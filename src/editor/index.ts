@@ -125,12 +125,14 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
-      `para (\\p{Letter}+)`,
+      `ir para (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("iara teste");
+          this.onIaraCommand?.("ir para");
+        } finally {
+          console.info(detail, command, param);
         }
       }
     );
