@@ -2,7 +2,11 @@ import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
+
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
+
+  public zoomInterval: ReturnType<typeof setTimeout>;
+
   constructor(
     private _editor: DocumentEditor,
     private _config: IaraSyncfusionConfig
@@ -11,18 +15,15 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
 
-    console.log(this._config);
-
-    setTimeout(() => {
-      this.setZoomFactor(this._config.zoomFactor ?? '100%' );
-    },500);
-
-
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
       fontSize: this._config.font?.size,
       fontColor: this._config.darkMode ? "#fff" : "#000",
     });
+
+    this.zoomInterval = setInterval(() => {
+      this.setZoomFactor(this._config.zoomFactor ?? '100%');
+    }, 100);
   }
 
   setEditorFontColor(color: string): void {
@@ -37,7 +38,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.focusIn();
   }
 
-  setTheme(theme: "light" | "dark") {
+  setTheme(theme: "light" | "dark")
+  {
     if (theme === "light") return;
 
     IaraSyncfusionStyleManager.loadThemeCss(theme);
@@ -60,9 +62,12 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
       let zoomFactorFixed = parseInt(zoomFactor, 0) / 100;
       this._editor.zoomFactor = Number(zoomFactorFixed);
     }
+
+    clearInterval(this.zoomInterval);
   }
 
-  static loadThemeCss(theme: "light" | "dark") {
+  static loadThemeCss(theme: "light" | "dark")
+  {
     if (theme === "dark") {
       const FILE = "https://cdn.syncfusion.com/ej2/22.1.34/material3-dark.css";
       const css = document.createElement("link");
