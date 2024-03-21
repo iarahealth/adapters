@@ -194,13 +194,15 @@ export class IaraSFDT {
   }
 
   async toHtml(): Promise<string> {
-    return this.html
-      ? this.html
-      : IaraSFDT.toHtml(this.value, this._authHeaders);
+    if (!this.html)
+      this.html = await IaraSFDT.toHtml(this.value, this._authHeaders);
+    return this.html;
   }
 
   async toRtf(): Promise<string> {
-    return this.rtf ? this.rtf : IaraSFDT.toRtf(this.value, this._authHeaders);
+    if (!this.rtf)
+      this.rtf = await IaraSFDT.toRtf(this.value, this._authHeaders);
+    return this.rtf;
   }
 
   toString(): string {

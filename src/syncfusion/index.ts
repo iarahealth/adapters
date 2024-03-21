@@ -242,6 +242,9 @@ export class IaraSyncfusionAdapter
       this._contentManager.getHtmlContent(),
     ]);
 
+    // Update the RTF content in the background in order to speed up content retrieval
+    this._contentManager.getRtfContent();
+
     if (contentDate !== this._contentDate) return;
 
     await this._updateReport(content[0], content[1]);
