@@ -33,7 +33,7 @@ export class IaraSFDT {
 
   static async fromContent(content: string, authHeaders: HeadersInit) {
     const contentType = IaraSFDT.detectContentType(content);
-    if (content === IaraSyncfusionContentTypes.SFDT)
+    if (contentType === IaraSyncfusionContentTypes.SFDT)
       return new IaraSFDT(content, authHeaders);
     else return IaraSFDT.import(content, authHeaders, contentType);
   }
