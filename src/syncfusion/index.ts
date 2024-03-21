@@ -237,13 +237,13 @@ export class IaraSyncfusionAdapter
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
+    // Update the RTF content in the background in order to speed up content retrieval
+    this._contentManager.getRtfContent();
+
     const content: string[] = await Promise.all([
       this._contentManager.getPlainTextContent(),
       this._contentManager.getHtmlContent(),
     ]);
-
-    // Update the RTF content in the background in order to speed up content retrieval
-    this._contentManager.getRtfContent();
 
     if (contentDate !== this._contentDate) return;
 
