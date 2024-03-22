@@ -1,25 +1,14 @@
-/// <reference types="vitest" />
-import path from "path";
+// vite.config.js
+import { resolve } from "path";
 import { defineConfig } from "vite";
 
-const fileName = {
-  es: 'index.js',
-  cjs: 'index.cjs',
-};
-
-const formats = Object.keys(fileName) as Array<keyof typeof fileName>;
-
-module.exports = defineConfig({
-  base: "./",
+export default defineConfig({
   build: {
     lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
-      name: 'index',
-      formats,
-      fileName: (format) => fileName[format],
+      entry: resolve(__dirname, "src/index.ts"),
+      name: "adapters",
+      fileName: "adapters",
     },
+    rollupOptions: {},
   },
-  test: {
-
-  }
 });

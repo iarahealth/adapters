@@ -2,12 +2,12 @@
   "name": "@iarahealth/adapters",
   "private": true,
   "version": "0.1.0",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/adapters.umd.js",
+  "module": "./dist/adapters.mjs",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
+      "require": "./dist/adapters.umd.js",
+      "import": "./dist/adapters.mjs"
     }
   },
   "scripts": {
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
+    "@types/tinymce": "^4.6.8",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
     "@vitest/coverage-c8": "^0.29.8",
@@ -46,7 +47,9 @@
     "vitest": "^0.29.8"
   },
   "peerDependencies": {
-    "@syncfusion/ej2-documenteditor": ">=22.1",
+    "@syncfusion/ej2-documenteditor": ">=23.2",
+    "@syncfusion/ej2-locale": ">=23.1",
+    "@syncfusion/ej2-ribbon": ">=24.1",
     "tinymce": ">=6.5"
   },
   "peerDependenciesMeta": {

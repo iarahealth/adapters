@@ -1,14 +1,152 @@
-import { IaraInference } from "../speech";
+import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { Editor as TinymceEditor } from "tinymce";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraEditorInferenceFormatter } from "./formatter";
+import { IaraEditorStyleManager } from "./style";
+
+export interface IaraEditorConfig {
+  darkMode: boolean;
+  font?: {
+    availableFamilies: string[];
+    availableSizes: number[];
+    family: string;
+    size: number;
+  };
+  saveReport: boolean;
+}
 
 export abstract class EditorAdapter {
-  constructor(protected _editor: any, protected _recognition: any) {
-    _recognition.addEventListener(
-      "iaraSpeechRecognitionResult",
-      (event: { detail: IaraInference }) => {
-        this.insertInference(event.detail);
+  public onIaraCommand?: (command: string) => void;
+
+  protected abstract _styleManager: IaraEditorStyleManager;
+  protected static DefaultConfig: IaraEditorConfig = {
+    darkMode: false,
+    saveReport: true,
+  };
+
+  protected _inferenceFormatter: IaraEditorInferenceFormatter;
+
+  private _listeners = [
+    {
+      key: "iaraSpeechRecognitionResult",
+      callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
+        if (event?.detail) this.insertInference(event.detail);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionStart",
+      callback: () => {
+        this.blockEditorWhileSpeaking(true);
+      },
+    },
+
+    {
+      key: "iaraSpeechRecognitionStop",
+      callback: () => {
+        this.blockEditorWhileSpeaking(false);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionVADVoiceStart",
+      callback: () => {
+        this.blockEditorWhileSpeaking(true);
+      },
+    },
+    {
+      key: "iaraSpeechRecognitionVADVoiceStop",
+      callback: () => {
+        this.blockEditorWhileSpeaking(false);
+      },
+    },
+  ];
+
+  constructor(
+    protected _editorContainer: DocumentEditorContainer | TinymceEditor,
+    protected _recognition: IaraSpeechRecognition,
+    protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
+  ) {
+    this._inferenceFormatter = new IaraEditorInferenceFormatter();
+    this._initCommands();
+    this._initListeners();
+    this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
+      true;
+    if (this._config.saveReport && !this._recognition.report["_key"]) {
+      if (this._recognition.ready) this.beginReport();
+      else {
+        this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
+          this.beginReport();
+        });
       }
-    );
+    }
   }
 
-  abstract insertInference(inference: IaraInference): void;
+  abstract blockEditorWhileSpeaking(status: boolean): void;
+  abstract clearReport(): void;
+  abstract copyReport(): Promise<void>;
+  abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
+  abstract getEditorContent(): Promise<[string, string, string, string?]>;
+  abstract print(): void;
+
+  beginReport(): string | void {
+    if (!this._config.saveReport) return;
+    return this._recognition.beginReport({ richText: "", text: "" });
+  }
+
+  async finishReport(): Promise<void> {
+    if (!this._config.saveReport) return;
+    await this.copyReport();
+    this.clearReport();
+    this._recognition.finishReport();
+  }
+
+  private _initCommands(): void {
+    this._recognition.commands.add("iara copiar laudo", async () => {
+      this._recognition.stop();
+      await this.copyReport();
+      this.onIaraCommand?.("iara copiar laudo");
+    });
+    this._recognition.commands.add("iara finalizar laudo", async () => {
+      this._recognition.stop();
+      await this.finishReport();
+      this.onIaraCommand?.("iara finalizar laudo");
+    });
+    this._recognition.commands.add("iara negrito", () => {
+      this._styleManager.toggleBold();
+    });
+    this._recognition.commands.add("iara itálico", () => {
+      this._styleManager.toggleItalic();
+    });
+    this._recognition.commands.add("iara sublinhado", () => {
+      this._styleManager.toggleUnderline();
+    });
+    this._recognition.commands.add("iara maiúsculo", () => {
+      this._styleManager.toggleUppercase();
+    });
+    this._recognition.commands.add("iara imprimir", () => {
+      this.print();
+    });
+  }
+
+  private _initListeners(): void {
+    this._listeners.forEach(listener => {
+      this._recognition.addEventListener(listener.key, listener.callback);
+    });
+  }
+
+  protected async _onEditorDestroyed(): Promise<void> {
+    this._recognition.report["_key"] = "";
+    this._listeners.forEach(listener => {
+      this._recognition.removeEventListener(
+        listener.key,
+        listener.callback as EventListenerOrEventListenerObject
+      );
+    });
+  }
+
+  protected _updateReport(
+    plainContent: string,
+    richContent: string
+  ): Promise<string> {
+    return this._recognition.report.change(plainContent, richContent);
+  }
 }

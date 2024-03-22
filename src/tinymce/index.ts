@@ -1,18 +1,33 @@
-import { EditorAdapter } from "../editor";
-import { IaraInference } from "../speech";
+import { Editor } from "tinymce";
+import { EditorAdapter, IaraEditorConfig } from "../editor";
+import { IaraEditorInferenceFormatter } from "../editor/formatter";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraTinyMceStyleManager } from "./style";
 
 export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
+  protected _styleManager: IaraTinyMceStyleManager;
   private _initialUndoStackSize = 0;
 
-  private get _editorAPI() {
-    return this._editor.activeEditor;
+  constructor(
+    protected _editorContainer: Editor,
+    protected _recognition: IaraSpeechRecognition,
+    protected _config: IaraEditorConfig
+  ) {
+    super(_editorContainer, _recognition, _config);
+    this._inferenceFormatter = new IaraEditorInferenceFormatter();
+    this._styleManager = new IaraTinyMceStyleManager();
+    this._editorContainer.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
   getUndoStackSize(): number {
-    return this._editorAPI.undoManager.data.length || 0;
+    return (this._editorContainer.undoManager as any).data.length || 0;
   }
 
-  insertInference(inference: IaraInference): void {
+  getEditorContent(): Promise<[string, string, string]> {
+    throw new Error("Método não implementado.");
+  }
+
+  insertInference(inference: IaraSpeechRecognitionDetail): void {
     if (inference.isFirst) {
       this._initialUndoStackSize = this.getUndoStackSize();
     } else {
@@ -36,14 +51,31 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   }
 
   insertParagraph() {
-    this._editorAPI.execCommand("InsertParagraph");
+    this._editorContainer.execCommand("InsertParagraph");
   }
 
   insertText(text: string) {
-    this._editorAPI.insertContent(text);
+    this._editorContainer.insertContent(text);
+  }
+
+  blockEditorWhileSpeaking(status: boolean) {
+    const wrapper = document.getElementsByTagName("tinymce")[0] as HTMLElement;
+    if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
   undo() {
-    this._editorAPI.undoManager.undo();
+    this._editorContainer.undoManager.undo();
+  }
+
+  copyReport(): Promise<void> {
+    throw new Error("Método não implementado.");
+  }
+
+  clearReport(): void {
+    throw new Error("Método não implementado.");
+  }
+
+  print(): void {
+    throw new Error("Method not implemented.");
   }
 }
