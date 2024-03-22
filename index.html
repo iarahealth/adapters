@@ -191,7 +191,7 @@ Status: ?</pre
     <button id="btnStop">Parar</button>
 
     <script type="module">
-      import { IaraSyncfusionAdapter } from "/dist/index.js";
+      import { IaraSyncfusionAdapter } from "/dist/adapters.mjs";
 
       window.onload = () => {
         window.ej.documenteditor.DocumentEditorContainer.Inject(
@@ -206,31 +206,31 @@ Status: ?</pre
           });
         editorContainer.appendTo("#editor-container");
 
-        // Elementos na página usados para gravar audio.
-        var botaoStart = document.getElementById("btnStart");
-        var botaoStop = document.getElementById("btnStop");
-        var elementoConsole = document.getElementById("console");
-        var elementoSaidaStatus = document.getElementById("saidaStatus");
+        // Elementos na página usados para graconst audio.
+        const botaoStart = document.getElementById("btnStart");
+        const botaoStop = document.getElementById("btnStop");
+        const elementoConsole = document.getElementById("console");
+        const elementoSaidaStatus = document.getElementById("saidaStatus");
 
         // Informações de conexão aos serviços da Iara
-        var myUserId = document.getElementById("userId").value;
-        var myApiToken = document.getElementById("apiToken").value;
+        const myUserId = document.getElementById("userId").value;
+        const myApiToken = document.getElementById("apiToken").value;
 
         // Instancia o reconhecedor da Iara e informa que resultados intermediários
         // de inferência devem ser emitidos.
-        var recognition = new IaraSpeechRecognition();
+        const recognition = new IaraSpeechRecognition();
         recognition.interimResults = true;
 
         const syncfusionAdapter = new IaraSyncfusionAdapter(
-          recognition,
-          editorContainer.documentEditor
+          editorContainer,
+          recognition
         );
 
         // Botão de Stop só é ativado quando o usuário clica no botão "Iniciar".
         botaoStop.disabled = true;
 
         // Define o botão que salva as credenciais e sua função
-        var botaoSalvar = document.getElementById("btnSalvar");
+        const botaoSalvar = document.getElementById("btnSalvar");
         botaoSalvar.addEventListener("click", function () {
           elementoSaidaStatus.innerHTML =
             "Inicializando com base nas credenciais informadas...";
@@ -239,8 +239,8 @@ Status: ?</pre
 
         function salvaCredenciaisDepoisInicializa() {
           // Informações de conexão aos serviços da Iara
-          var myUserId = document.getElementById("userId").value;
-          var myApiToken = document.getElementById("apiToken").value;
+          const myUserId = document.getElementById("userId").value;
+          const myApiToken = document.getElementById("apiToken").value;
 
           // Inicializa o SDK, i.e. autenticação, checa o ALS, baixa modelo de voz, etc.
           recognition
@@ -263,8 +263,8 @@ Status: ?</pre
                 // resultado contém o texto que a Iara reconheceu baseados no audio de entrada.
                 // Além disso, a propriedade "isFinal" do objeto "detail" informa se essa
                 // inferência é intermediária (isFinal=false) ou final (isFinal=true).
-                var text = event.detail.transcript.toLowerCase();
-                var intermediate = event.detail.isFinal == false;
+                const text = event.detail.transcript.toLowerCase();
+                const intermediate = event.detail.isFinal == false;
 
                 elementoSaidaStatus.innerText = JSON.stringify(
                   event.detail,

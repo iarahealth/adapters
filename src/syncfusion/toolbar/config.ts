@@ -9,9 +9,9 @@ import {
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { tabsConfig } from "./ribbonTabs";
 import { IaraSFDT } from "../content";
 import { createNavigationFields } from "../navigationFields";
+import { tabsConfig } from "./ribbonTabs";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
