@@ -2,12 +2,12 @@
   "name": "@iarahealth/adapters",
   "private": true,
   "version": "0.1.0",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/adapters.umd.js",
+  "module": "./dist/adapters.mjs",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
+      "require": "./dist/adapters.umd.js",
+      "import": "./dist/adapters.mjs"
     }
   },
   "scripts": {
