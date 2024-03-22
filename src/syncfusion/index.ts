@@ -35,6 +35,11 @@ export class IaraSyncfusionAdapter
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
 
+  protected static DefaultConfig: IaraSyncfusionConfig = {
+    ...EditorAdapter.DefaultConfig,
+    replaceToolbar: false,
+  };
+
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public savingReportSpan = document.createElement("span");
@@ -49,7 +54,7 @@ export class IaraSyncfusionAdapter
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraSyncfusionConfig
+    protected _config: IaraSyncfusionConfig = IaraSyncfusionAdapter.DefaultConfig
   ) {
     super(_editorContainer, _recognition, _config);
 

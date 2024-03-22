@@ -17,7 +17,7 @@ export const tabsConfig = (
     editor: DocumentEditorContainer,
     config?: IaraSyncfusionConfig
   ) => void,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -201,7 +201,7 @@ export const tabsConfig = (
                   type: "ComboBox",
                   id: "fontFamilySelect",
                   comboBoxSettings: {
-                    dataSource: config.font.availableFamilies,
+                    dataSource: config.font?.availableFamilies,
                     label: "Font Style",
                     width: "115px",
                     popupWidth: "150px",
@@ -222,7 +222,7 @@ export const tabsConfig = (
                   type: "ComboBox",
                   id: "fontSizeSelect",
                   comboBoxSettings: {
-                    dataSource: config.font.availableSizes.map(value =>
+                    dataSource: config.font?.availableSizes.map(value =>
                       value.toString()
                     ),
                     label: "Font Size",
