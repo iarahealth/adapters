@@ -64,11 +64,18 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       const insertMandatoryFieldBtn = <HTMLElement>(
         document.getElementById("add_mandatory_field")
       );
+      const insertOptionalFieldBtn = <HTMLElement>(
+        document.getElementById("add_optional_field")
+      );
+
       insertBtn.addEventListener("click", () => {
         this.insertField();
       });
       insertMandatoryFieldBtn.addEventListener("click", () => {
         this.insertMandatoryField();
+      });
+      insertOptionalFieldBtn.addEventListener("click", () => {
+        this.insertOptionalField();
       });
       nextFieldBtn.addEventListener("click", () => {
         this.nextField();
@@ -148,6 +155,42 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(`${content}*`);
   }
 
+  insertOptionalField(): void {
+    const bookmarksCount = Date.now();
+
+    const defaultColor =
+      this._editorContainer.documentEditor.selection.characterFormat.fontColor;
+
+    this._editorContainer.documentEditor.editor.insertBookmark(
+      `Optional-${bookmarksCount}`
+    );
+    const content = "Escreva uma dica de texto";
+    const title = "Nome do campo";
+    this._editorContainer.documentEditor.selection.characterFormat.fontColor =
+      "#3269a8";
+    this._editorContainer.documentEditor.editor.insertText("[]");
+    this._editorContainer.documentEditor.selection.movePreviousPosition();
+    this._editorContainer.documentEditor.selection.characterFormat.fontColor =
+      "#ffd54f";
+    this._editorContainer.documentEditor.editor.insertText("?");
+    this._editorContainer.documentEditor.selection.movePreviousPosition();
+    this._editorContainer.documentEditor.selection.characterFormat.fontColor = `${defaultColor}`;
+    this._editorContainer.documentEditor.editor.insertText("<>");
+    this._editorContainer.documentEditor.selection.movePreviousPosition();
+    this._editorContainer.documentEditor.editor.insertText(`${title}`);
+    this._editorContainer.documentEditor.selection.clear();
+    this._editorContainer.documentEditor.selection.moveNextPosition();
+    this._editorContainer.documentEditor.editor.insertText(`${content}`);
+    this._editorContainer.documentEditor.selection.selectBookmark(
+      `Optional-${bookmarksCount}`,
+      true
+    );
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
+    this.selectTitleField(`${content}*`);
+  }
+
   getBookmarks(): void {
     const editorBookmarks = this._editorContainer.documentEditor.getBookmarks();
     editorBookmarks.map(bookmark => {
@@ -160,16 +203,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.popAndUpdate(bookmark, content, title);
     });
     this.removeEmptyField(editorBookmarks);
-
     if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
       this.insertedBookmark = this._bookmarks.filter(
         bookmark =>
           bookmark.name === editorBookmarks[editorBookmarks.length - 1]
       )[0];
-    } else this.sortByPosition();
+    }
+    this.sortByPosition();
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
-
     this._editorContainer.documentEditor.selection.clear();
   }
 
@@ -329,7 +371,11 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   popAndUpdate(bookmarkName: string, content: string, title: string): void {
     const index = this._bookmarks.findIndex(item => item.name === bookmarkName);
-    if (bookmarkName.includes("Field") || bookmarkName.includes("Mandatory")) {
+    if (
+      bookmarkName.includes("Field") ||
+      bookmarkName.includes("Mandatory") ||
+      bookmarkName.includes("Optional")
+    ) {
       if (index !== -1) {
         this._bookmarks = this._bookmarks.map(item => {
           if (item.name === bookmarkName) {
