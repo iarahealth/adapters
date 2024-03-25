@@ -548,16 +548,28 @@ export const tabsConfig = (
             {
               items: [
                 {
-                  type: "Button",
-                  buttonSettings: {
-                    iconCss: "e-icons e-bookmark e-align-center",
+                  type: "DropDown",
+
+                  dropDownSettings: {
+                    iconCss: "e-icons e-bookmark",
                     content: "Campos de navegação",
-                    clicked: function () {
-                      toolbarButtonClick("navigationFields", editor);
-                    },
-                  },
-                  ribbonTooltipSettings: {
-                    title: "Campos de navegação",
+                    items: [
+                      {
+                        id: "add_field",
+                        iconCss: "e-icons e-plus",
+                        text: "Adicionar campo",
+                      },
+                      {
+                        id: "next_field",
+                        iconCss: "e-icons e-arrow-right",
+                        text: "Próximo campo",
+                      },
+                      {
+                        id: "previous_field",
+                        iconCss: "e-icons e-arrow-left",
+                        text: "Campo anterior",
+                      },
+                    ],
                   },
                 },
               ],
@@ -566,7 +578,6 @@ export const tabsConfig = (
         },
         {
           id: "export_group",
-          orientation: "Row",
           header: editorContainerLocale.grid["Export"],
           groupIconCss: "e-icons e-align-center",
           collections: [

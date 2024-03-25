@@ -4,6 +4,8 @@ import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
+
 export interface IaraEditorConfig {
   darkMode: boolean;
   font?: {
@@ -17,13 +19,12 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-
   protected abstract _styleManager: IaraEditorStyleManager;
+  protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
     darkMode: false,
     saveReport: true,
   };
-
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 
   private _listeners = [
@@ -125,6 +126,27 @@ export abstract class EditorAdapter {
     this._recognition.commands.add("iara imprimir", () => {
       this.print();
     });
+    this._recognition.commands.add("iara próximo campo", () => {
+      this._navigationFieldManager.nextField();
+    });
+    this._recognition.commands.add("iara campo anterior", () => {
+      this._navigationFieldManager.previousField();
+    });
+    this._recognition.commands.add("next", () => {
+      this._navigationFieldManager.nextField();
+    });
+    this._recognition.commands.add(
+      `ir para (\\p{Letter}+)`,
+      (detail, command, param, groups) => {
+        try {
+          this._navigationFieldManager.goToField(groups ? groups[1] : "");
+        } catch (e) {
+          this.onIaraCommand?.("ir para");
+        } finally {
+          console.info(detail, command, param);
+        }
+      }
+    );
   }
 
   private _initListeners(): void {
