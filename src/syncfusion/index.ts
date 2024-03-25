@@ -37,6 +37,11 @@ export class IaraSyncfusionAdapter
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
+  protected static DefaultConfig: IaraSyncfusionConfig = {
+    ...EditorAdapter.DefaultConfig,
+    replaceToolbar: false,
+  };
+
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public savingReportSpan = document.createElement("span");
@@ -51,7 +56,7 @@ export class IaraSyncfusionAdapter
   constructor(
     protected _editorContainer: DocumentEditorContainer,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraSyncfusionConfig
+    protected _config: IaraSyncfusionConfig = IaraSyncfusionAdapter.DefaultConfig
   ) {
     super(_editorContainer, _recognition, _config);
 
@@ -114,7 +119,14 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
     const content = await this._contentManager.getContent();
-    this._recognition.automation.copyText(content[0], content[1], content[2]);
+
+    // By pretending our html comes from google docs, we can paste it into
+    // tinymce without losing the formatting for some reason.
+    const htmlContent = content[1].replace(
+      '<div class="Section0">',
+      '<div class="Section0" id="docs-internal-guid-iara">'
+    );
+    this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
@@ -273,6 +285,20 @@ export class IaraSyncfusionAdapter
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
     this._editorContainer.documentEditor.print();
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#fff");
+  }
+
+  replaceParagraph(
+    sectionIndex: number,
+    paragraphIndex: number,
+    content: string
+  ) {
+    this._editorContainer.documentEditor.selection.select(
+      `${sectionIndex};${paragraphIndex};0`,
+      `${sectionIndex};${paragraphIndex};0`
+    );
+
+    this._editorContainer.documentEditor.selection.extendToParagraphEnd();
+    this.insertText(content);
   }
 
   private _setScrollClickHandler() {

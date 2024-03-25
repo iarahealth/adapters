@@ -8,7 +8,7 @@ import { IaraEditorNavigationFieldManager } from "./navigationFields";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
-  font: {
+  font?: {
     availableFamilies: string[];
     availableSizes: number[];
     family: string;
@@ -19,9 +19,14 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-  protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
+  protected static DefaultConfig: IaraEditorConfig = {
+    darkMode: false,
+    saveReport: true,
+  };
+  protected _inferenceFormatter: IaraEditorInferenceFormatter;
+
   private _listeners = [
     {
       key: "iaraSpeechRecognitionResult",
@@ -59,15 +64,21 @@ export abstract class EditorAdapter {
   constructor(
     protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraEditorConfig
+    protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
-    if (this._config.saveReport && !this._recognition.report["_key"])
-      this.beginReport();
+    if (this._config.saveReport && !this._recognition.report["_key"]) {
+      if (this._recognition.ready) this.beginReport();
+      else {
+        this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
+          this.beginReport();
+        });
+      }
+    }
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;

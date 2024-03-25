@@ -2,12 +2,12 @@
   "name": "@iarahealth/adapters",
   "private": true,
   "version": "0.1.0",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/adapters.umd.js",
+  "module": "./dist/adapters.mjs",
   "exports": {
     ".": {
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
+      "require": "./dist/adapters.umd.js",
+      "import": "./dist/adapters.mjs"
     }
   },
   "scripts": {
@@ -33,7 +33,7 @@
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "lint-staged": "^13.1.0",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.31",
     "postcss-scss": "^4.0.6",
     "prettier": "^2.8.3",
     "stylelint": "^14.16.1",
