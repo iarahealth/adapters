@@ -15,6 +15,7 @@ export interface IaraEditorConfig {
     size: number;
   };
   saveReport: boolean;
+  zoomFactor: string;
 }
 
 export abstract class EditorAdapter {
