@@ -1,5 +1,3 @@
-import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import { Editor as TinymceEditor } from "tinymce";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
@@ -64,7 +62,6 @@ export abstract class EditorAdapter {
   ];
 
   constructor(
-    protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {

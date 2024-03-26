@@ -1,7 +1,7 @@
-import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import {
   CharacterFormatProperties,
   DocumentEditor,
+  DocumentEditorContainer,
   Print,
 } from "@syncfusion/ej2-documenteditor";
 import { ListView, SelectedCollection } from "@syncfusion/ej2-lists";
@@ -14,11 +14,11 @@ import {
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
-import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -32,9 +32,12 @@ export class IaraSyncfusionAdapter
   private _contentDate?: Date;
   private _cursorSelection?: IaraSyncfusionSelectionManager;
   private _debouncedSaveReport: () => void;
+  private _documentEditor: DocumentEditor;
+  private _editorContainer?: DocumentEditorContainer;
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
+
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
   protected static DefaultConfig: IaraSyncfusionConfig = {
@@ -53,56 +56,63 @@ export class IaraSyncfusionAdapter
   public defaultFormat: CharacterFormatProperties = {};
 
   constructor(
-    protected _editorContainer: DocumentEditorContainer,
+    _editorInstance: DocumentEditorContainer | DocumentEditor,
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraSyncfusionConfig = IaraSyncfusionAdapter.DefaultConfig
   ) {
-    super(_editorContainer, _recognition, _config);
+    super(_recognition, _config);
+
+    if ("documentEditor" in _editorInstance) {
+      this._editorContainer = _editorInstance;
+      this._documentEditor = _editorInstance.documentEditor;
+    } else {
+      this._documentEditor = _editorInstance;
+    }
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
-      _editorContainer.documentEditor,
+      this._documentEditor,
       _recognition,
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
     this._styleManager = new IaraSyncfusionStyleManager(
-      _editorContainer.documentEditor,
+      this._documentEditor,
       this._config
     );
 
-    if (this._config.replaceToolbar) {
+    if (this._config.replaceToolbar && this._editorContainer) {
       this._toolbarManager = new IaraSyncfusionToolbarManager(
-        _editorContainer,
+        this._editorContainer,
         this._config
       );
       this._toolbarManager.init();
     }
 
     DocumentEditor.Inject(Print);
-    this._editorContainer.documentEditor.enablePrint = true;
 
-    this._editorContainer.documentEditor.enableImageResizer = true;
+    this._documentEditor.enablePrint = true;
+    this._documentEditor.enableImageResizer = true;
 
     this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
-    this._editorContainer.addEventListener(
+    this._documentEditor.addEventListener(
       "destroyed",
       this._onEditorDestroyed.bind(this)
     );
 
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
-      _editorContainer
+      this._documentEditor
     );
 
     new IaraSyncfusionShortcutsManager(
-      _editorContainer.documentEditor,
+      this._documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this),
       this._navigationFieldManager
     );
 
     createSpinner({
-      target: _editorContainer.editorContainer,
+      target: this._documentEditor.editor.documentHelper.viewerContainer,
     });
 
     this._setScrollClickHandler();
@@ -114,9 +124,10 @@ export class IaraSyncfusionAdapter
   }
 
   async copyReport(): Promise<void> {
-    this._editorContainer.documentEditor.focusIn();
-    this._editorContainer.documentEditor.selection.selectAll();
-    showSpinner(this._editorContainer.editorContainer);
+    this._documentEditor.focusIn();
+    this._documentEditor.selection.selectAll();
+
+    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
     const content = await this._contentManager.getContent();
 
     // By pretending our html comes from google docs, we can paste it into
@@ -126,13 +137,13 @@ export class IaraSyncfusionAdapter
       '<div class="Section0" id="docs-internal-guid-iara">'
     );
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
-    hideSpinner(this._editorContainer.editorContainer);
-    this._editorContainer.documentEditor.selection.moveNextPosition();
+    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this._documentEditor.selection.moveNextPosition();
   }
 
   clearReport(): void {
-    this._editorContainer.documentEditor.selection.selectAll();
-    this._editorContainer.documentEditor.editor.delete();
+    this._documentEditor.selection.selectAll();
+    this._documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
   }
 
@@ -141,7 +152,7 @@ export class IaraSyncfusionAdapter
   }
 
   insertParagraph(): void {
-    this._editorContainer.documentEditor.editor.insertText("\n");
+    this._documentEditor.editor.insertText("\n");
   }
 
   async insertTemplate(
@@ -152,27 +163,23 @@ export class IaraSyncfusionAdapter
       content,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
     );
-    if (replaceAllContent)
-      this._editorContainer.documentEditor.open(sfdt.value);
-    else this._editorContainer.documentEditor.editor.paste(sfdt.value);
+    if (replaceAllContent) this._documentEditor.open(sfdt.value);
+    else this._documentEditor.editor.paste(sfdt.value);
 
-    this._editorContainer.documentEditor.selection.moveToDocumentStart();
+    this._documentEditor.selection.moveToDocumentStart();
 
     // Set the default editor format after inserting the template
-    this._editorContainer.documentEditor.setDefaultCharacterFormat({
-      fontFamily:
-        this._editorContainer.documentEditor.selection.characterFormat
-          .fontFamily,
-      fontSize:
-        this._editorContainer.documentEditor.selection.characterFormat.fontSize,
+    this._documentEditor.setDefaultCharacterFormat({
+      fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
+      fontSize: this._documentEditor.selection.characterFormat.fontSize,
     });
 
-    this._editorContainer.documentEditor.selection.moveToDocumentEnd();
+    this._documentEditor.selection.moveToDocumentEnd();
     this._navigationFieldManager.getBookmarks();
   }
 
   insertText(text: string): void {
-    this._editorContainer.documentEditor.editor.insertText(text);
+    this._documentEditor.editor.insertText(text);
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
@@ -183,7 +190,7 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference();
     } else if (this._selectionManager) {
-      this._editorContainer.documentEditor.selection.select(
+      this._documentEditor.selection.select(
         this._selectionManager.initialSelectionData.startOffset,
         this._inferenceEndOffset
       );
@@ -212,16 +219,15 @@ export class IaraSyncfusionAdapter
         line = line.trimStart();
         if (line) this.insertText(line);
       });
-    } else this._editorContainer.documentEditor.editor.delete();
+    } else this._documentEditor.editor.delete();
 
-    this._inferenceEndOffset =
-      this._editorContainer.documentEditor.selection.endOffset;
+    this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
   }
 
   undo(): void {
-    this._editorContainer.documentEditor.editorHistory.undo();
+    this._documentEditor.editorHistory.undo();
   }
 
   private _debounce(func: () => unknown) {
@@ -286,7 +292,7 @@ export class IaraSyncfusionAdapter
 
   print(): void {
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#000");
-    this._editorContainer.documentEditor.print();
+    this._documentEditor.print();
     if (this._config.darkMode) this._styleManager.setEditorFontColor("#fff");
   }
 
@@ -295,26 +301,28 @@ export class IaraSyncfusionAdapter
     paragraphIndex: number,
     content: string
   ) {
-    this._editorContainer.documentEditor.selection.select(
+    this._documentEditor.selection.select(
       `${sectionIndex};${paragraphIndex};0`,
       `${sectionIndex};${paragraphIndex};0`
     );
 
-    this._editorContainer.documentEditor.selection.extendToParagraphEnd();
+    this._documentEditor.selection.extendToParagraphEnd();
     this.insertText(content);
   }
 
   private _setScrollClickHandler() {
-    this._editorContainer.element.addEventListener("mousedown", event => {
-      if (event.button === 1) {
-        this._cursorSelection = new IaraSyncfusionSelectionManager(
-          this._editorContainer.documentEditor,
-          false
-        );
-      }
-    });
+    this._documentEditor
+      .getRootElement()
+      .addEventListener("mousedown", event => {
+        if (event.button === 1) {
+          this._cursorSelection = new IaraSyncfusionSelectionManager(
+            this._documentEditor,
+            false
+          );
+        }
+      });
 
-    this._editorContainer.element.addEventListener("mouseup", event => {
+    this._documentEditor.getRootElement().addEventListener("mouseup", event => {
       if (event.button === 1) {
         this._cursorSelection?.resetSelection();
         this._cursorSelection = undefined;
@@ -325,18 +333,18 @@ export class IaraSyncfusionAdapter
   }
 
   private _handleFirstInference(): void {
-    if (this._editorContainer.documentEditor.selection.text.length) {
-      this._editorContainer.documentEditor.editor.delete();
+    if (this._documentEditor.selection.text.length) {
+      this._documentEditor.editor.delete();
     }
     this._selectionManager = new IaraSyncfusionSelectionManager(
-      this._editorContainer.documentEditor
+      this._documentEditor
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
-      this._editorContainer.documentEditor.selection.extendBackward();
-      this._editorContainer.documentEditor.editor.delete();
+      this._documentEditor.selection.extendBackward();
+      this._documentEditor.editor.delete();
       this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._editorContainer.documentEditor
+        this._documentEditor
       );
     }
   }

@@ -1,11 +1,11 @@
 import {
   BookmarkElementBox,
   Dictionary,
-  DocumentEditorContainer,
+  DocumentEditor,
   TextPosition,
 } from "@syncfusion/ej2-documenteditor";
-import { IaraBookmark } from "./bookmark";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
+import { IaraBookmark } from "./bookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -49,7 +49,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   private _previousBookmarksTitles: string[] = [];
 
-  constructor(private _editorContainer: DocumentEditorContainer) {
+  constructor(private _documentEditor: DocumentEditor) {
     super();
     const navigationBtn = <HTMLElement>(
       document.getElementById("navigation_fields")
@@ -75,28 +75,24 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   insertField(): void {
     const bookmarksCount = Date.now();
-    this._editorContainer.documentEditor.editor.insertBookmark(
-      `Field-${bookmarksCount}`
-    );
+    this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
     const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
-    this._editorContainer.documentEditor.editor.insertText("[]");
-    this._editorContainer.documentEditor.selection.movePreviousPosition();
-    this._editorContainer.documentEditor.editor.insertText("<>");
-    this._editorContainer.documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText("[]");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText("<>");
+    this._documentEditor.selection.movePreviousPosition();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    this._editorContainer.documentEditor.selection.characterFormat.highlightColor =
-      "#9e9ef4";
-    this._editorContainer.documentEditor.editor.insertText(`${title}`);
-    this._editorContainer.documentEditor.selection.clear();
-    this._editorContainer.documentEditor.selection.moveNextPosition();
+    this._documentEditor.selection.characterFormat.highlightColor = "#9e9ef4";
+    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.selection.clear();
+    this._documentEditor.selection.moveNextPosition();
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    this._editorContainer.documentEditor.selection.characterFormat.highlightColor =
-      "#c0beff";
-    this._editorContainer.documentEditor.editor.insertText(`${content}`);
-    this._editorContainer.documentEditor.selection.selectBookmark(
+    this._documentEditor.selection.characterFormat.highlightColor = "#c0beff";
+    this._documentEditor.editor.insertText(`${content}`);
+    this._documentEditor.selection.selectBookmark(
       `Field-${bookmarksCount}`,
       true
     );
@@ -107,11 +103,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   getBookmarks(): void {
-    const editorBookmarks = this._editorContainer.documentEditor.getBookmarks();
+    const editorBookmarks = this._documentEditor.getBookmarks();
     editorBookmarks.map(bookmark => {
       this.getOffsetsAndSelect(bookmark, true);
-      const bookmarkContent =
-        this._editorContainer.documentEditor.selection.text;
+      const bookmarkContent = this._documentEditor.selection.text;
 
       const { title, content } = this.getNames(bookmarkContent);
 
@@ -125,7 +120,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
 
-    this._editorContainer.documentEditor.selection.clear();
+    this._documentEditor.selection.clear();
   }
 
   goToField(title: string): void | string {
@@ -148,15 +143,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   nextField(isShortcutNavigation?: boolean): void {
     this.currentSelectionOffset = {
-      start: this._editorContainer.documentEditor.selection.startOffset,
-      end: this._editorContainer.documentEditor.selection.endOffset,
+      start: this._documentEditor.selection.startOffset,
+      end: this._documentEditor.selection.endOffset,
     };
     this.getBookmarks();
 
     if (isShortcutNavigation && this.isFirstNextNavigation)
       this.selectContentField();
     else {
-      this._editorContainer.documentEditor.selection.select(
+      this._documentEditor.selection.select(
         this.nextBookmark.offset.start,
         this.nextBookmark.offset.end
       );
@@ -167,14 +162,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       end: this.nextBookmark.offset.end,
     };
 
-    this._editorContainer.documentEditor.selection.characterFormat.highlightColor =
-      "Gray25";
+    this._documentEditor.selection.characterFormat.highlightColor = "Gray25";
   }
 
   previousField(isShortcutNavigation?: boolean): void {
     this.currentSelectionOffset = {
-      start: this._editorContainer.documentEditor.selection.startOffset,
-      end: this._editorContainer.documentEditor.selection.endOffset,
+      start: this._documentEditor.selection.startOffset,
+      end: this._documentEditor.selection.endOffset,
     };
 
     this.getBookmarks();
@@ -182,7 +176,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (isShortcutNavigation && this.isFirstPreviousNavigation)
       this.selectTitleField(this.insertedBookmark.content);
     else {
-      this._editorContainer.documentEditor.selection.select(
+      this._documentEditor.selection.select(
         this.previousBookmark.offset.start,
         this.previousBookmark.offset.end
       );
@@ -192,56 +186,45 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       start: this.previousBookmark.offset.start,
       end: this.previousBookmark.offset.end,
     };
-    this._editorContainer.documentEditor.selection.characterFormat.highlightColor =
-      "Gray25";
+    this._documentEditor.selection.characterFormat.highlightColor = "Gray25";
   }
 
   selectContentField(): void {
     const title = this.insertedBookmark.title;
     const content = this.insertedBookmark.content;
-    const startOffset =
-      this._editorContainer.documentEditor.selection.startOffset.split(";");
+    const startOffset = this._documentEditor.selection.startOffset.split(";");
 
     //add 2 positions so as not to select [ or <
     startOffset[2] = String(
-      Number(
-        this._editorContainer.documentEditor.selection.startOffset.split(";")[2]
-      ) +
+      Number(this._documentEditor.selection.startOffset.split(";")[2]) +
         (title.length + 3)
     );
     const start = startOffset.join(";");
 
-    const endOffset =
-      this._editorContainer.documentEditor.selection.endOffset.split(";");
+    const endOffset = this._documentEditor.selection.endOffset.split(";");
     //remove the content size plus 2 positions so as not to select > or ]
     endOffset[2] = String(Number(start.split(";")[2]) + content.length);
     const end = endOffset.join(";");
 
-    this._editorContainer.documentEditor.selection.select(start, end);
+    this._documentEditor.selection.select(start, end);
   }
 
   selectTitleField(content: string): void {
-    const startOffset =
-      this._editorContainer.documentEditor.selection.startOffset.split(";");
+    const startOffset = this._documentEditor.selection.startOffset.split(";");
     //add 2 positions so as not to select [ or <
     startOffset[2] = String(
-      Number(
-        this._editorContainer.documentEditor.selection.startOffset.split(";")[2]
-      ) + 2
+      Number(this._documentEditor.selection.startOffset.split(";")[2]) + 2
     );
     const start = startOffset.join(";");
 
-    const endOffset =
-      this._editorContainer.documentEditor.selection.endOffset.split(";");
+    const endOffset = this._documentEditor.selection.endOffset.split(";");
     //remove the content size plus 2 positions so as not to select > or ]
     endOffset[2] = String(
-      Number(
-        this._editorContainer.documentEditor.selection.endOffset.split(";")[2]
-      ) -
+      Number(this._documentEditor.selection.endOffset.split(";")[2]) -
         (content.length + 2)
     );
     const end = endOffset.join(";");
-    this._editorContainer.documentEditor.selection.select(start, end);
+    this._documentEditor.selection.select(start, end);
   }
 
   sortByPosition(): void {
@@ -294,9 +277,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
               content,
               title,
               offset: {
-                start:
-                  this._editorContainer.documentEditor.selection.startOffset,
-                end: this._editorContainer.documentEditor.selection.endOffset,
+                start: this._documentEditor.selection.startOffset,
+                end: this._documentEditor.selection.endOffset,
               },
             };
           }
@@ -310,8 +292,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
             content,
             title,
             offset: {
-              start: this._editorContainer.documentEditor.selection.startOffset,
-              end: this._editorContainer.documentEditor.selection.endOffset,
+              start: this._documentEditor.selection.startOffset,
+              end: this._documentEditor.selection.endOffset,
             },
           },
         ];
@@ -398,7 +380,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   getOffsetsAndSelect(name: string, excludeBookmarkStartEnd?: boolean): void {
     const bookmarks: Dictionary<string, BookmarkElementBox> =
-      this._editorContainer.documentEditor.documentHelper.bookmarks;
+      this._documentEditor.documentHelper.bookmarks;
 
     if (bookmarks.containsKey(name)) {
       //bookmark start element
@@ -411,7 +393,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       }
 
       const startPosition: TextPosition = new TextPosition(
-        this._editorContainer.documentEditor
+        this._documentEditor
       );
       startPosition.setPositionParagraph(bookmrkElmnt.line, offset);
 
@@ -429,12 +411,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       if (excludeBookmarkStartEnd) {
         endoffset--;
       }
-      const endPosition: TextPosition = new TextPosition(
-        this._editorContainer.documentEditor
-      );
+      const endPosition: TextPosition = new TextPosition(this._documentEditor);
       endPosition.setPositionParagraph(bookmrkEnd.line, endoffset);
       //selects the bookmark range
-      this._editorContainer.documentEditor.documentHelper.selection.selectRange(
+      this._documentEditor.documentHelper.selection.selectRange(
         startPosition,
         endPosition
       );
