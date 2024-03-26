@@ -41,12 +41,6 @@ export class IaraSyncfusionAdapter
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
   };
-
-  protected static DefaultConfig: IaraSyncfusionConfig = {
-    ...EditorAdapter.DefaultConfig,
-    replaceToolbar: false,
-  };
-
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public savingReportSpan = document.createElement("span");

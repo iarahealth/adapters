@@ -2,10 +2,8 @@ import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
-
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
-
-  public zoomInterval: ReturnType<typeof setTimeout>;
+  public zoomInterval: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private _editor: DocumentEditor,
@@ -25,7 +23,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     });
 
     this.zoomInterval = setInterval(() => {
-      this.setZoomFactor(this._config.zoomFactor ?? '100%');
+      this.setZoomFactor(this._config.zoomFactor ?? "100%");
     }, 100);
   }
 
@@ -41,8 +39,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.focusIn();
   }
 
-  setTheme(theme: "light" | "dark")
-  {
+  setTheme(theme: "light" | "dark") {
     if (theme === "light") return;
 
     IaraSyncfusionStyleManager.loadThemeCss(theme);
@@ -50,27 +47,20 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
   }
 
-  public setZoomFactor(zoomFactor: string)
-  {
-    if (zoomFactor.match('Fit one page'))
-    {
-      this._editor.fitPage('FitOnePage');
-    }
-    else if (zoomFactor.match('Fit page width'))
-    {
-      this._editor.fitPage('FitPageWidth');
-    }
-    else
-    {
-      let zoomFactorFixed = parseInt(zoomFactor, 0) / 100;
+  public setZoomFactor(zoomFactor: string) {
+    if (zoomFactor.match("Fit one page")) {
+      this._editor.fitPage("FitOnePage");
+    } else if (zoomFactor.match("Fit page width")) {
+      this._editor.fitPage("FitPageWidth");
+    } else {
+      const zoomFactorFixed = parseInt(zoomFactor, 0) / 100;
       this._editor.zoomFactor = Number(zoomFactorFixed);
     }
 
-    clearInterval(this.zoomInterval);
+    if (this.zoomInterval) clearInterval(this.zoomInterval);
   }
 
-  static loadThemeCss(theme: "light" | "dark")
-  {
+  static loadThemeCss(theme: "light" | "dark") {
     if (theme === "dark") {
       const FILE = "https://cdn.syncfusion.com/ej2/24.2.9/material3-dark.css";
       const css = document.createElement("link");
