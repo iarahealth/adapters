@@ -25,6 +25,7 @@ export abstract class EditorAdapter {
   protected static DefaultConfig: IaraEditorConfig = {
     darkMode: false,
     saveReport: true,
+    zoomFactor: "100%",
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 

@@ -42,6 +42,11 @@ export class IaraSyncfusionAdapter
     replaceToolbar: false,
   };
 
+  protected static DefaultConfig: IaraSyncfusionConfig = {
+    ...EditorAdapter.DefaultConfig,
+    replaceToolbar: false,
+  };
+
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public savingReportSpan = document.createElement("span");
@@ -134,6 +139,7 @@ export class IaraSyncfusionAdapter
   clearReport(): void {
     this._editorContainer.documentEditor.selection.selectAll();
     this._editorContainer.documentEditor.editor.delete();
+    this._styleManager.setEditorDefaultFont();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -248,6 +254,9 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.innerText = "Salvando...";
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
+
+    // Update the RTF content in the background in order to speed up content retrieval
+    this._contentManager.getRtfContent();
 
     const content: string[] = await Promise.all([
       this._contentManager.getPlainTextContent(),
