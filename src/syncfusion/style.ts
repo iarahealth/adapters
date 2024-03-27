@@ -3,6 +3,8 @@ import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
+  public zoomInterval: ReturnType<typeof setTimeout> | null = null;
+
   constructor(
     private _editor: DocumentEditor,
     private _config: IaraSyncfusionConfig
@@ -10,12 +12,19 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     super();
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
+    this.setEditorDefaultFont();
+  }
 
+  setEditorDefaultFont(): void {
     this._editor.setDefaultCharacterFormat({
       fontFamily: this._config.font?.family,
       fontSize: this._config.font?.size,
       fontColor: this._config.darkMode ? "#fff" : "#000",
     });
+
+    this.zoomInterval = setInterval(() => {
+      this.setZoomFactor(this._config.zoomFactor ?? "100%");
+    }, 100);
   }
 
   setEditorFontColor(color: string): void {
@@ -36,6 +45,19 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     IaraSyncfusionStyleManager.loadThemeCss(theme);
     this._editor.documentHelper.backgroundColor = "#444";
     this._editor.setDefaultCharacterFormat({ fontColor: "#fff" });
+  }
+
+  public setZoomFactor(zoomFactor: string) {
+    if (zoomFactor.match("Fit one page")) {
+      this._editor.fitPage("FitOnePage");
+    } else if (zoomFactor.match("Fit page width")) {
+      this._editor.fitPage("FitPageWidth");
+    } else {
+      const zoomFactorFixed = parseInt(zoomFactor, 0) / 100;
+      this._editor.zoomFactor = Number(zoomFactorFixed);
+    }
+
+    if (this.zoomInterval) clearInterval(this.zoomInterval);
   }
 
   static loadThemeCss(theme: "light" | "dark") {
