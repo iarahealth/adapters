@@ -55,6 +55,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       document.getElementById("navigation_fields")
     );
 
+    if (!navigationBtn) return;
+
     navigationBtn.addEventListener("click", () => {
       const insertBtn = <HTMLElement>document.getElementById("add_field");
       const nextFieldBtn = <HTMLElement>document.getElementById("next_field");
