@@ -63,8 +63,21 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       const previousFieldBtn = <HTMLElement>(
         document.getElementById("previous_field")
       );
+      const insertMandatoryFieldBtn = <HTMLElement>(
+        document.getElementById("add_mandatory_field")
+      );
+      const insertOptionalFieldBtn = <HTMLElement>(
+        document.getElementById("add_optional_field")
+      );
+
       insertBtn.addEventListener("click", () => {
         this.insertField();
+      });
+      insertMandatoryFieldBtn.addEventListener("click", () => {
+        this.insertMandatoryField();
+      });
+      insertOptionalFieldBtn.addEventListener("click", () => {
+        this.insertOptionalField();
       });
       nextFieldBtn.addEventListener("click", () => {
         this.nextField();
@@ -104,6 +117,70 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(content);
   }
 
+  insertMandatoryField(): void {
+    const bookmarksCount = Date.now();
+
+    const defaultColor =
+      this._documentEditor.selection.characterFormat.fontColor;
+
+    this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
+    const content = "Escreva uma dica de texto";
+    const title = "Nome do campo";
+    this._documentEditor.selection.characterFormat.fontColor = "#b71c1c";
+    this._documentEditor.editor.insertText("[]");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.selection.characterFormat.fontColor = "#ffd54f";
+    this._documentEditor.editor.insertText("*");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.selection.characterFormat.fontColor = `${defaultColor}`;
+    this._documentEditor.editor.insertText("<>");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.selection.clear();
+    this._documentEditor.selection.moveNextPosition();
+    this._documentEditor.editor.insertText(`${content}`);
+    this._documentEditor.selection.selectBookmark(
+      `Mandatory-${bookmarksCount}`,
+      true
+    );
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
+    this.selectTitleField(`${content}*`);
+  }
+
+  insertOptionalField(): void {
+    const bookmarksCount = Date.now();
+
+    const defaultColor =
+      this._documentEditor.selection.characterFormat.fontColor;
+
+    this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
+    const content = "Escreva uma dica de texto";
+    const title = "Nome do campo";
+    this._documentEditor.selection.characterFormat.fontColor = "#3269a8";
+    this._documentEditor.editor.insertText("[]");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.selection.characterFormat.fontColor = "#ffd54f";
+    this._documentEditor.editor.insertText("?");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.selection.characterFormat.fontColor = `${defaultColor}`;
+    this._documentEditor.editor.insertText("<>");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.selection.clear();
+    this._documentEditor.selection.moveNextPosition();
+    this._documentEditor.editor.insertText(`${content}`);
+    this._documentEditor.selection.selectBookmark(
+      `Optional-${bookmarksCount}`,
+      true
+    );
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
+    this.selectTitleField(`${content}*`);
+  }
+
   getBookmarks(): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
     editorBookmarks.map(bookmark => {
@@ -113,12 +190,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       const { title, content } = this.getNames(bookmarkContent);
 
       this.popAndUpdate(bookmark, content, title);
-      this.removeEmptyField();
     });
-
-    if (this.isFirstNextNavigation || this.isFirstPreviousNavigation)
-      this.insertedBookmark = this._bookmarks[this._bookmarks.length - 1];
-    else this.sortByPosition();
+    this.removeEmptyField(editorBookmarks);
+    if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
+      this.insertedBookmark = this._bookmarks.filter(
+        bookmark =>
+          bookmark.name === editorBookmarks[editorBookmarks.length - 1]
+      )[0];
+    }
+    this.sortByPosition();
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
 
@@ -196,7 +276,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const content = this.insertedBookmark.content;
     const startOffset = this._documentEditor.selection.startOffset.split(";");
 
-    //add 2 positions so as not to select [ or <
+    //title lenght and add 3 positions to pass startOffset to content
     startOffset[2] = String(
       Number(this._documentEditor.selection.startOffset.split(";")[2]) +
         (title.length + 3)
@@ -204,7 +284,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const start = startOffset.join(";");
 
     const endOffset = this._documentEditor.selection.endOffset.split(";");
-    //remove the content size plus 2 positions so as not to select > or ]
+    //add content lenght to endOffset to pass endOffset to content
     endOffset[2] = String(Number(start.split(";")[2]) + content.length);
     const end = endOffset.join(";");
 
@@ -214,6 +294,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   selectTitleField(content: string): void {
     const startOffset = this._documentEditor.selection.startOffset.split(";");
     //add 2 positions so as not to select [ or <
+
     startOffset[2] = String(
       Number(this._documentEditor.selection.startOffset.split(";")[2]) + 2
     );
@@ -251,14 +332,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     let title = "";
     let content = "";
     if (bookmarkContent.includes("[")) {
-      title = bookmarkContent
-        .split(">")[0]
-        .replace(/[^a-zA-Z0-9]/g, " ")
-        .trimStart();
-      content = bookmarkContent
-        .split(">")[1]
-        .replace(/[^a-zA-Z0-9]/g, " ")
-        .trimEnd();
+      const insideContent = bookmarkContent.replace(
+        /\[(.*)\]/,
+        (_match, group1) => group1
+      );
+      title = insideContent.split(">")[0].substring(1);
+      content = insideContent.split(">")[1];
     } else {
       content = bookmarkContent;
     }
@@ -270,7 +349,11 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   popAndUpdate(bookmarkName: string, content: string, title: string): void {
     const index = this._bookmarks.findIndex(item => item.name === bookmarkName);
-    if (bookmarkName.includes("Field")) {
+    if (
+      bookmarkName.includes("Field") ||
+      bookmarkName.includes("Mandatory") ||
+      bookmarkName.includes("Optional")
+    ) {
       if (index !== -1) {
         this._bookmarks = this._bookmarks.map(item => {
           if (item.name === bookmarkName) {
@@ -303,7 +386,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     }
   }
 
-  removeEmptyField(): void {
+  removeEmptyField(editorBookmarks: string[]): void {
+    this._bookmarks = this._bookmarks.filter(item =>
+      editorBookmarks.includes(item.name)
+    );
     this._bookmarks = this._bookmarks.filter(item => item.content !== "");
   }
 
