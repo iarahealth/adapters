@@ -229,6 +229,7 @@ export class IaraSyncfusionEditorContentManager {
 
   async getContent(): Promise<[string, string, string, string]> {
     const sfdt = await this._getSfdtContent();
+    console.log("getContent", sfdt.value);
     return Promise.all([
       this.getPlainTextContent(),
       sfdt.toHtml(),

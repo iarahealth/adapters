@@ -119,12 +119,14 @@ export class IaraSyncfusionAdapter
       '<div class="Section0">',
       '<div class="Section0" id="docs-internal-guid-iara">'
     );
+    console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
   }
 
   clearReport(): void {
+    console.log("clearReport");
     this._editorContainer.documentEditor.selection.selectAll();
     this._editorContainer.documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
@@ -142,6 +144,7 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
+    console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await IaraSFDT.fromContent(
       content,
       this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
@@ -149,9 +152,15 @@ export class IaraSyncfusionAdapter
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
+    console.log("insertTemplate1", sfdt.value);
 
     this._editorContainer.documentEditor.selection.moveToDocumentStart();
 
+    console.log(
+      "insertTemplate2",
+      this._editorContainer.documentEditor.selection.characterFormat.fontFamily,
+      this._editorContainer.documentEditor.selection.characterFormat.fontSize
+    );
     // Set the default editor format after inserting the template
     this._editorContainer.documentEditor.setDefaultCharacterFormat({
       fontFamily:
