@@ -92,4 +92,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     console.log(title);
     throw new Error("Method not implemented.");
   }
+  hasEmptyRequiredFields(): boolean {
+    throw new Error("Method not implemented.");
+  }
 }

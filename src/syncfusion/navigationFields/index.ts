@@ -190,6 +190,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       const { title, content } = this.getNames(bookmarkContent);
 
       this.popAndUpdate(bookmark, content, title);
+      this._documentEditor.selection.clear();
     });
     this.removeEmptyField(editorBookmarks);
     if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
@@ -201,8 +202,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.sortByPosition();
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
-
-    this._documentEditor.selection.clear();
+    console.log(editorBookmarks, this._bookmarks, "editorBookmarks");
   }
 
   goToField(title: string): void | string {
@@ -507,5 +507,83 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         endPosition
       );
     }
+  }
+
+  changeFieldsToFinishReport(): void {
+    const fields = this._bookmarks.filter(bookmark =>
+      bookmark.name.includes("Field")
+    );
+    fields.filter(field => {
+      this.getOffsetsAndSelect(field.name);
+      if (
+        field.content === "" ||
+        field.content === "Escreva uma dica de texto"
+      ) {
+        this._documentEditor.editor.insertText(" ");
+        this._documentEditor.getBookmarks();
+      } else {
+        this._documentEditor.selection.characterFormat.highlightColor =
+          "Violet";
+        this._documentEditor.editor.insertText(`${field.content}`);
+      }
+      this._documentEditor.selection.clear();
+    });
+  }
+
+  changeOptionalsFieldsToFinishReport(): void {
+    const optionalFields = this._bookmarks.filter(bookmark =>
+      bookmark.name.includes("Optional")
+    );
+    optionalFields.filter(field => {
+      this.getOffsetsAndSelect(field.name);
+      if (
+        field.content === "" ||
+        field.content === "Escreva uma dica de texto?"
+      ) {
+        this._documentEditor.editor.insertText(" ");
+        this._documentEditor.getBookmarks();
+      } else {
+        this._documentEditor.editor.insertText(`${field.content}`);
+      }
+      this._documentEditor.selection.clear();
+    });
+  }
+
+  changeMandatoriesFieldsToFinishReport(): void {
+    const mandatoriesFields = this._bookmarks.filter(bookmark =>
+      bookmark.name.includes("Mandatory")
+    );
+    mandatoriesFields.filter(field => {
+      this.getOffsetsAndSelect(field.name);
+
+      if (
+        field.content !== "" &&
+        field.content !== "Escreva uma dica de texto*"
+      ) {
+        this._documentEditor.selection.characterFormat.highlightColor = "Red";
+        this._documentEditor.editor.insertText(`${field.content}`);
+      }
+      this._documentEditor.selection.clear();
+    });
+  }
+
+  requiredFields(): boolean {
+    this.getBookmarks();
+    const mandatoriesFields = this._bookmarks.filter(bookmark =>
+      bookmark.name.includes("Mandatory")
+    );
+    const hasMandatoriesFields = mandatoriesFields.filter(
+      field =>
+        field.content === "" || field.content === "Escreva uma dica de texto*"
+    );
+    return hasMandatoriesFields.length > 0 ? true : false;
+  }
+
+  hasEmptyRequiredFields(): boolean {
+    console.log(this._bookmarks, "BOOKS");
+    this.changeFieldsToFinishReport();
+    this.changeOptionalsFieldsToFinishReport();
+    this.changeMandatoriesFieldsToFinishReport();
+    return this.requiredFields();
   }
 }
