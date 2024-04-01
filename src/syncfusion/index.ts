@@ -19,6 +19,7 @@ import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -37,6 +38,7 @@ export class IaraSyncfusionAdapter
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
+  private _contextMenuManager?: IaraSyncfusionContextMenuManager;
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
@@ -87,6 +89,10 @@ export class IaraSyncfusionAdapter
       );
       this._toolbarManager.init();
     }
+
+    this._contextMenuManager = new IaraSyncfusionContextMenuManager(
+      this._documentEditor
+    );
 
     DocumentEditor.Inject(Print);
 
