@@ -226,6 +226,10 @@ export class IaraSyncfusionAdapter
     if (inference.isFinal) this._selectionManager = undefined;
   }
 
+  moveToDocumentEnd() {
+    this._documentEditor.selection.moveToDocumentEnd();
+  }
+
   undo(): void {
     this._documentEditor.editorHistory.undo();
   }
