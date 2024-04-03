@@ -88,10 +88,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
-  insertField(): void {
+  insertField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
@@ -117,14 +116,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(content);
   }
 
-  insertMandatoryField(): void {
+  insertMandatoryField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
 
     const defaultColor =
       this._documentEditor.selection.characterFormat.fontColor;
 
     this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.selection.characterFormat.fontColor = "#b71c1c";
     this._documentEditor.editor.insertText("[]");
@@ -149,14 +147,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(`${content}*`);
   }
 
-  insertOptionalField(): void {
+  insertOptionalField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
 
     const defaultColor =
       this._documentEditor.selection.characterFormat.fontColor;
 
     this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.selection.characterFormat.fontColor = "#3269a8";
     this._documentEditor.editor.insertText("[]");

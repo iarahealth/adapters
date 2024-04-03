@@ -19,6 +19,7 @@ import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -111,6 +112,11 @@ export class IaraSyncfusionAdapter
       this._documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this),
+      this._navigationFieldManager
+    );
+
+    new IaraSyncfusionContextMenuManager(
+      this._documentEditor,
       this._navigationFieldManager
     );
 
