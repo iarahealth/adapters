@@ -54,6 +54,9 @@ export class IaraSyncfusionAdapter
   public get contentManager(): IaraSyncfusionEditorContentManager {
     return this._contentManager;
   }
+  public get documentEditor(): DocumentEditor {
+    return this._documentEditor;
+  }
 
   public defaultFormat: CharacterFormatProperties = {};
 
@@ -231,6 +234,10 @@ export class IaraSyncfusionAdapter
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
+  }
+
+  moveToDocumentEnd() {
+    this._documentEditor.selection.moveToDocumentEnd();
   }
 
   undo(): void {
