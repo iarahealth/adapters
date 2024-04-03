@@ -52,6 +52,9 @@ export class IaraSyncfusionAdapter
   public get contentManager(): IaraSyncfusionEditorContentManager {
     return this._contentManager;
   }
+  public get documentEditor(): DocumentEditor {
+    return this._documentEditor;
+  }
 
   public defaultFormat: CharacterFormatProperties = {};
 
