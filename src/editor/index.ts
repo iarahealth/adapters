@@ -82,21 +82,30 @@ export abstract class EditorAdapter {
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
   abstract clearReport(): void;
-  abstract copyReport(): Promise<void>;
+  abstract copyReport(): Promise<string[]>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
   abstract getEditorContent(): Promise<[string, string, string, string?]>;
   abstract print(): void;
 
-  beginReport(): string | void {
+  async beginReport(): Promise<string | void> {
     if (!this._config.saveReport) return;
-    return this._recognition.beginReport({ richText: "", text: "" });
+    console.log("beginReport!!!!", this._recognition.report["_key"]);
+    return new Promise(resolve => {
+      this._recognition.beginReport({ richText: "", text: "" }, resolve);
+    });
   }
 
   async finishReport(): Promise<void> {
+    console.log("finishReport!!!!", this._recognition.report["_key"]);
     if (!this._config.saveReport) return;
-    await this.copyReport();
+    const content = await this.copyReport();
     this.clearReport();
-    this._recognition.finishReport();
+    return new Promise(resolve => {
+      this._recognition.finishReport(
+        { richText: content[1], text: content[0] },
+        resolve
+      );
+    });
   }
 
   private _initCommands(): void {

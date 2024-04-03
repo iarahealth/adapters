@@ -107,10 +107,11 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
-  async copyReport(): Promise<void> {
+  async copyReport(): Promise<string[]> {
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
+    console.log("copyReport");
     const content = await this._contentManager.getContent();
 
     // By pretending our html comes from google docs, we can paste it into
@@ -119,10 +120,11 @@ export class IaraSyncfusionAdapter
       '<div class="Section0">',
       '<div class="Section0" id="docs-internal-guid-iara">'
     );
-    console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
+
+    return content.slice(0, 3);
   }
 
   clearReport(): void {
@@ -130,6 +132,7 @@ export class IaraSyncfusionAdapter
     this._editorContainer.documentEditor.selection.selectAll();
     this._editorContainer.documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
+    console.log("clearReport1");
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -144,23 +147,20 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
-    console.log("insertTemplate0", content, replaceAllContent);
-    const sfdt = await IaraSFDT.fromContent(
-      content,
-      this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
-    );
+    // console.log("insertTemplate0", content, replaceAllContent);
+    const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
-    console.log("insertTemplate1", sfdt.value);
+    // console.log("insertTemplate1", sfdt.value);
 
     this._editorContainer.documentEditor.selection.moveToDocumentStart();
 
-    console.log(
-      "insertTemplate2",
-      this._editorContainer.documentEditor.selection.characterFormat.fontFamily,
-      this._editorContainer.documentEditor.selection.characterFormat.fontSize
-    );
+    // console.log(
+    //   "insertTemplate2",
+    //   this._editorContainer.documentEditor.selection.characterFormat.fontFamily,
+    //   this._editorContainer.documentEditor.selection.characterFormat.fontSize
+    // );
     // Set the default editor format after inserting the template
     this._editorContainer.documentEditor.setDefaultCharacterFormat({
       fontFamily:
@@ -252,15 +252,17 @@ export class IaraSyncfusionAdapter
     }
 
     // Update the RTF content in the background in order to speed up content retrieval
-    this._contentManager.getRtfContent();
 
-    const content: string[] = await Promise.all([
-      this._contentManager.getPlainTextContent(),
-      this._contentManager.getHtmlContent(),
-    ]);
+    console.log("_saveReport0", this._recognition.report["_key"]);
+    const content: string[] = await this._contentManager.getContent();
+    console.log("_saveReport01", content[0]);
 
     if (contentDate !== this._contentDate) return;
-
+    console.log("_saveReport", this._recognition.report["_key"]);
+    if (!this._recognition.report["_key"]) {
+      await this.beginReport();
+    }
+    console.log("_saveReport2", this._recognition.report["_key"]);
     await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
