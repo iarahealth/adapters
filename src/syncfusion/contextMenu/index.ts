@@ -44,19 +44,20 @@ export class IaraSyncfusionContextMenuManager {
       args: CustomContentMenuEventArgs
     ): void => {
       const item: string = args.id;
-      const selectedText = this._editor.selection.text;
-      console.log(selectedText, "selectedText");
+
+      const selectedText = this._editor.selection.text
+        ? this._editor.selection.text.trim()
+        : undefined;
+
       switch (item) {
         case "add-navigation-field":
-          this._navigationFieldManager.insertField(selectedText.trim());
+          this._navigationFieldManager.insertField(selectedText);
           break;
         case "add-mandatory-field":
-          this._navigationFieldManager.insertMandatoryField(
-            selectedText.trim()
-          );
+          this._navigationFieldManager.insertMandatoryField(selectedText);
           break;
         case "add-optional-field":
-          this._navigationFieldManager.insertOptionalField(selectedText.trim());
+          this._navigationFieldManager.insertOptionalField(selectedText);
           break;
       }
     };

@@ -89,6 +89,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   insertField(content = "Escreva uma dica de texto"): void {
+    console.log(content, "CONTE");
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
     const title = "Nome do campo";

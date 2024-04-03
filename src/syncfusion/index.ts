@@ -38,7 +38,6 @@ export class IaraSyncfusionAdapter
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
-  private _contextMenuManager?: IaraSyncfusionContextMenuManager;
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
@@ -116,7 +115,7 @@ export class IaraSyncfusionAdapter
       this._navigationFieldManager
     );
 
-    this._contextMenuManager = new IaraSyncfusionContextMenuManager(
+    new IaraSyncfusionContextMenuManager(
       this._documentEditor,
       this._navigationFieldManager
     );
