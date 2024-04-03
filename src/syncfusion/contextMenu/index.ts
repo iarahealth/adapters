@@ -1,45 +1,64 @@
 import {
-  ContextMenu,
-  MenuItemModel,
-  ContextMenuModel,
-} from "@syncfusion/ej2-navigations";
-import { enableRipple } from "@syncfusion/ej2-base";
-import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
+  CustomContentMenuEventArgs,
+  DocumentEditor,
+} from "@syncfusion/ej2-documenteditor";
+import { MenuItemModel } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 
 export class IaraSyncfusionContextMenuManager {
-  constructor(private _editor: DocumentEditor) {
-    enableRipple(true);
-
+  constructor(
+    private _editor: DocumentEditor,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
+  ) {
     const menuItems: MenuItemModel[] = [
       {
         separator: true,
       },
       {
-        text: "View",
+        iconCss: "e-icons e-bookmark",
+        text: "Campos de navegação",
+        id: "navigation-fields",
         items: [
           {
-            text: "Large icons",
+            iconCss: "e-icons e-plus",
+            id: "add-navigation-field",
+            text: "Adicionar campo",
           },
           {
-            text: "Medium icons",
+            iconCss: "e-icons e-lock",
+            id: "add-mandatory-field",
+            text: "Adicionar campo obrigatório",
           },
           {
-            text: "Small icons",
+            iconCss: "e-icons e-circle-info",
+            id: "add-optional-field",
+            text: "Adicionar campo opicional",
           },
         ],
       },
     ];
 
-    console.log(this._editor.contextMenuModule, "ITENS");
-    this._editor.contextMenuModule.addMenuItems(menuItems);
-    console.log(this._editor.contextMenu, "ITENS2");
+    this._editor.contextMenu.addCustomMenu(menuItems, false, true);
 
-    // const menuObj: ContextMenu = new ContextMenu(menuOptions, "#contextmenu");
-
-    // const menuObj: ContextMenu = document.getElementById(
-    //   ""
-    // );
-
-    // menuOptions.insertAfter([{ text: "View" }], "Parágrafo...");
+    this._editor.customContextMenuSelect = (
+      args: CustomContentMenuEventArgs
+    ): void => {
+      const item: string = args.id;
+      const selectedText = this._editor.selection.text;
+      console.log(selectedText, "selectedText");
+      switch (item) {
+        case "add-navigation-field":
+          this._navigationFieldManager.insertField(selectedText.trim());
+          break;
+        case "add-mandatory-field":
+          this._navigationFieldManager.insertMandatoryField(
+            selectedText.trim()
+          );
+          break;
+        case "add-optional-field":
+          this._navigationFieldManager.insertOptionalField(selectedText.trim());
+          break;
+      }
+    };
   }
 }

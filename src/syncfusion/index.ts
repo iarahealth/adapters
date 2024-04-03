@@ -90,10 +90,6 @@ export class IaraSyncfusionAdapter
       this._toolbarManager.init();
     }
 
-    this._contextMenuManager = new IaraSyncfusionContextMenuManager(
-      this._documentEditor
-    );
-
     DocumentEditor.Inject(Print);
 
     this._documentEditor.enablePrint = true;
@@ -114,6 +110,11 @@ export class IaraSyncfusionAdapter
       this._documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this),
+      this._navigationFieldManager
+    );
+
+    this._contextMenuManager = new IaraSyncfusionContextMenuManager(
+      this._documentEditor,
       this._navigationFieldManager
     );
 
