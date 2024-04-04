@@ -13,7 +13,7 @@ import {
 } from "@syncfusion/ej2-popups";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
@@ -107,7 +107,7 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
-  async copyReport(): Promise<void> {
+  async copyReport(): Promise<string[]> {
     this._editorContainer.documentEditor.focusIn();
     this._editorContainer.documentEditor.selection.selectAll();
     showSpinner(this._editorContainer.editorContainer);
@@ -123,10 +123,11 @@ export class IaraSyncfusionAdapter
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._editorContainer.editorContainer);
     this._editorContainer.documentEditor.selection.moveNextPosition();
+
+    return content.slice(0, 3);
   }
 
   clearReport(): void {
-    console.log("clearReport");
     this._editorContainer.documentEditor.selection.selectAll();
     this._editorContainer.documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
@@ -145,10 +146,7 @@ export class IaraSyncfusionAdapter
     replaceAllContent = false
   ): Promise<void> {
     console.log("insertTemplate0", content, replaceAllContent);
-    const sfdt = await IaraSFDT.fromContent(
-      content,
-      this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
-    );
+    const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent)
       this._editorContainer.documentEditor.open(sfdt.value);
     else this._editorContainer.documentEditor.editor.paste(sfdt.value);
@@ -251,16 +249,12 @@ export class IaraSyncfusionAdapter
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
-    // Update the RTF content in the background in order to speed up content retrieval
-    this._contentManager.getRtfContent();
-
-    const content: string[] = await Promise.all([
-      this._contentManager.getPlainTextContent(),
-      this._contentManager.getHtmlContent(),
-    ]);
+    const content: string[] = await this._contentManager.getContent();
 
     if (contentDate !== this._contentDate) return;
-
+    if (!this._recognition.report["_key"]) {
+      await this.beginReport();
+    }
     await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
