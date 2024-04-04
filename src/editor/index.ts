@@ -98,12 +98,7 @@ export abstract class EditorAdapter {
     if (!this._config.saveReport) return;
     const content = await this.copyReport();
     this.clearReport();
-    return new Promise(resolve => {
-      this._recognition.finishReport(
-        { richText: content[1], text: content[0] },
-        resolve
-      );
-    });
+    this._recognition.finishReport({ richText: content[1], text: content[0] });
   }
 
   private _initCommands(): void {
