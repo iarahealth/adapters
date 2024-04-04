@@ -13,7 +13,7 @@ import {
 } from "@syncfusion/ej2-popups";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
