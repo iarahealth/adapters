@@ -89,14 +89,12 @@ export abstract class EditorAdapter {
 
   async beginReport(): Promise<string | void> {
     if (!this._config.saveReport) return;
-    console.log("beginReport!!!!", this._recognition.report["_key"]);
     return new Promise(resolve => {
       this._recognition.beginReport({ richText: "", text: "" }, resolve);
     });
   }
 
   async finishReport(): Promise<void> {
-    console.log("finishReport!!!!", this._recognition.report["_key"]);
     if (!this._config.saveReport) return;
     const content = await this.copyReport();
     this.clearReport();

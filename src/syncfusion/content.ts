@@ -261,13 +261,11 @@ export class IaraSyncfusionEditorContentManager {
 
   async fromEditor() {
     const sfdt = await IaraSFDT.fromEditor(this._editor, this._authHeaders);
-    console.log("fromEditor", sfdt.value);
     this._sfdt = sfdt;
     return this._sfdt;
   }
 
   async getContent(): Promise<[string, string, string, string]> {
-    console.log("getContent");
     const sfdt = await this._getSfdtContent();
     return Promise.all([
       sfdt.toPlainText(),
@@ -278,25 +276,21 @@ export class IaraSyncfusionEditorContentManager {
   }
 
   async getHtmlContent(): Promise<string> {
-    console.log("getHtmlContent");
     const sfdt = await this._getSfdtContent();
     return sfdt.toHtml();
   }
 
   async getPlainTextContent(): Promise<string> {
-    console.log("getPlainTextContent");
     const sfdt = await this._getSfdtContent();
     return sfdt.toPlainText();
   }
 
   async getRtfContent(): Promise<string> {
-    console.log("getRtfContent");
     const sfdt = await this._getSfdtContent();
     return sfdt.toRtf();
   }
 
   getSfdtContent(): Promise<IaraSFDT> {
-    console.log("getSfdtContent");
     return this._getSfdtContent();
   }
 
@@ -310,11 +304,9 @@ export class IaraSyncfusionEditorContentManager {
   }
 
   private async _getSfdtContent(): Promise<IaraSFDT> {
-    console.log("get sfdt");
     if (this._isDirty) {
-      console.log("get new sfdt content!");
       this._isDirty = false;
-      this.fromEditor();
+      await this.fromEditor();
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
     return this._sfdt;
