@@ -235,6 +235,8 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
+    if (!this._recognition.report["_key"]) return;
+
     const contentDate = new Date();
     this._contentDate = contentDate;
 
@@ -252,9 +254,6 @@ export class IaraSyncfusionAdapter
     const content: string[] = await this._contentManager.getContent();
 
     if (contentDate !== this._contentDate) return;
-    if (!this._recognition.report["_key"]) {
-      await this.beginReport();
-    }
     await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
