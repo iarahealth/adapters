@@ -19,6 +19,7 @@ import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -51,6 +52,9 @@ export class IaraSyncfusionAdapter
 
   public get contentManager(): IaraSyncfusionEditorContentManager {
     return this._contentManager;
+  }
+  public get documentEditor(): DocumentEditor {
+    return this._documentEditor;
   }
 
   public defaultFormat: CharacterFormatProperties = {};
@@ -108,6 +112,11 @@ export class IaraSyncfusionAdapter
       this._documentEditor,
       _recognition,
       this.onTemplateSelectedAtShortCut.bind(this),
+      this._navigationFieldManager
+    );
+
+    new IaraSyncfusionContextMenuManager(
+      this._documentEditor,
       this._navigationFieldManager
     );
 
@@ -224,6 +233,10 @@ export class IaraSyncfusionAdapter
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
+  }
+
+  moveToDocumentEnd() {
+    this._documentEditor.selection.moveToDocumentEnd();
   }
 
   undo(): void {

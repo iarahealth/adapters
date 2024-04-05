@@ -560,6 +560,16 @@ export const tabsConfig = (
                         text: "Adicionar campo",
                       },
                       {
+                        id: "add_mandatory_field",
+                        iconCss: "e-icons e-lock",
+                        text: "Adicionar campo obrigatório",
+                      },
+                      {
+                        id: "add_optional_field",
+                        iconCss: "e-icons e-circle-info",
+                        text: "Adicionar campo opicional",
+                      },
+                      {
                         id: "next_field",
                         iconCss: "e-icons e-arrow-right",
                         text: "Próximo campo",

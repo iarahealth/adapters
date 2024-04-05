@@ -88,10 +88,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
-  insertField(): void {
+  insertField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
@@ -117,14 +116,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(content);
   }
 
-  insertMandatoryField(): void {
+  insertMandatoryField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
 
     const defaultColor =
       this._documentEditor.selection.characterFormat.fontColor;
 
     this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.selection.characterFormat.fontColor = "#b71c1c";
     this._documentEditor.editor.insertText("[]");
@@ -149,14 +147,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitleField(`${content}*`);
   }
 
-  insertOptionalField(): void {
+  insertOptionalField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
 
     const defaultColor =
       this._documentEditor.selection.characterFormat.fontColor;
 
     this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
-    const content = "Escreva uma dica de texto";
     const title = "Nome do campo";
     this._documentEditor.selection.characterFormat.fontColor = "#3269a8";
     this._documentEditor.editor.insertText("[]");
@@ -202,7 +199,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.sortByPosition();
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
-    console.log(editorBookmarks, this._bookmarks, "editorBookmarks");
   }
 
   goToField(title: string): void | string {
@@ -509,46 +505,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     }
   }
 
-  changeFieldsToFinishReport(): void {
-    const fields = this._bookmarks.filter(bookmark =>
-      bookmark.name.includes("Field")
-    );
-    fields.filter(field => {
-      this.getOffsetsAndSelect(field.name);
-      if (
-        field.content === "" ||
-        field.content === "Escreva uma dica de texto"
-      ) {
-        this._documentEditor.editor.insertText(" ");
-        this._documentEditor.getBookmarks();
-      } else {
-        this._documentEditor.selection.characterFormat.highlightColor =
-          "Violet";
-        this._documentEditor.editor.insertText(`${field.content}`);
-      }
-      this._documentEditor.selection.clear();
-    });
-  }
-
-  changeOptionalsFieldsToFinishReport(): void {
-    const optionalFields = this._bookmarks.filter(bookmark =>
-      bookmark.name.includes("Optional")
-    );
-    optionalFields.filter(field => {
-      this.getOffsetsAndSelect(field.name);
-      if (
-        field.content === "" ||
-        field.content === "Escreva uma dica de texto?"
-      ) {
-        this._documentEditor.editor.insertText(" ");
-        this._documentEditor.getBookmarks();
-      } else {
-        this._documentEditor.editor.insertText(`${field.content}`);
-      }
-      this._documentEditor.selection.clear();
-    });
-  }
-
   changeMandatoriesFieldsToFinishReport(): void {
     const mandatoriesFields = this._bookmarks.filter(bookmark =>
       bookmark.name.includes("Mandatory")
@@ -581,8 +537,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   hasEmptyRequiredFields(): boolean {
     console.log(this._bookmarks, "BOOKS");
-    this.changeFieldsToFinishReport();
-    this.changeOptionalsFieldsToFinishReport();
     this.changeMandatoriesFieldsToFinishReport();
     return this.requiredFields();
   }

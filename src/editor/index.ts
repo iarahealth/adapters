@@ -93,6 +93,7 @@ export abstract class EditorAdapter {
   }
 
   async finishReport(): Promise<void> {
+    if (this.hasEmptyRequiredFields()) return;
     if (!this._config.saveReport) return;
     await this.copyReport();
     this.clearReport();
