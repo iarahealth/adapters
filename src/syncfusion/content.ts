@@ -18,10 +18,14 @@ export enum IaraSyncfusionContentTypes {
 
 export class IaraSFDT {
   public html: string | undefined;
+  public plainText: string | undefined;
   public rtf: string | undefined;
-  public pdf: string | undefined;
 
-  constructor(public value: string, private _authHeaders: HeadersInit) {}
+  constructor(
+    public value: string,
+    private _editor: DocumentEditor,
+    private _authHeaders: HeadersInit
+  ) {}
 
   static detectContentType(content: string): IaraSyncfusionContentTypes {
     if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
@@ -31,22 +35,27 @@ export class IaraSFDT {
     else throw new Error("Content type not recognized.");
   }
 
-  static async fromContent(content: string, authHeaders: HeadersInit) {
+  static async fromContent(
+    content: string,
+    editor: DocumentEditor,
+    authHeaders: HeadersInit
+  ) {
     const contentType = IaraSFDT.detectContentType(content);
     if (contentType === IaraSyncfusionContentTypes.SFDT)
-      return new IaraSFDT(content, authHeaders);
-    else return IaraSFDT.import(content, authHeaders, contentType);
+      return new IaraSFDT(content, editor, authHeaders);
+    else return IaraSFDT.import(content, editor, authHeaders, contentType);
   }
 
   static async fromEditor(editor: DocumentEditor, authHeaders: HeadersInit) {
     const value: string = await editor
       .saveAsBlob("Sfdt")
       .then((blob: Blob) => blob.text());
-    return new IaraSFDT(value, authHeaders);
+    return new IaraSFDT(value, editor, authHeaders);
   }
 
   static async import(
     content: string,
+    editor: DocumentEditor,
     authHeaders: HeadersInit,
     contentType?: IaraSyncfusionContentTypes
   ) {
@@ -73,7 +82,7 @@ export class IaraSFDT {
       throw new Error(responseText);
     }
 
-    return new IaraSFDT(responseText, authHeaders);
+    return new IaraSFDT(responseText, editor, authHeaders);
   }
 
   static async toHtml(
@@ -193,6 +202,13 @@ export class IaraSFDT {
     }
   }
 
+  static async editorToPlainText(editor: DocumentEditor): Promise<string> {
+    const plainText = await editor
+      .saveAsBlob("Txt")
+      .then((blob: Blob) => blob.text());
+    return plainText;
+  }
+
   async toHtml(): Promise<string> {
     if (!this.html)
       this.html = await IaraSFDT.toHtml(this.value, this._authHeaders);
@@ -205,32 +221,54 @@ export class IaraSFDT {
     return this.rtf;
   }
 
+  async toPlainText(): Promise<string> {
+    if (!this.plainText)
+      this.plainText = await IaraSFDT.editorToPlainText(this._editor);
+    return this.plainText;
+  }
+
   toString(): string {
     return this.value;
   }
 }
 
 export class IaraSyncfusionEditorContentManager {
-  private _isPlainTextDirty = true;
-  private _isSfdtDirty = true;
-  private _plainText: string | undefined;
+  private _authHeaders: HeadersInit;
+  private _isDirty = true;
   private _sfdt: IaraSFDT | undefined;
 
   constructor(
     private _editor: DocumentEditor,
-    private _recognition: IaraSpeechRecognition,
+    recognition: IaraSpeechRecognition,
     onContentChange: () => void
   ) {
+    this._authHeaders = recognition.internal
+      .iaraAPIMandatoryHeaders as HeadersInit;
     this._editor.contentChange = () => {
       this._onContentChange();
       onContentChange();
     };
   }
 
+  async fromContent(content: string) {
+    this._sfdt = await IaraSFDT.fromContent(
+      content,
+      this._editor,
+      this._authHeaders
+    );
+    return this._sfdt;
+  }
+
+  async fromEditor() {
+    const sfdt = await IaraSFDT.fromEditor(this._editor, this._authHeaders);
+    this._sfdt = sfdt;
+    return this._sfdt;
+  }
+
   async getContent(): Promise<[string, string, string, string]> {
     const sfdt = await this._getSfdtContent();
     return Promise.all([
-      this.getPlainTextContent(),
+      sfdt.toPlainText(),
       sfdt.toHtml(),
       sfdt.toRtf(),
       sfdt.value,
@@ -242,8 +280,9 @@ export class IaraSyncfusionEditorContentManager {
     return sfdt.toHtml();
   }
 
-  getPlainTextContent(): Promise<string> {
-    return this._getPlainTextContent();
+  async getPlainTextContent(): Promise<string> {
+    const sfdt = await this._getSfdtContent();
+    return sfdt.toPlainText();
   }
 
   async getRtfContent(): Promise<string> {
@@ -255,33 +294,25 @@ export class IaraSyncfusionEditorContentManager {
     return this._getSfdtContent();
   }
 
+  import(content: string, contentType?: IaraSyncfusionContentTypes) {
+    return IaraSFDT.import(
+      content,
+      this._editor,
+      this._authHeaders,
+      contentType
+    );
+  }
+
   private async _getSfdtContent(): Promise<IaraSFDT> {
-    if (this._isSfdtDirty) {
-      this._isSfdtDirty = false;
-      this._sfdt = await IaraSFDT.fromEditor(
-        this._editor,
-        this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
-      );
+    if (this._isDirty) {
+      this._isDirty = false;
+      await this.fromEditor();
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
-
     return this._sfdt;
   }
 
-  private async _getPlainTextContent(): Promise<string> {
-    if (this._isPlainTextDirty) {
-      this._isPlainTextDirty = false;
-      this._plainText = await this._editor
-        .saveAsBlob("Txt")
-        .then((blob: Blob) => blob.text());
-    }
-    if (!this._plainText) throw new Error("Invalid plain text content");
-
-    return this._plainText;
-  }
-
   private _onContentChange(): void {
-    this._isPlainTextDirty = true;
-    this._isSfdtDirty = true;
+    this._isDirty = true;
   }
 }

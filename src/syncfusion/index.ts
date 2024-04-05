@@ -13,13 +13,13 @@ import {
 } from "@syncfusion/ej2-popups";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
-import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -132,7 +132,7 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
-  async copyReport(): Promise<void> {
+  async copyReport(): Promise<string[]> {
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
 
@@ -145,9 +145,12 @@ export class IaraSyncfusionAdapter
       '<div class="Section0">',
       '<div class="Section0" id="docs-internal-guid-iara">'
     );
+    console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
     hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
     this._documentEditor.selection.moveNextPosition();
+
+    return content.slice(0, 3);
   }
 
   clearReport(): void {
@@ -168,15 +171,19 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
-    const sfdt = await IaraSFDT.fromContent(
-      content,
-      this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
-    );
+    console.log("insertTemplate0", content, replaceAllContent);
+    const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
     else this._documentEditor.editor.paste(sfdt.value);
+    console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
 
+    console.log(
+      "insertTemplate2",
+      this._documentEditor.selection.characterFormat.fontFamily,
+      this._documentEditor.selection.characterFormat.fontSize
+    );
     // Set the default editor format after inserting the template
     this._documentEditor.setDefaultCharacterFormat({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
@@ -268,16 +275,12 @@ export class IaraSyncfusionAdapter
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
-    // Update the RTF content in the background in order to speed up content retrieval
-    this._contentManager.getRtfContent();
-
-    const content: string[] = await Promise.all([
-      this._contentManager.getPlainTextContent(),
-      this._contentManager.getHtmlContent(),
-    ]);
+    const content: string[] = await this._contentManager.getContent();
 
     if (contentDate !== this._contentDate) return;
-
+    if (!this._recognition.report["_key"]) {
+      await this.beginReport();
+    }
     await this._updateReport(content[0], content[1]);
     this.savingReportSpan.innerText = "Salvo";
   }
