@@ -135,9 +135,22 @@ export class IaraSyncfusionAdapter
   async copyReport(): Promise<string[]> {
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
-
     showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
-    const content = await this._contentManager.getContent();
+    let content = await this._contentManager.getContent();
+
+    if (this._navigationFieldManager.bookmarks.length) {
+      const insideContent = content[0].replace(
+        /\[<(.*)>(.*)\]/gm,
+        (_match, group1, group2) => {
+          const bookmarkContent = group2.includes("Escreva uma dica de texto")
+            ? ""
+            : group2;
+          return bookmarkContent;
+        }
+      );
+      this._documentEditor.editor.insertText(insideContent);
+      content = await this._contentManager.getContent();
+    }
 
     // By pretending our html comes from google docs, we can paste it into
     // tinymce without losing the formatting for some reason.
@@ -147,6 +160,9 @@ export class IaraSyncfusionAdapter
     );
     console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
+    if (this._navigationFieldManager.bookmarks.length) {
+      this.undo();
+    }
     hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
     this._documentEditor.selection.moveNextPosition();
 
