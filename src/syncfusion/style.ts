@@ -22,9 +22,9 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
       fontColor: this._config.darkMode ? "#fff" : "#000",
     });
 
-    this.zoomInterval = setInterval(() => {
-      this.setZoomFactor(this._config.zoomFactor ?? "100%");
-    }, 100);
+    // this.zoomInterval = setInterval(() => {
+    //   this.setZoomFactor(this._config.zoomFactor ?? "100%");
+    // }, 100);
   }
 
   setEditorFontColor(color: string): void {
