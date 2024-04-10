@@ -6,6 +6,7 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraBookmark } from "./bookmark";
+import { IaraSyncfusionConfig } from "..";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -49,7 +50,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   private _previousBookmarksTitles: string[] = [];
 
-  constructor(private _documentEditor: DocumentEditor) {
+  constructor(
+    private _documentEditor: DocumentEditor,
+    private _config: IaraSyncfusionConfig
+  ) {
     super();
     const navigationBtn = <HTMLElement>(
       document.getElementById("navigation_fields")
@@ -92,20 +96,43 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
     const title = "Nome do campo";
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#565656")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#DDDDDD");
+
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#3F3F3F")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#AEAEAE");
+
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    this._documentEditor.selection.characterFormat.highlightColor = "#9e9ef4";
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    this._documentEditor.selection.characterFormat.highlightColor = "#c0beff";
-    this._documentEditor.editor.insertText(`${content}`);
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#565656")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#DDDDDD");
+    this._documentEditor.editor.insertText(`${content}.`);
     this._documentEditor.selection.selectBookmark(
       `Field-${bookmarksCount}`,
       true
@@ -119,24 +146,45 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   insertMandatoryField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
 
-    const defaultColor =
-      this._documentEditor.selection.characterFormat.fontColor;
-
     this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
     const title = "Nome do campo";
-    this._documentEditor.selection.characterFormat.fontColor = "#b71c1c";
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#C07240")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#FFEBD8");
+
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.selection.characterFormat.fontColor = "#ffd54f";
-    this._documentEditor.editor.insertText("*");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.selection.characterFormat.fontColor = `${defaultColor}`;
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#6C4E35")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#FFD5BB");
+
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    this._documentEditor.editor.insertText(`${content}`);
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#C07240")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#FFEBD8");
+    this._documentEditor.editor.insertText(`${content}*`);
     this._documentEditor.selection.selectBookmark(
       `Mandatory-${bookmarksCount}`,
       true
@@ -149,25 +197,44 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   insertOptionalField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
-
-    const defaultColor =
-      this._documentEditor.selection.characterFormat.fontColor;
-
     this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
     const title = "Nome do campo";
-    this._documentEditor.selection.characterFormat.fontColor = "#3269a8";
+
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#4C83AC")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#CEEFFE");
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.selection.characterFormat.fontColor = "#ffd54f";
-    this._documentEditor.editor.insertText("?");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.selection.characterFormat.fontColor = `${defaultColor}`;
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#356688")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#BAE1FE");
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    this._documentEditor.editor.insertText(`${content}`);
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#4C83AC")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._documentEditor.selection.characterFormat.highlightColor =
+          "#CEEFFE");
+    this._documentEditor.editor.insertText(`${content}?`);
     this._documentEditor.selection.selectBookmark(
       `Optional-${bookmarksCount}`,
       true
@@ -240,8 +307,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       start: this.nextBookmark.offset.start,
       end: this.nextBookmark.offset.end,
     };
-
-    this._documentEditor.selection.characterFormat.highlightColor = "Gray25";
   }
 
   previousField(isShortcutNavigation?: boolean): void {
@@ -265,7 +330,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       start: this.previousBookmark.offset.start,
       end: this.previousBookmark.offset.end,
     };
-    this._documentEditor.selection.characterFormat.highlightColor = "Gray25";
   }
 
   selectContentField(): void {
