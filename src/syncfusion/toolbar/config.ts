@@ -243,6 +243,14 @@ const toolbarButtonClick = (
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
         !editor.documentEditor.documentEditorSettings.showHiddenMarks;
       break;
+    case "ToggleTrackChanges":
+      editor.documentEditor.enableTrackChanges =
+        !editor.documentEditor.enableTrackChanges;
+      changeActiveState(
+        editor.documentEditor.enableTrackChanges,
+        "trackChangesBtn"
+      );
+      break;
     default:
       break;
   }

@@ -610,6 +610,31 @@ export const tabsConfig = (
             },
           ],
         },
+        {
+          id: "track_changes",
+          header: "Revisão",
+          collections: [
+            {
+              items: [
+                {
+                  id: "trackChangesBtn",
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-changes-track",
+                    content: "Rastrear mudanças",
+                    clicked: function () {
+                      toolbarButtonClick("ToggleTrackChanges", editor, config);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditor["Tracked changes"],
+                  },
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];

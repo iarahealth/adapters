@@ -137,7 +137,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
 
-    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this.showSpinner();
     const content = await this._contentManager.getContent();
 
     // By pretending our html comes from google docs, we can paste it into
@@ -148,16 +148,22 @@ export class IaraSyncfusionAdapter
     );
     console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
-    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this.hideSpinner();
     this._documentEditor.selection.moveNextPosition();
 
     return content.slice(0, 3);
   }
 
   clearReport(): void {
+    this._documentEditor.enableTrackChanges = false;
     this._documentEditor.selection.selectAll();
     this._documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
+  }
+
+  async finishReport(): Promise<void> {
+    this._documentEditor.enableTrackChanges = false;
+    return super.finishReport();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -221,6 +227,10 @@ export class IaraSyncfusionAdapter
       this._documentEditor.selection.characterFormat.allCaps = true;
       this._documentEditor.selection.paragraphFormat.textAlignment = "Center";
     }
+  }
+
+  hideSpinner(): void {
+    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
   insertParagraph(): void {
@@ -383,6 +393,10 @@ export class IaraSyncfusionAdapter
 
     this._documentEditor.selection.extendToParagraphEnd();
     this.insertText(content);
+  }
+
+  showSpinner(): void {
+    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
   private _setScrollClickHandler() {
