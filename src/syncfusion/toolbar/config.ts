@@ -250,7 +250,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: typeof EJ2_LOCALE["pt-BR"],
+  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {

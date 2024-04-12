@@ -164,6 +164,65 @@ export class IaraSyncfusionAdapter
     return this._contentManager.getContent();
   }
 
+  private _formatSectionTitle(titleQueries: string[]): void {
+    let matchedQuery = "";
+    while (!matchedQuery && titleQueries.length) {
+      const query = titleQueries.shift();
+      if (!query) continue;
+
+      this._documentEditor.search.findAll(query);
+      if (this._documentEditor.search.searchResults.length) {
+        matchedQuery = query;
+        this._documentEditor.selection.characterFormat.bold = true;
+      }
+    }
+
+    this._documentEditor.search.searchResults.clear();
+  }
+
+  formatSectionTitles(): void {
+    this._formatSectionTitle(["Técnica:", "Técnica de exame:"]);
+    this._formatSectionTitle(["Histórico Clínico:", "Informações Clínicas:"]);
+    this._formatSectionTitle(["Exames anteriores:"]);
+    this._formatSectionTitle([
+      "Análise:",
+      "Os seguintes aspectos foram observados:",
+      "Relatório:",
+    ]);
+    this._formatSectionTitle(["Objetivo:"]);
+    this._formatSectionTitle([
+      "Conclusão:",
+      "Hipótese diagnóstica:",
+      "Impressão Diagnóstica:",
+      "Impressão:",
+      "Resumo:",
+      "Observação:",
+      "Observações:",
+      "Opinião:",
+    ]);
+  }
+
+  formatTitle(): void {
+    this._documentEditor.selection.moveToDocumentEnd();
+    const lastParagraph = parseInt(
+      this._documentEditor.selection.endOffset.split(";")[1]
+    );
+    this._documentEditor.selection.moveToDocumentStart();
+
+    let titleLine = "";
+    let currentParagraph = 0;
+    while (!titleLine && currentParagraph <= lastParagraph) {
+      this._documentEditor.selection.selectLine();
+      titleLine = this._documentEditor.selection.text.trim();
+      currentParagraph++;
+    }
+    if (titleLine) {
+      this._documentEditor.selection.characterFormat.bold = true;
+      this._documentEditor.selection.characterFormat.allCaps = true;
+      this._documentEditor.selection.paragraphFormat.textAlignment = "Center";
+    }
+  }
+
   insertParagraph(): void {
     this._documentEditor.editor.insertText("\n");
   }
@@ -196,7 +255,13 @@ export class IaraSyncfusionAdapter
   }
 
   insertText(text: string): void {
-    this._documentEditor.editor.insertText(text);
+    const [firstLine, ...lines]: string[] = text.split("\n");
+    this._documentEditor.editor.insertText(firstLine);
+    lines.forEach(line => {
+      this.insertParagraph();
+      line = line.trimStart();
+      if (line) this._documentEditor.editor.insertText(line);
+    });
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
@@ -228,15 +293,8 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) {
-      const [firstLine, ...lines]: string[] = text.split("\n");
-      this.insertText(firstLine);
-      lines.forEach(line => {
-        this.insertParagraph();
-        line = line.trimStart();
-        if (line) this.insertText(line);
-      });
-    } else this._documentEditor.editor.delete();
+    if (text.length) this.insertText(text);
+    else this._documentEditor.editor.delete();
 
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
