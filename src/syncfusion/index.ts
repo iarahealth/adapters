@@ -134,6 +134,9 @@ export class IaraSyncfusionAdapter
   }
 
   async copyReport(): Promise<string[]> {
+    this._documentEditor.revisions.acceptAll();
+    this._documentEditor.enableTrackChanges = false;
+
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
 
@@ -159,11 +162,6 @@ export class IaraSyncfusionAdapter
     this._documentEditor.selection.selectAll();
     this._documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
-  }
-
-  async finishReport(): Promise<void> {
-    this._documentEditor.enableTrackChanges = false;
-    return super.finishReport();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
