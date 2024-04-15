@@ -18,6 +18,7 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
+  public iaraRecognizes = true;
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -31,7 +32,8 @@ export abstract class EditorAdapter {
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        if (event?.detail) this.insertInference(event.detail);
+        if (event?.detail && this.iaraRecognizes)
+          this.insertInference(event.detail);
       },
     },
     {
