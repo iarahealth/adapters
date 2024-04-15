@@ -66,6 +66,13 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
+  loadingSpinner(status: boolean): void {
+    if (status) {
+      return;
+    }
+    return;
+  }
+
   undo() {
     this._editor.undoManager.undo();
   }

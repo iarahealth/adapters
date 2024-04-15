@@ -84,6 +84,7 @@ export abstract class EditorAdapter {
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
+  abstract loadingSpinner(status: boolean): void;
   abstract clearReport(): void;
   abstract copyReport(): Promise<string[]>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;

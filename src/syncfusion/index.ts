@@ -133,11 +133,20 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
+  loadingSpinner(status: boolean): void {
+    if (status) {
+      return showSpinner(
+        this._documentEditor.editor.documentHelper.viewerContainer
+      );
+    }
+    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+  }
+
   async copyReport(): Promise<string[]> {
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
 
-    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this.loadingSpinner(true);
     const content = await this._contentManager.getContent();
 
     // By pretending our html comes from google docs, we can paste it into
@@ -148,7 +157,7 @@ export class IaraSyncfusionAdapter
     );
     console.log("copyReport", content[0], htmlContent, content[2]);
     this._recognition.automation.copyText(content[0], htmlContent, content[2]);
-    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this.loadingSpinner(false);
     this._documentEditor.selection.moveNextPosition();
 
     return content.slice(0, 3);
