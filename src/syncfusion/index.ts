@@ -186,10 +186,16 @@ export class IaraSyncfusionAdapter
 
   formatSectionTitles(): void {
     this._formatSectionTitle(["Técnica:", "Técnica de exame:"]);
-    this._formatSectionTitle(["Histórico Clínico:", "Informações Clínicas:"]);
+    this._formatSectionTitle(["Contraste:"]);
+    this._formatSectionTitle([
+      "Histórico Clínico:",
+      "Indicação clínica:",
+      "Informações Clínicas:",
+    ]);
     this._formatSectionTitle(["Exames anteriores:"]);
     this._formatSectionTitle([
       "Análise:",
+      "Interpretação:",
       "Os seguintes aspectos foram observados:",
       "Relatório:",
     ]);
@@ -203,6 +209,13 @@ export class IaraSyncfusionAdapter
       "Observação:",
       "Observações:",
       "Opinião:",
+    ]);
+    this._formatSectionTitle([
+      "Achados adicionais:",
+      "Comparação:",
+      "Demais achados:",
+      "Método:",
+      "Protocolo:",
     ]);
   }
 
