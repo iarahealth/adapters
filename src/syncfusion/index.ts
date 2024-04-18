@@ -271,8 +271,8 @@ export class IaraSyncfusionAdapter
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
     });
 
-    this._documentEditor.selection.moveToDocumentEnd();
     this._navigationFieldManager.getBookmarks();
+    this._documentEditor.selection.moveToDocumentEnd();
   }
 
   insertText(text: string): void {

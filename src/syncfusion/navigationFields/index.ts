@@ -74,14 +74,18 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         document.getElementById("add_optional_field")
       );
 
+      const selectedText = this._documentEditor.selection.text
+        ? this._documentEditor.selection.text.trim()
+        : undefined;
+
       insertBtn.addEventListener("click", () => {
-        this.insertField();
+        this.insertField(selectedText);
       });
       insertMandatoryFieldBtn.addEventListener("click", () => {
-        this.insertMandatoryField();
+        this.insertMandatoryField(selectedText);
       });
       insertOptionalFieldBtn.addEventListener("click", () => {
-        this.insertOptionalField();
+        this.insertOptionalField(selectedText);
       });
       nextFieldBtn.addEventListener("click", () => {
         this.nextField();
@@ -96,102 +100,43 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
     const title = "Nome do campo";
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#565656")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#DDDDDD");
-
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#3F3F3F")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#AEAEAE");
-
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#565656")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#DDDDDD");
-    this._documentEditor.editor.insertText(`${content}.`);
+    this._documentEditor.editor.insertText(content);
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
     this._documentEditor.selection.selectBookmark(
       `Field-${bookmarksCount}`,
       true
     );
-    this.getBookmarks();
-    this.isFirstNextNavigation = true;
-    this.isFirstPreviousNavigation = true;
     this.selectTitleField(content);
   }
 
   insertMandatoryField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
-
     this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
     const title = "Nome do campo";
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#C07240")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#FFEBD8");
-
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#6C4E35")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#FFD5BB");
-
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#C07240")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#FFEBD8");
     this._documentEditor.editor.insertText(`${content}*`);
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
     this._documentEditor.selection.selectBookmark(
       `Mandatory-${bookmarksCount}`,
       true
     );
-    this.getBookmarks();
-    this.isFirstNextNavigation = true;
-    this.isFirstPreviousNavigation = true;
     this.selectTitleField(`${content}*`);
   }
 
@@ -199,53 +144,25 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const bookmarksCount = Date.now();
     this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
     const title = "Nome do campo";
-
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#4C83AC")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#CEEFFE");
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#356688")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#BAE1FE");
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText(`${title}`);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
-    this._config.darkMode
-      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#4C83AC")
-      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        (this._documentEditor.selection.characterFormat.highlightColor =
-          "#CEEFFE");
     this._documentEditor.editor.insertText(`${content}?`);
+    this.getBookmarks();
+    this.isFirstNextNavigation = true;
+    this.isFirstPreviousNavigation = true;
     this._documentEditor.selection.selectBookmark(
       `Optional-${bookmarksCount}`,
       true
     );
-    this.getBookmarks();
-    this.isFirstNextNavigation = true;
-    this.isFirstPreviousNavigation = true;
     this.selectTitleField(`${content}*`);
   }
 
-  getBookmarks(): void {
+  getBookmarks(isNavitation?: boolean): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
     editorBookmarks.map(bookmark => {
       this.getOffsetsAndSelect(bookmark, true);
@@ -265,6 +182,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.sortByPosition();
     if (this._bookmarks.length > 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
+
+    if (!isNavitation) this.setColor();
 
     this._documentEditor.selection.clear();
   }
@@ -292,7 +211,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       start: this._documentEditor.selection.startOffset,
       end: this._documentEditor.selection.endOffset,
     };
-    this.getBookmarks();
+    this.getBookmarks(true);
 
     if (isShortcutNavigation && this.isFirstNextNavigation)
       this.selectContentField();
@@ -315,7 +234,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       end: this._documentEditor.selection.endOffset,
     };
 
-    this.getBookmarks();
+    this.getBookmarks(true);
 
     if (isShortcutNavigation && this.isFirstPreviousNavigation)
       this.selectTitleField(this.insertedBookmark.content);
@@ -332,40 +251,44 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     };
   }
 
-  selectContentField(): void {
-    const title = this.insertedBookmark.title;
-    const content = this.insertedBookmark.content;
+  selectContentField(title?: string, content?: string): void {
+    const currentTitle = title ? title : this.insertedBookmark.title;
+    const currentContent = content ? content : this.insertedBookmark.content;
     const startOffset = this._documentEditor.selection.startOffset.split(";");
 
     //title lenght and add 3 positions to pass startOffset to content
     startOffset[2] = String(
       Number(this._documentEditor.selection.startOffset.split(";")[2]) +
-        (title.length + 3)
+        (currentTitle.length + 3)
     );
     const start = startOffset.join(";");
 
     const endOffset = this._documentEditor.selection.endOffset.split(";");
     //add content lenght to endOffset to pass endOffset to content
-    endOffset[2] = String(Number(start.split(";")[2]) + content.length);
+    endOffset[2] = String(Number(start.split(";")[2]) + currentContent.length);
     const end = endOffset.join(";");
 
     this._documentEditor.selection.select(start, end);
   }
 
-  selectTitleField(content: string): void {
+  selectTitleField(content: string, selectAllTitle?: boolean): void {
     const startOffset = this._documentEditor.selection.startOffset.split(";");
     //add 2 positions so as not to select [ or <
-
     startOffset[2] = String(
-      Number(this._documentEditor.selection.startOffset.split(";")[2]) + 2
+      selectAllTitle
+        ? Number(this._documentEditor.selection.startOffset.split(";")[2]) + 1
+        : Number(this._documentEditor.selection.startOffset.split(";")[2]) + 2
     );
     const start = startOffset.join(";");
 
     const endOffset = this._documentEditor.selection.endOffset.split(";");
     //remove the content size plus 2 positions so as not to select > or ]
     endOffset[2] = String(
-      Number(this._documentEditor.selection.endOffset.split(";")[2]) -
-        (content.length + 2)
+      selectAllTitle
+        ? Number(this._documentEditor.selection.endOffset.split(";")[2]) -
+            (content.length + 1)
+        : Number(this._documentEditor.selection.endOffset.split(";")[2]) -
+            (content.length + 2)
     );
     const end = endOffset.join(";");
     this._documentEditor.selection.select(start, end);
@@ -445,6 +368,108 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         ];
       }
     }
+  }
+
+  setColor() {
+    this._bookmarks.map(bookmark => {
+      this._documentEditor.selection.select(
+        bookmark.offset.start,
+        bookmark.offset.end
+      );
+      if (bookmark.name.includes("Mandatory")) {
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#6C4E35")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#FFD5BB");
+        this.selectTitleField(bookmark.content, true);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#C07240")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#FFEBD8");
+        this.selectContentField(bookmark.title, bookmark.content);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#6C4E35")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#FFD5BB");
+      }
+      if (bookmark.name.includes("Field")) {
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#565656")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#DDDDDD");
+        this.selectTitleField(bookmark.content, true);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#3F3F3F")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#AEAEAE");
+        this.selectContentField(bookmark.title, bookmark.content);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#565656")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#DDDDDD");
+      }
+      if (bookmark.name.includes("Optional")) {
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#4C83AC")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#CEEFFE");
+        this.selectTitleField(bookmark.content, true);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#356688")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#BAE1FE");
+        this.selectContentField(bookmark.title, bookmark.content);
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#4C83AC")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#CEEFFE");
+      }
+    });
   }
 
   removeEmptyField(editorBookmarks: string[]): void {

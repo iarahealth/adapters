@@ -139,12 +139,12 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
-      `ir para (\\p{Letter}+)`,
+      `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("ir para");
+          this.onIaraCommand?.("buscar");
         } finally {
           console.info(detail, command, param);
         }
