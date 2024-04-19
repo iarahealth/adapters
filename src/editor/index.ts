@@ -103,13 +103,25 @@ export abstract class EditorAdapter {
     this._recognition.finishReport({ richText: content[1], text: content[0] });
   }
 
+  hasEmptyRequiredFields(): boolean {
+    return this._navigationFieldManager.hasEmptyRequiredFields();
+  }
+
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to copy");
+        return;
+      }
       this._recognition.stop();
       await this.copyReport();
       this.onIaraCommand?.("iara copiar laudo");
     });
     this._recognition.commands.add("iara finalizar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to finish");
+        return;
+      }
       this._recognition.stop();
       await this.finishReport();
       this.onIaraCommand?.("iara finalizar laudo");
