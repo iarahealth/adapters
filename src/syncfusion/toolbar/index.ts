@@ -2,6 +2,8 @@ import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { toolBarSettings } from "./config";
 import { IaraSyncfusionConfig } from "..";
+import { createElement } from "@syncfusion/ej2-base";
+import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
@@ -12,6 +14,7 @@ export class IaraSyncfusionToolbarManager {
   public init(): void {
     this._addRibbonToolbar();
     this._removePropertiesPane();
+    this._setupTrackChangesTab();
   }
 
   private _removePropertiesPane(): void {
@@ -101,5 +104,41 @@ export class IaraSyncfusionToolbarManager {
       ribbonExpandedMenuElement.style.height = "auto";
       this._editorContainer.resize();
     }
+  }
+
+  private _setupTrackChangesTab() {
+    const acceptAllHeader: HTMLElement = createElement("div", {
+      innerHTML: "Aceitar tudo",
+    });
+    const rejectAllHeader: HTMLElement = createElement("div", {
+      innerHTML: "Rejeitar tudo",
+    });
+
+    const totalItems = document.querySelectorAll(
+      "#iara-syncfusion-editor-container_editorReview_Tab_tab_header_items .e-toolbar-item"
+    ).length;
+    const items: TabItemModel[] = [
+      { header: { text: acceptAllHeader } },
+      { header: { text: rejectAllHeader } },
+    ] as TabItemModel[];
+    this._editorContainer.documentEditor.trackChangesPane[
+      "commentReviewPane"
+    ].reviewTab.addTab(items, totalItems);
+
+    this._editorContainer.documentEditor.trackChangesPane[
+      "commentReviewPane"
+    ].reviewTab.addEventListener("selecting", (event: SelectingEventArgs) => {
+      const selectedTabText = (
+        event.selectingItem.getElementsByClassName("e-tab-text")[0]
+          .childNodes[0] as HTMLElement
+      ).innerText;
+      if (selectedTabText == "ACEITAR TUDO") {
+        event.cancel = true;
+        this._editorContainer.documentEditor.revisions.acceptAll();
+      } else if (selectedTabText == "REJEITAR TUDO") {
+        event.cancel = true;
+        this._editorContainer.documentEditor.revisions.rejectAll();
+      }
+    });
   }
 }
