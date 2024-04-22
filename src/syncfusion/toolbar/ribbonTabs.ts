@@ -541,15 +541,16 @@ export const tabsConfig = (
           ],
         },
         {
-          id: "navigation_fields",
+          id: "navigation_fields_content",
           header: "Marcadores",
           groupIconCss: "e-icons e-align-center",
           collections: [
             {
               items: [
                 {
+                  displayOptions: DisplayMode.Classic,
                   type: "DropDown",
-
+                  id: "navigation_fields",
                   dropDownSettings: {
                     iconCss: "e-icons e-bookmark",
                     content: "Campos de navegação",
