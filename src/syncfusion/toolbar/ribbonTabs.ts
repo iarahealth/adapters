@@ -568,7 +568,7 @@ export const tabsConfig = (
                       {
                         id: "add_optional_field",
                         iconCss: "e-icons e-circle-info",
-                        text: "Adicionar campo opicional",
+                        text: "Adicionar campo opcional",
                       },
                       {
                         id: "next_field",
