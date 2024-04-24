@@ -32,7 +32,7 @@ export class IaraSyncfusionContextMenuManager {
           {
             iconCss: "e-icons e-circle-info",
             id: "add-optional-field",
-            text: "Adicionar campo opicional",
+            text: "Adicionar campo opcional",
           },
         ],
       },
