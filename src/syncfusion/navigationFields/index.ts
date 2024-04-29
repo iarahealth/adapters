@@ -4,9 +4,9 @@ import {
   DocumentEditor,
   TextPosition,
 } from "@syncfusion/ej2-documenteditor";
+import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraBookmark } from "./bookmark";
-import { IaraSyncfusionConfig } from "..";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -608,12 +608,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
           this._documentEditor.editor.deleteBookmark(field.name);
         } else {
           this._documentEditor.editor.delete();
+          this._documentEditor.editor.onBackSpace();
           this._documentEditor.editor.deleteBookmark(field.name);
         }
       }
       if (field.name.includes("Optional")) {
         if (field.title) {
           this._documentEditor.editor.delete();
+          this._documentEditor.editor.onBackSpace();
           this._documentEditor.editor.deleteBookmark(field.name);
         }
       }
