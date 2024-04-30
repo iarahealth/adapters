@@ -107,7 +107,7 @@ export class IaraEditorInferenceFormatter {
     }, text);
 
     //convert the 'por' before or after a number and return the formatted expression without a space ex:1x1
-    text = text.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/giu, "$1x");
+    // text = text.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/giu, "$1x");
 
     return text;
   }
@@ -132,10 +132,6 @@ export class IaraEditorInferenceFormatter {
     text = this._estimateVolume(
       text,
       "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm³|mm³)(?!\\s\\()"
-    );
-    text = this._estimateVolume(
-      text,
-      "(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?)(\\spor\\s|x)(\\d+(?:,\\d+)?) (cm|mm)(?!\\s\\(|³)"
     );
 
     text = this._capitalize(text, wordBefore);
