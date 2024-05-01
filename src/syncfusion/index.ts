@@ -141,20 +141,30 @@ export class IaraSyncfusionAdapter
     this._documentEditor.selection.selectAll();
 
     this.showSpinner();
-    const content = await this._contentManager.getContent();
+    try {
+      const content = await this._contentManager.getContent();
 
-    // By pretending our html comes from google docs, we can paste it into
-    // tinymce without losing the formatting for some reason.
-    const htmlContent = content[1].replace(
-      '<div class="Section0">',
-      '<div class="Section0" id="docs-internal-guid-iara">'
-    );
-    console.log("copyReport", content[0], htmlContent, content[2]);
-    this._recognition.automation.copyText(content[0], htmlContent, content[2]);
-    this.hideSpinner();
-    this._documentEditor.selection.moveNextPosition();
+      // By pretending our html comes from google docs, we can paste it into
+      // tinymce without losing the formatting for some reason.
+      const htmlContent = content[1].replace(
+        '<div class="Section0">',
+        '<div class="Section0" id="docs-internal-guid-iara">'
+      );
+      console.log("copyReport", content[0], htmlContent, content[2]);
+      this._recognition.automation.copyText(
+        content[0],
+        htmlContent,
+        content[2]
+      );
+      this.hideSpinner();
+      this._documentEditor.selection.moveNextPosition();
 
-    return content.slice(0, 3);
+      return content.slice(0, 3);
+    } catch (error) {
+      this.hideSpinner();
+      this._documentEditor.selection.moveToDocumentStart();
+      throw error;
+    }
   }
 
   clearReport(): void {
@@ -346,23 +356,29 @@ export class IaraSyncfusionAdapter
 
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
+      this.savingReportSpan.style.width = "120px";
       this.savingReportSpan.style.margin = "10px";
       this.savingReportSpan.style.fontSize = "12px";
-      this.savingReportSpan.style.display = "flex";
-      this.savingReportSpan.style.justifyContent = "end";
       this.savingReportSpan.style.color = "black";
-      this.savingReportSpan.innerText = "Salvando...";
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
-    const content: string[] = await this._contentManager.getContent();
+    try {
+      const content: string[] = await this._contentManager.getContent();
 
-    if (contentDate !== this._contentDate) return;
-    if (!this._recognition.report["_key"]) {
-      await this.beginReport();
+      if (contentDate !== this._contentDate) return;
+      if (!this._recognition.report["_key"]) {
+        await this.beginReport();
+      }
+      await this._updateReport(content[0], content[1]);
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
+    } catch {
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>Erro ao salvar';
     }
-    await this._updateReport(content[0], content[1]);
-    this.savingReportSpan.innerText = "Salvo";
   }
 
   onTemplateSelectedAtShortCut(
