@@ -73,10 +73,10 @@ export abstract class EditorAdapter {
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
     if (this._config.saveReport && !this._recognition.report["_key"]) {
-      if (this._recognition.ready) this.beginReport();
+      if (this._recognition.ready) this.beginReport().catch(console.error);
       else {
         this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
-          this.beginReport();
+          this.beginReport().catch(console.error);
         });
       }
     }
@@ -91,16 +91,14 @@ export abstract class EditorAdapter {
 
   async beginReport(): Promise<string | void> {
     if (!this._config.saveReport) return;
-    return new Promise(resolve => {
-      this._recognition.beginReport({ richText: "", text: "" }, resolve);
-    });
+    return this._recognition.report.begin("", "");
   }
 
   async finishReport(): Promise<void> {
     if (!this._config.saveReport) return;
     const content = await this.copyReport();
     this.clearReport();
-    this._recognition.finishReport({ richText: content[1], text: content[0] });
+    await this._recognition.report.finish(content[0], content[1]);
   }
 
   hasEmptyRequiredFields(): boolean {

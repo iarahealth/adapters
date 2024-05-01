@@ -347,22 +347,30 @@ export class IaraSyncfusionAdapter
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
       this.savingReportSpan.style.margin = "10px";
+      this.savingReportSpan.style.width = "fit-content";
       this.savingReportSpan.style.fontSize = "12px";
       this.savingReportSpan.style.display = "flex";
       this.savingReportSpan.style.justifyContent = "end";
       this.savingReportSpan.style.color = "black";
-      this.savingReportSpan.innerText = "Salvando...";
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
-    const content: string[] = await this._contentManager.getContent();
+    try {
+      const content: string[] = await this._contentManager.getContent();
 
-    if (contentDate !== this._contentDate) return;
-    if (!this._recognition.report["_key"]) {
-      await this.beginReport();
+      if (contentDate !== this._contentDate) return;
+      if (!this._recognition.report["_key"]) {
+        await this.beginReport();
+      }
+      await this._updateReport(content[0], content[1]);
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
+    } catch {
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>Erro ao salvar';
     }
-    await this._updateReport(content[0], content[1]);
-    this.savingReportSpan.innerText = "Salvo";
   }
 
   onTemplateSelectedAtShortCut(
