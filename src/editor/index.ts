@@ -18,6 +18,7 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
+  public iaraRecognizes = true;
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -31,7 +32,8 @@ export abstract class EditorAdapter {
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        if (event?.detail) this.insertInference(event.detail);
+        if (event?.detail && this.iaraRecognizes)
+          this.insertInference(event.detail);
       },
     },
     {
@@ -71,10 +73,10 @@ export abstract class EditorAdapter {
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
     if (this._config.saveReport && !this._recognition.report["_key"]) {
-      if (this._recognition.ready) this.beginReport();
+      if (this._recognition.ready) this.beginReport().catch(console.error);
       else {
         this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
-          this.beginReport();
+          this.beginReport().catch(console.error);
         });
       }
     }
@@ -89,25 +91,35 @@ export abstract class EditorAdapter {
 
   async beginReport(): Promise<string | void> {
     if (!this._config.saveReport) return;
-    return new Promise(resolve => {
-      this._recognition.beginReport({ richText: "", text: "" }, resolve);
-    });
+    return this._recognition.report.begin("", "");
   }
 
   async finishReport(): Promise<void> {
     if (!this._config.saveReport) return;
     const content = await this.copyReport();
     this.clearReport();
-    this._recognition.finishReport({ richText: content[1], text: content[0] });
+    await this._recognition.report.finish(content[0], content[1]);
+  }
+
+  hasEmptyRequiredFields(): boolean {
+    return this._navigationFieldManager.hasEmptyRequiredFields();
   }
 
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to copy");
+        return;
+      }
       this._recognition.stop();
       await this.copyReport();
       this.onIaraCommand?.("iara copiar laudo");
     });
     this._recognition.commands.add("iara finalizar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to finish");
+        return;
+      }
       this._recognition.stop();
       await this.finishReport();
       this.onIaraCommand?.("iara finalizar laudo");
@@ -137,12 +149,12 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
-      `ir para (\\p{Letter}+)`,
+      `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("ir para");
+          this.onIaraCommand?.("buscar");
         } finally {
           console.info(detail, command, param);
         }

@@ -134,27 +134,41 @@ export class IaraSyncfusionAdapter
   }
 
   async copyReport(): Promise<string[]> {
+    this._documentEditor.revisions.acceptAll();
+    this._documentEditor.enableTrackChanges = false;
+
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
 
-    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
-    const content = await this._contentManager.getContent();
+    this.showSpinner();
+    try {
+      const content = await this._contentManager.getContent();
 
-    // By pretending our html comes from google docs, we can paste it into
-    // tinymce without losing the formatting for some reason.
-    const htmlContent = content[1].replace(
-      '<div class="Section0">',
-      '<div class="Section0" id="docs-internal-guid-iara">'
-    );
-    console.log("copyReport", content[0], htmlContent, content[2]);
-    this._recognition.automation.copyText(content[0], htmlContent, content[2]);
-    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
-    this._documentEditor.selection.moveNextPosition();
+      // By pretending our html comes from google docs, we can paste it into
+      // tinymce without losing the formatting for some reason.
+      const htmlContent = content[1].replace(
+        '<div class="Section0">',
+        '<div class="Section0" id="docs-internal-guid-iara">'
+      );
+      console.log("copyReport", content[0], htmlContent, content[2]);
+      this._recognition.automation.copyText(
+        content[0],
+        htmlContent,
+        content[2]
+      );
+      this.hideSpinner();
+      this._documentEditor.selection.moveNextPosition();
 
-    return content.slice(0, 3);
+      return content.slice(0, 3);
+    } catch (error) {
+      this.hideSpinner();
+      this._documentEditor.selection.moveToDocumentStart();
+      throw error;
+    }
   }
 
   clearReport(): void {
+    this._documentEditor.enableTrackChanges = false;
     this._documentEditor.selection.selectAll();
     this._documentEditor.editor.delete();
     this._styleManager.setEditorDefaultFont();
@@ -162,6 +176,82 @@ export class IaraSyncfusionAdapter
 
   getEditorContent(): Promise<[string, string, string, string]> {
     return this._contentManager.getContent();
+  }
+
+  private _formatSectionTitle(titleQueries: string[]): void {
+    let matchedQuery = "";
+    while (!matchedQuery && titleQueries.length) {
+      const query = titleQueries.shift();
+      if (!query) continue;
+
+      this._documentEditor.search.findAll(query);
+      if (this._documentEditor.search.searchResults.length) {
+        matchedQuery = query;
+        this._documentEditor.selection.characterFormat.bold = true;
+      }
+    }
+
+    this._documentEditor.search.searchResults.clear();
+  }
+
+  formatSectionTitles(): void {
+    this._formatSectionTitle(["Técnica:", "Técnica de exame:"]);
+    this._formatSectionTitle(["Contraste:"]);
+    this._formatSectionTitle([
+      "Histórico Clínico:",
+      "Indicação clínica:",
+      "Informações Clínicas:",
+    ]);
+    this._formatSectionTitle(["Exames anteriores:"]);
+    this._formatSectionTitle([
+      "Análise:",
+      "Interpretação:",
+      "Os seguintes aspectos foram observados:",
+      "Relatório:",
+    ]);
+    this._formatSectionTitle(["Objetivo:"]);
+    this._formatSectionTitle([
+      "Conclusão:",
+      "Hipótese diagnóstica:",
+      "Impressão Diagnóstica:",
+      "Impressão:",
+      "Resumo:",
+      "Observação:",
+      "Observações:",
+      "Opinião:",
+    ]);
+    this._formatSectionTitle([
+      "Achados adicionais:",
+      "Comparação:",
+      "Demais achados:",
+      "Método:",
+      "Protocolo:",
+    ]);
+  }
+
+  formatTitle(): void {
+    this._documentEditor.selection.moveToDocumentEnd();
+    const lastParagraph = parseInt(
+      this._documentEditor.selection.endOffset.split(";")[1]
+    );
+    this._documentEditor.selection.moveToDocumentStart();
+
+    let titleLine = "";
+    let currentParagraph = 0;
+    while (!titleLine && currentParagraph <= lastParagraph) {
+      this._documentEditor.selection.selectLine();
+      titleLine = this._documentEditor.selection.text.trim();
+      currentParagraph++;
+    }
+    if (titleLine) {
+      this._documentEditor.selection.characterFormat.bold = true;
+      this._documentEditor.selection.characterFormat.allCaps = true;
+      this._documentEditor.selection.paragraphFormat.textAlignment = "Center";
+    }
+  }
+
+  hideSpinner(): void {
+    hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
   insertParagraph(): void {
@@ -191,12 +281,18 @@ export class IaraSyncfusionAdapter
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
     });
 
-    this._documentEditor.selection.moveToDocumentEnd();
     this._navigationFieldManager.getBookmarks();
+    this._documentEditor.selection.moveToDocumentEnd();
   }
 
   insertText(text: string): void {
-    this._documentEditor.editor.insertText(text);
+    const [firstLine, ...lines]: string[] = text.split("\n");
+    this._documentEditor.editor.insertText(firstLine);
+    lines.forEach(line => {
+      this.insertParagraph();
+      line = line.trimStart();
+      if (line) this._documentEditor.editor.insertText(line);
+    });
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
@@ -228,15 +324,8 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) {
-      const [firstLine, ...lines]: string[] = text.split("\n");
-      this.insertText(firstLine);
-      lines.forEach(line => {
-        this.insertParagraph();
-        line = line.trimStart();
-        if (line) this.insertText(line);
-      });
-    } else this._documentEditor.editor.delete();
+    if (text.length) this.insertText(text);
+    else this._documentEditor.editor.delete();
 
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
@@ -267,23 +356,29 @@ export class IaraSyncfusionAdapter
 
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
+      this.savingReportSpan.style.width = "120px";
       this.savingReportSpan.style.margin = "10px";
       this.savingReportSpan.style.fontSize = "12px";
-      this.savingReportSpan.style.display = "flex";
-      this.savingReportSpan.style.justifyContent = "end";
       this.savingReportSpan.style.color = "black";
-      this.savingReportSpan.innerText = "Salvando...";
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
-    const content: string[] = await this._contentManager.getContent();
+    try {
+      const content: string[] = await this._contentManager.getContent();
 
-    if (contentDate !== this._contentDate) return;
-    if (!this._recognition.report["_key"]) {
-      await this.beginReport();
+      if (contentDate !== this._contentDate) return;
+      if (!this._recognition.report["_key"]) {
+        await this.beginReport();
+      }
+      await this._updateReport(content[0], content[1]);
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
+    } catch {
+      this.savingReportSpan.innerHTML =
+        '<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>Erro ao salvar';
     }
-    await this._updateReport(content[0], content[1]);
-    this.savingReportSpan.innerText = "Salvo";
   }
 
   onTemplateSelectedAtShortCut(
@@ -325,6 +420,10 @@ export class IaraSyncfusionAdapter
 
     this._documentEditor.selection.extendToParagraphEnd();
     this.insertText(content);
+  }
+
+  showSpinner(): void {
+    showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
   private _setScrollClickHandler() {
