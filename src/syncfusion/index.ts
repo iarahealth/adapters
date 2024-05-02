@@ -198,9 +198,9 @@ export class IaraSyncfusionAdapter
     this._formatSectionTitle(["Técnica:", "Técnica de exame:"]);
     this._formatSectionTitle(["Contraste:"]);
     this._formatSectionTitle([
-      "Histórico Clínico:",
+      "Histórico clínico:",
       "Indicação clínica:",
-      "Informações Clínicas:",
+      "Informações clínicas:",
     ]);
     this._formatSectionTitle(["Exames anteriores:"]);
     this._formatSectionTitle([
@@ -213,7 +213,7 @@ export class IaraSyncfusionAdapter
     this._formatSectionTitle([
       "Conclusão:",
       "Hipótese diagnóstica:",
-      "Impressão Diagnóstica:",
+      "Impressão diagnóstica:",
       "Impressão:",
       "Resumo:",
       "Observação:",
@@ -221,6 +221,7 @@ export class IaraSyncfusionAdapter
       "Opinião:",
     ]);
     this._formatSectionTitle([
+      "Achados:",
       "Achados adicionais:",
       "Comparação:",
       "Demais achados:",
