@@ -181,7 +181,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         bookmark.title !== ""
     );
     if (bookmarks.length === 1) {
-      this.getOffsetsAndSelect(bookmarks[0].name, true);
+      this.getOffsetsAndSelect(bookmarks[0].name);
       this._previousBookmarksTitles = [];
     } else if (bookmarks.length > 1) {
       this.getOffsetsAndSelect(
