@@ -75,7 +75,6 @@ export class IaraSyncfusionAdapter
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
-      _recognition,
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
