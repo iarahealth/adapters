@@ -71,7 +71,7 @@ export class IaraSFDT {
     );
 
     const response = await fetch(
-      "https://ej2services.syncfusion.com/production/web-services/api/documenteditor/Import",
+      "https://syncfusion-document-services-qink2fdpcq-rj.a.run.app/api/documenteditor/Import",
       {
         method: "POST",
         body: formData,
