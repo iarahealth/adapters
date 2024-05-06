@@ -126,7 +126,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.editor.insertText(title);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(`${content}*`);
@@ -147,7 +147,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.editor.insertText(title);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(`${content}?`);
@@ -160,7 +160,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   getBookmarks(setColor = true): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
-    console.log(editorBookmarks, "editorBookmarks");
     this.updateBookmark(editorBookmarks);
     this.removeEmptyField(editorBookmarks);
     if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
