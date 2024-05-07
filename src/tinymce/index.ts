@@ -1,7 +1,10 @@
 import { Editor } from "tinymce";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraEditorInferenceFormatter } from "../editor/formatter";
-import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import type {
+  IaraSpeechRecognition,
+  IaraSpeechRecognitionDetail,
+} from "../speech";
 import { IaraTinyMceStyleManager } from "./style";
 import { IaraTinyMceNavigationFieldManager } from "./navigationFields";
 
@@ -18,7 +21,9 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     super(_recognition, _config);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
-    this._navigationFieldManager = new IaraTinyMceNavigationFieldManager();
+    this._navigationFieldManager = new IaraTinyMceNavigationFieldManager(
+      _recognition
+    );
     this._editor.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
