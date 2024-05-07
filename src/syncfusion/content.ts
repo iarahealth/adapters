@@ -1,5 +1,4 @@
 import { DocumentEditor, ImageFormat } from "@syncfusion/ej2-documenteditor";
-import { IaraSpeechRecognition } from "../speech";
 import {
   PdfBitmap,
   PdfDocument,
