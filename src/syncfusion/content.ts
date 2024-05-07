@@ -61,7 +61,7 @@ export class IaraSFDT {
     );
 
     const response = await fetch(
-      "https://syncfusion-documenteditor-server-qink2fdpcq-rj.a.run.app/api/documenteditor/Import",
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/Import",
       {
         method: "POST",
         body: formData,
@@ -77,7 +77,7 @@ export class IaraSFDT {
 
   static async toHtml(content: string): Promise<string> {
     const response = await fetch(
-      "https://syncfusion-documenteditor-server-qink2fdpcq-rj.a.run.app/api/documenteditor/ExportSFDT/",
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
       {
         method: "POST",
         headers: {
@@ -104,7 +104,7 @@ export class IaraSFDT {
 
   static async toRtf(content: string): Promise<string> {
     const response = await fetch(
-      "https://syncfusion-documenteditor-server-qink2fdpcq-rj.a.run.app/api/documenteditor/ExportSFDT/",
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
       {
         method: "POST",
         headers: {
