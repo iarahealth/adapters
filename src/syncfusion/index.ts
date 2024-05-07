@@ -106,7 +106,8 @@ export class IaraSyncfusionAdapter
 
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
       this._documentEditor,
-      this._config
+      this._config,
+      _recognition
     );
 
     new IaraSyncfusionShortcutsManager(
