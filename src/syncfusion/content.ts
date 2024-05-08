@@ -10,9 +10,9 @@ import {
 import { IaraSyncfusionConfig } from ".";
 
 export enum IaraSyncfusionContentTypes {
-  SFDT = "SFDT",
-  HTML = "HTML",
-  RTF = "RTF",
+  SFDT = "sfdt",
+  HTML = "html",
+  RTF = "rtf",
 }
 
 export class IaraSFDT {
@@ -52,12 +52,15 @@ export class IaraSFDT {
     if (!contentType) contentType = IaraSFDT.detectContentType(content);
     if (contentType === IaraSyncfusionContentTypes.HTML)
       content = content.replace(/<br>/g, "<br/>");
-
+    const mimeType =
+      contentType === IaraSyncfusionContentTypes.SFDT
+        ? "application/json"
+        : `text/${contentType}`;
     const formData = new FormData();
     formData.append(
       "Files",
-      new Blob([content], { type: "text/html" }),
-      "file.html"
+      new Blob([content], { type: mimeType }),
+      `file.${contentType}`
     );
 
     const response = await fetch(
