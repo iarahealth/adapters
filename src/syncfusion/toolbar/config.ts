@@ -2,7 +2,8 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
+import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 import {
   Ribbon,
   RibbonColorPicker,
@@ -258,7 +259,9 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale:
+    | (typeof EJ2_LOCALE_PT_BR)["pt-BR"]
+    | (typeof EJ2_LOCALE_ES)["es"],
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {

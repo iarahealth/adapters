@@ -1,5 +1,6 @@
 import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
+import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 import {
   DisplayMode,
   RibbonGroupButtonSelection,
@@ -17,7 +18,9 @@ export const tabsConfig = (
     editor: DocumentEditorContainer,
     config?: IaraSyncfusionConfig
   ) => void,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale:
+    | (typeof EJ2_LOCALE_PT_BR)["pt-BR"]
+    | (typeof EJ2_LOCALE_ES)["es"],
   config: IaraSyncfusionConfig,
   ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
@@ -39,7 +42,8 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Abrir",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Open"],
                     isToggle: true,
                     iconCss: "e-icons e-folder-open",
                     clicked: function () {
@@ -53,7 +57,8 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Desfazer",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Undo"],
                     isToggle: true,
                     iconCss: "e-icons e-undo",
                     clicked: function () {
@@ -70,7 +75,8 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Refazer",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Redo"],
                     isToggle: true,
                     iconCss: "e-icons e-redo",
                     clicked: function () {
@@ -115,7 +121,8 @@ export const tabsConfig = (
                 {
                   type: "Button",
                   buttonSettings: {
-                    content: "Inserir Tabela",
+                    content:
+                      editorContainerLocale.richtexteditor["inserttablebtn"],
                     iconCss: "e-icons e-table",
                     clicked: function () {
                       toolbarButtonClick("insertTable", editor);
@@ -267,7 +274,10 @@ export const tabsConfig = (
                   id: "bold",
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
-                    content: "Bold",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Bold Tooltip"
+                      ],
                     isToggle: true,
                     iconCss: "e-icons e-bold",
                     clicked: function () {
@@ -287,7 +297,10 @@ export const tabsConfig = (
                   id: "italic",
                   buttonSettings: {
                     isToggle: true,
-                    content: "Italic",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Italic Tooltip"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("italic", editor);
                     },
@@ -306,7 +319,10 @@ export const tabsConfig = (
                   id: "underline",
                   buttonSettings: {
                     isToggle: true,
-                    content: "Underline",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Underline Tooltip"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("underline", editor);
                     },
@@ -325,7 +341,10 @@ export const tabsConfig = (
                   id: "strikethrough",
                   buttonSettings: {
                     iconCss: "e-icons e-strikethrough",
-                    content: "Strikethrough",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Strikethrough"
+                      ],
                     isToggle: true,
                     clicked: function () {
                       toolbarButtonClick("strikethrough", editor);
@@ -374,7 +393,10 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-decrease-indent",
-                    content: "Decrease Indent",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Decrease indent"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("DecreaseIndent", editor);
                     },
@@ -391,7 +413,10 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-increase-indent",
-                    content: "Increase Indent",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Increase indent"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("IncreaseIndent", editor);
                     },
@@ -429,7 +454,8 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-list-unordered-3",
-                    content: "Bullets",
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Bullets"],
                     clicked: function () {
                       toolbarButtonClick("Bullets", editor);
                     },
@@ -444,7 +470,10 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-list-ordered",
-                    content: "Numbering",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Numbering"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("Numbering", editor);
                     },
@@ -461,7 +490,10 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     iconCss: "e-icons e-paragraph",
-                    content: "Paragraph",
+                    content:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Paragraph"
+                      ],
                     clicked: function () {
                       toolbarButtonClick("ShowParagraphMark", editor);
                     },
@@ -598,7 +630,7 @@ export const tabsConfig = (
                   type: "Button",
                   buttonSettings: {
                     iconCss: "e-icons e-export-pdf",
-                    content: "PDF",
+                    content: editorContainerLocale.pivotview["pdf"],
                     clicked: function () {
                       toolbarButtonClick("ExportToPDF", editor, config);
                     },
@@ -613,7 +645,10 @@ export const tabsConfig = (
         },
         {
           id: "track_changes",
-          header: "Revisão",
+          header:
+            typeof editorContainerLocale === typeof EJ2_LOCALE_PT_BR
+              ? "Revisão"
+              : editorContainerLocale.documenteditor["Changes"],
           collections: [
             {
               items: [
@@ -622,7 +657,12 @@ export const tabsConfig = (
                   type: "Button",
                   buttonSettings: {
                     iconCss: "e-icons e-changes-track",
-                    content: "Rastrear mudanças",
+                    content:
+                      typeof editorContainerLocale === typeof EJ2_LOCALE_PT_BR
+                        ? "Rastrear mudanças"
+                        : editorContainerLocale.documenteditor[
+                            "Tracked changes"
+                          ],
                     clicked: function () {
                       toolbarButtonClick("ToggleTrackChanges", editor, config);
                     },
