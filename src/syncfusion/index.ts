@@ -20,6 +20,7 @@ import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
+import { IaraSyncfusionLanguageManager } from "./language";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -38,7 +39,7 @@ export class IaraSyncfusionAdapter
   private _selectionManager?: IaraSyncfusionSelectionManager;
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
-
+  private _languageManager: IaraSyncfusionLanguageManager;
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
   protected static DefaultConfig: IaraSyncfusionConfig = {
@@ -73,6 +74,8 @@ export class IaraSyncfusionAdapter
       this._documentEditor = _editorInstance;
     }
 
+    this._languageManager = new IaraSyncfusionLanguageManager(this._config);
+
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
       _recognition,
@@ -87,7 +90,8 @@ export class IaraSyncfusionAdapter
     if (this._config.replaceToolbar && this._editorContainer) {
       this._toolbarManager = new IaraSyncfusionToolbarManager(
         this._editorContainer,
-        this._config
+        this._config,
+        this._languageManager
       );
       this._toolbarManager.init();
     }
@@ -118,7 +122,8 @@ export class IaraSyncfusionAdapter
 
     new IaraSyncfusionContextMenuManager(
       this._documentEditor,
-      this._navigationFieldManager
+      this._navigationFieldManager,
+      this._languageManager
     );
 
     createSpinner({
@@ -353,6 +358,7 @@ export class IaraSyncfusionAdapter
   private async _saveReport(): Promise<void> {
     const contentDate = new Date();
     this._contentDate = contentDate;
+    let spanContent = "";
 
     const element = document.querySelector(".e-de-status-bar");
     if (element) {
@@ -360,8 +366,10 @@ export class IaraSyncfusionAdapter
       this.savingReportSpan.style.margin = "10px";
       this.savingReportSpan.style.fontSize = "12px";
       this.savingReportSpan.style.color = "black";
-      this.savingReportSpan.innerHTML =
-        '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
+      spanContent =
+        this._languageManager.languages.language.iaraTranslate.saveMessage
+          .loading;
+      this.savingReportSpan.innerHTML = `<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>${spanContent}`;
       element.insertBefore(this.savingReportSpan, element.firstChild);
     }
 
@@ -373,11 +381,15 @@ export class IaraSyncfusionAdapter
         await this.beginReport();
       }
       await this._updateReport(content[0], content[1]);
-      this.savingReportSpan.innerHTML =
-        '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
+      spanContent =
+        this._languageManager.languages.language.iaraTranslate.saveMessage
+          .success;
+      this.savingReportSpan.innerHTML = `<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>${spanContent}`;
     } catch {
-      this.savingReportSpan.innerHTML =
-        '<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>Erro ao salvar';
+      spanContent =
+        this._languageManager.languages.language.iaraTranslate.saveMessage
+          .error;
+      this.savingReportSpan.innerHTML = `<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>${spanContent}`;
     }
   }
 

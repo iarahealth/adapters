@@ -12,6 +12,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { tabsConfig } from "./ribbonTabs";
+import { IaraLanguages } from "../language/language";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -259,9 +260,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale:
-    | (typeof EJ2_LOCALE_PT_BR)["pt-BR"]
-    | (typeof EJ2_LOCALE_ES)["es"],
+  editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
