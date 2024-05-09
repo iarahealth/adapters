@@ -78,7 +78,6 @@ export class IaraSyncfusionAdapter
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
-      _recognition,
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
@@ -110,7 +109,8 @@ export class IaraSyncfusionAdapter
 
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
       this._documentEditor,
-      this._config
+      this._config,
+      _recognition
     );
 
     new IaraSyncfusionShortcutsManager(
@@ -200,14 +200,14 @@ export class IaraSyncfusionAdapter
   }
 
   formatSectionTitles(): void {
-    this._formatSectionTitle(["Técnica:", "Técnica de exame:"]);
+    this._formatSectionTitle(["Técnica:", "Técnica de Exame:"]);
     this._formatSectionTitle(["Contraste:"]);
     this._formatSectionTitle([
       "Histórico Clínico:",
-      "Indicação clínica:",
+      "Indicação Clínica:",
       "Informações Clínicas:",
     ]);
-    this._formatSectionTitle(["Exames anteriores:"]);
+    this._formatSectionTitle(["Exames Anteriores:"]);
     this._formatSectionTitle([
       "Análise:",
       "Interpretação:",
@@ -217,7 +217,7 @@ export class IaraSyncfusionAdapter
     this._formatSectionTitle(["Objetivo:"]);
     this._formatSectionTitle([
       "Conclusão:",
-      "Hipótese diagnóstica:",
+      "Hipótese Diagnóstica:",
       "Impressão Diagnóstica:",
       "Impressão:",
       "Resumo:",
@@ -226,9 +226,10 @@ export class IaraSyncfusionAdapter
       "Opinião:",
     ]);
     this._formatSectionTitle([
-      "Achados adicionais:",
+      "Achados:",
+      "Achados Adicionais:",
       "Comparação:",
-      "Demais achados:",
+      "Demais Achados:",
       "Método:",
       "Protocolo:",
     ]);

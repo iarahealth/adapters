@@ -6,6 +6,7 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
+import { IaraSpeechRecognition } from "../../speech";
 import { IaraBookmark } from "./bookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
@@ -45,16 +46,16 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
   isFirstNextNavigation = false;
   isFirstPreviousNavigation = false;
-
   private _bookmarks: IaraBookmark[] = [];
 
   private _previousBookmarksTitles: string[] = [];
 
   constructor(
     private _documentEditor: DocumentEditor,
-    private _config: IaraSyncfusionConfig
+    private _config: IaraSyncfusionConfig,
+    _recognition: IaraSpeechRecognition
   ) {
-    super();
+    super(_recognition);
     const navigationBtn = <HTMLElement>(
       document.getElementById("navigation_fields")
     );
@@ -98,13 +99,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   insertField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
+    this._documentEditor.editor.insertText(" ");
+    this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
     const title = "Nome do campo";
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.editor.insertText(title);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(content);
@@ -117,13 +120,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   insertMandatoryField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
+    this._documentEditor.editor.insertText(" ");
+    this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
     const title = "Nome do campo";
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.editor.insertText(title);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(`${content}*`);
@@ -136,13 +141,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   insertOptionalField(content = "Escreva uma dica de texto"): void {
     const bookmarksCount = Date.now();
+    this._documentEditor.editor.insertText(" ");
+    this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
     const title = "Nome do campo";
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(`${title}`);
+    this._documentEditor.editor.insertText(title);
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(`${content}?`);
