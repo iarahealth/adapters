@@ -358,8 +358,7 @@ export class IaraSyncfusionAdapter
     const element = document.querySelector(".e-de-status-bar");
 
     const content: string[] = await this._contentManager.getContent();
-    //the content is always created with a \r\n. The content length has to be greater than 2 to have value.
-    const emptyContent = /[\n\r\v]$/.test(content[0]) && content[0].length <= 2;
+    const emptyContent = content[0].trim().length === 0;
 
     if (emptyContent) {
       return;
