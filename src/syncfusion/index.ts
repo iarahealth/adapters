@@ -356,6 +356,15 @@ export class IaraSyncfusionAdapter
     this._contentDate = contentDate;
 
     const element = document.querySelector(".e-de-status-bar");
+
+    const content: string[] = await this._contentManager.getContent();
+    //the content is always created with a \r\n. The content length has to be greater than 2 to have value.
+    const emptyContent = /[\n\r\v]$/.test(content[0]) && content[0].length <= 2;
+
+    if (emptyContent) {
+      return;
+    }
+
     if (element) {
       this.savingReportSpan.style.width = "120px";
       this.savingReportSpan.style.margin = "10px";
@@ -367,9 +376,8 @@ export class IaraSyncfusionAdapter
     }
 
     try {
-      const content: string[] = await this._contentManager.getContent();
-
       if (contentDate !== this._contentDate) return;
+
       if (!this._recognition.report["_key"]) {
         await this.beginReport();
       }
