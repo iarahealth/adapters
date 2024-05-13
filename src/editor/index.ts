@@ -14,6 +14,7 @@ export interface IaraEditorConfig {
   };
   saveReport: boolean;
   zoomFactor: string;
+  editRibbon: boolean;
 }
 
 export abstract class EditorAdapter {
@@ -25,6 +26,7 @@ export abstract class EditorAdapter {
     darkMode: false,
     saveReport: true,
     zoomFactor: "100%",
+    editRibbon: false,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 
