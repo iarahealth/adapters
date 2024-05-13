@@ -72,14 +72,6 @@ export abstract class EditorAdapter {
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
-    if (this._config.saveReport && !this._recognition.report["_key"]) {
-      if (this._recognition.ready) this.beginReport().catch(console.error);
-      else {
-        this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
-          this.beginReport().catch(console.error);
-        });
-      }
-    }
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;

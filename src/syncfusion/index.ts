@@ -356,6 +356,14 @@ export class IaraSyncfusionAdapter
     this._contentDate = contentDate;
 
     const element = document.querySelector(".e-de-status-bar");
+
+    const content: string[] = await this._contentManager.getContent();
+    const emptyContent = content[0].trim().length === 0;
+
+    if (emptyContent) {
+      return;
+    }
+
     if (element) {
       this.savingReportSpan.style.width = "120px";
       this.savingReportSpan.style.margin = "10px";
@@ -367,9 +375,8 @@ export class IaraSyncfusionAdapter
     }
 
     try {
-      const content: string[] = await this._contentManager.getContent();
-
       if (contentDate !== this._contentDate) return;
+
       if (!this._recognition.report["_key"]) {
         await this.beginReport();
       }
