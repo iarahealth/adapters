@@ -640,5 +640,390 @@ export const tabsConfig = (
     },
   ];
 
+  const simplifiedTabs = [
+    {
+      groups: [
+        {
+          id: "fonts",
+          orientation: "Row",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  id: "bold",
+                  allowedSizes: RibbonItemSize.Medium,
+                  buttonSettings: {
+                    content: "Bold",
+                    isToggle: true,
+                    iconCss: "e-icons e-bold",
+                    clicked: function () {
+                      toolbarButtonClick("bold", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                      "Bold Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  id: "italic",
+                  buttonSettings: {
+                    isToggle: true,
+                    content: "Italic",
+                    clicked: function () {
+                      toolbarButtonClick("italic", editor);
+                    },
+                    iconCss: "e-icons e-italic",
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                      "Italic Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  id: "underline",
+                  buttonSettings: {
+                    isToggle: true,
+                    content: "Underline",
+                    clicked: function () {
+                      toolbarButtonClick("underline", editor);
+                    },
+                    iconCss: "e-icons e-underline",
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                      "Underline Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  id: "strikethrough",
+                  buttonSettings: {
+                    iconCss: "e-icons e-strikethrough",
+                    content: "Strikethrough",
+                    isToggle: true,
+                    clicked: function () {
+                      toolbarButtonClick("strikethrough", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                      "Strikethrough"
+                      ],
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  id: "fontFamilySelect",
+                  comboBoxSettings: {
+                    dataSource: config.font?.availableFamilies,
+                    label: "Font Style",
+                    width: "115px",
+                    popupWidth: "150px",
+                    value:
+                      editor.documentEditor.selection.characterFormat
+                        .fontFamily,
+                    allowFiltering: true,
+                    change: function (args: { itemData: { text: string } }) {
+                      if (args.itemData) {
+                        changeFontFamily({
+                          value: args.itemData.text,
+                        });
+                      }
+                    },
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  allowedSizes: RibbonItemSize.Small,
+                  id: "fontSizeSelect",
+                  comboBoxSettings: {
+                    dataSource: config.font?.availableSizes.map(value =>
+                      value.toString()
+                    ),
+                    label: "Font Size",
+                    popupWidth: "85px",
+                    width: "65px",
+                    allowFiltering: true,
+                    value:
+                      editor.documentEditor.selection.characterFormat.fontSize +
+                      "",
+                    change: function (args: { itemData: { text: string } }) {
+                      if (args.itemData) {
+                        changeFontSize({
+                          value: Number(args.itemData.text),
+                        });
+                      }
+                    },
+                  },
+                },
+                {
+                  type: "ColorPicker",
+                  id: "fontColorSelect",
+                  displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
+                  colorPickerSettings: {
+                    change: function (args: { currentValue: { hex: string } }) {
+                      changeFontColor({
+                        currentValue: { hex: args.currentValue.hex },
+                      });
+                    },
+                    value: editor.documentEditor.selection.characterFormat
+                      .fontColor
+                      ? editor.documentEditor.selection.characterFormat
+                        .fontColor
+                      : `#000`,
+                  },
+                },
+                {
+                  type: "GroupButton",
+                  allowedSizes: RibbonItemSize.Small,
+                  groupButtonSettings: {
+                    selection: RibbonGroupButtonSelection.Single,
+                    header: "Alignment",
+                    items: [
+                      {
+                        iconCss: "e-icons e-align-left",
+                        selected: true,
+                        click: function () {
+                          toolbarButtonClick("AlignLeft", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                            "Align left Tooltip"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-align-center",
+                        click: function () {
+                          toolbarButtonClick("AlignCenter", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                            "Align center"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-align-right",
+                        click: function () {
+                          toolbarButtonClick("AlignRight", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                            "Align right Tooltip"
+                            ],
+                        },
+                      },
+                      {
+                        iconCss: "e-icons e-justify",
+                        click: function () {
+                          toolbarButtonClick("Justify", editor);
+                        },
+                        ribbonTooltipSettings: {
+                          title:
+                            editorContainerLocale.documenteditorcontainer[
+                            "Justify Tooltip"
+                            ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ]
+            }
+          ]
+        },
+        {
+          id: "paragraph_group",
+          orientation: "Row",
+          // header: editorContainerLocale.documenteditorcontainer["Paragraph"],
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-unordered-3",
+                    content: "Bullets",
+                    clicked: function () {
+                      toolbarButtonClick("Bullets", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer["Bullets"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-list-ordered",
+                    content: "Numbering",
+                    clicked: function () {
+                      toolbarButtonClick("Numbering", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Numbering"
+                      ],
+                  },
+                },
+                {
+                  type: "ComboBox",
+                  id: "lineSpacingSelect",
+                  comboBoxSettings: {
+                    dataSource: ["1", "1.15", "1.5", "2"],
+                    label: "Line Spacing",
+                    popupWidth: "85px",
+                    width: "70px",
+                    value: editor.documentEditor.selection.paragraphFormat
+                      .lineSpacing
+                      ? editor.documentEditor.selection.paragraphFormat
+                          .lineSpacing + ""
+                      : editor.documentEditor.documentHelper.paragraphFormat
+                          .lineSpacing + "",
+                    change: function (args: { itemData: { text: number } }) {
+                      if (args.itemData) {
+                        changeLineSpacing({ value: args.itemData.text });
+                      }
+                    },
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    iconCss: "e-icons e-paragraph",
+                    content: "Paragraph",
+                    clicked: function () {
+                      toolbarButtonClick("ShowParagraphMark", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Paragraph"
+                      ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "control",
+          orientation: "Row",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Inserir Tabela",
+                    iconCss: "e-icons e-table",
+                    clicked: function () {
+                      toolbarButtonClick("insertTable", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Insert a table into the document"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content:
+                      editorContainerLocale.documenteditorcontainer["Image"],
+                    iconCss: "e-icons e-image",
+                    clicked: function () {
+                      toolbarOpenFile("image", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title: editorContainerLocale.richtexteditor["image"],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Desfazer",
+                    isToggle: true,
+                    iconCss: "e-icons e-undo",
+                    clicked: function () {
+                      toolbarButtonClick("undo", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Undo Tooltip"
+                      ],
+                  },
+                },
+                {
+                  type: "Button",
+                  allowedSizes: RibbonItemSize.Small,
+                  buttonSettings: {
+                    content: "Refazer",
+                    isToggle: true,
+                    iconCss: "e-icons e-redo",
+                    clicked: function () {
+                      toolbarButtonClick("redo", editor);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditorcontainer[
+                        "Redo Tooltip"
+                      ],
+                  },
+                },
+
+
+              ],
+            },
+          ],
+
+      }
+    ]
+    }
+  ];
+
+  if (config.editRibbon)
+  {
+    editor.documentEditor.zoomFactor = Number(0.95);
+    return simplifiedTabs;
+  }
+
   return tabs;
 };
