@@ -1,14 +1,15 @@
 import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import { toolBarSettings } from "./config";
 import { IaraSyncfusionConfig } from "..";
 import { createElement } from "@syncfusion/ej2-base";
 import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
     private _editorContainer: DocumentEditorContainer,
-    private _config: IaraSyncfusionConfig
+    private _config: IaraSyncfusionConfig,
+    private _languageManager: IaraSyncfusionLanguageManager
   ) {}
 
   public init(): void {
@@ -30,11 +31,9 @@ export class IaraSyncfusionToolbarManager {
   }
 
   private _addRibbonToolbar(): void {
-    const editorContainerLocale = EJ2_LOCALE["pt-BR"];
-
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
-      editorContainerLocale,
+      this._languageManager.languages,
       this._config
     );
     const editorToolbarContainer = <HTMLElement>(
