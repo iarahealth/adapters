@@ -263,19 +263,19 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
-    console.log("insertTemplate0", content, replaceAllContent);
+    // console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
     else this._documentEditor.editor.paste(sfdt.value);
-    console.log("insertTemplate1", sfdt.value);
+    // console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
 
-    console.log(
-      "insertTemplate2",
-      this._documentEditor.selection.characterFormat.fontFamily,
-      this._documentEditor.selection.characterFormat.fontSize
-    );
+    // console.log(
+    //   "insertTemplate2",
+    //   this._documentEditor.selection.characterFormat.fontFamily,
+    //   this._documentEditor.selection.characterFormat.fontSize
+    // );
     // Set the default editor format after inserting the template
     this._documentEditor.setDefaultCharacterFormat({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
@@ -352,6 +352,9 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
+    console.log("ENTROU AQUI", this._documentEditor);
+    if (!this._documentEditor) return;
+    const reportId = this._recognition.report["_key"];
     const contentDate = new Date();
     this._contentDate = contentDate;
 
@@ -359,6 +362,14 @@ export class IaraSyncfusionAdapter
 
     const content: string[] = await this._contentManager.getContent();
     const emptyContent = content[0].trim().length === 0;
+
+    console.log(
+      reportId,
+      "this._recognition.report",
+      emptyContent,
+      contentDate,
+      "FIRST"
+    );
 
     if (emptyContent) {
       return;
@@ -375,11 +386,20 @@ export class IaraSyncfusionAdapter
     }
 
     try {
+      console.log(
+        reportId,
+        this._recognition.report["_key"],
+        "this._recognition.report",
+        emptyContent,
+        contentDate
+      );
       if (contentDate !== this._contentDate) return;
-
-      if (!this._recognition.report["_key"]) {
+      if (!reportId) {
+        console.log("BEGGIN");
         await this.beginReport();
       }
+
+      console.log("UPDATE");
       await this._updateReport(content[0], content[1]);
       this.savingReportSpan.innerHTML =
         '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
