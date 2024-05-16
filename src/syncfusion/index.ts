@@ -266,7 +266,10 @@ export class IaraSyncfusionAdapter
     console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
-    else this._documentEditor.editor.paste(sfdt.value);
+    else {
+      this._documentEditor.editor.paste(sfdt.value);
+      this._documentEditor.editor.onBackSpace();
+    }
     console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
