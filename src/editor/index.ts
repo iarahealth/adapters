@@ -173,7 +173,28 @@ export abstract class EditorAdapter {
   protected _updateReport(
     plainContent: string,
     richContent: string
-  ): Promise<string> {
-    return this._recognition.report.change(plainContent, richContent);
+  ): Promise<string> | void {
+    if (this._recognition.report["_key"]) {
+      return this._recognition.report.change(plainContent, richContent);
+    }
+  }
+
+  protected async _beginReport(): Promise<void> {
+    if (this._config.saveReport && !this._recognition.report["_key"]) {
+      try {
+        if (this._recognition.ready) {
+          this._recognition.report["_key"] = await this.beginReport();
+        } else {
+          this._recognition.addEventListener(
+            "iaraSpeechRecognitionReady",
+            async () => {
+              this._recognition.report["_key"] = await this.beginReport();
+            }
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 }

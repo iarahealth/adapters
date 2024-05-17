@@ -352,54 +352,29 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
-    console.log("ENTROU AQUI", this._documentEditor);
-    if (!this._documentEditor) return;
-    const reportId = this._recognition.report["_key"];
-    const contentDate = new Date();
-    this._contentDate = contentDate;
-
-    const element = document.querySelector(".e-de-status-bar");
-
-    const content: string[] = await this._contentManager.getContent();
-    const emptyContent = content[0].trim().length === 0;
-
-    console.log(
-      reportId,
-      "this._recognition.report",
-      emptyContent,
-      contentDate,
-      "FIRST"
-    );
-
-    if (emptyContent) {
-      return;
-    }
-
-    if (element) {
-      this.savingReportSpan.style.width = "120px";
-      this.savingReportSpan.style.margin = "10px";
-      this.savingReportSpan.style.fontSize = "12px";
-      this.savingReportSpan.style.color = "black";
-      this.savingReportSpan.innerHTML =
-        '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
-      element.insertBefore(this.savingReportSpan, element.firstChild);
-    }
+    if (this._documentEditor.isDocumentEmpty) return;
+    if (!this._recognition.report["_key"]) await this._beginReport();
 
     try {
-      console.log(
-        reportId,
-        this._recognition.report["_key"],
-        "this._recognition.report",
-        emptyContent,
-        contentDate
-      );
-      if (contentDate !== this._contentDate) return;
-      if (!reportId) {
-        console.log("BEGGIN");
-        await this.beginReport();
+      const contentDate = new Date();
+      this._contentDate = contentDate;
+
+      const element = document.querySelector(".e-de-status-bar");
+
+      const content: string[] = await this._contentManager.getContent();
+
+      if (element) {
+        this.savingReportSpan.style.width = "120px";
+        this.savingReportSpan.style.margin = "10px";
+        this.savingReportSpan.style.fontSize = "12px";
+        this.savingReportSpan.style.color = "black";
+        this.savingReportSpan.innerHTML =
+          '<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>Salvando...';
+        element.insertBefore(this.savingReportSpan, element.firstChild);
       }
 
-      console.log("UPDATE");
+      if (contentDate !== this._contentDate) return;
+
       await this._updateReport(content[0], content[1]);
       this.savingReportSpan.innerHTML =
         '<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>Salvo';
