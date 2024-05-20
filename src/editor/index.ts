@@ -1,8 +1,8 @@
-import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import { Editor as TinymceEditor } from "tinymce";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
+
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -13,24 +13,27 @@ export interface IaraEditorConfig {
     size: number;
   };
   saveReport: boolean;
+  zoomFactor: string;
 }
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-
+  public iaraRecognizes = true;
   protected abstract _styleManager: IaraEditorStyleManager;
+  protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
     darkMode: false,
     saveReport: true,
+    zoomFactor: "100%",
   };
-
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 
   private _listeners = [
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        if (event?.detail) this.insertInference(event.detail);
+        if (event?.detail && this.iaraRecognizes)
+          this.insertInference(event.detail);
       },
     },
     {
@@ -61,7 +64,6 @@ export abstract class EditorAdapter {
   ];
 
   constructor(
-    protected _editorContainer: DocumentEditorContainer | TinymceEditor,
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
@@ -70,42 +72,46 @@ export abstract class EditorAdapter {
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
-    if (this._config.saveReport && !this._recognition.report["_key"]) {
-      if (this._recognition.ready) this.beginReport();
-      else {
-        this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
-          this.beginReport();
-        });
-      }
-    }
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
   abstract clearReport(): void;
-  abstract copyReport(): Promise<void>;
+  abstract copyReport(): Promise<string[]>;
   abstract insertInference(inference: IaraSpeechRecognitionDetail): void;
   abstract getEditorContent(): Promise<[string, string, string, string?]>;
   abstract print(): void;
 
-  beginReport(): string | void {
+  async beginReport(): Promise<string | void> {
     if (!this._config.saveReport) return;
-    return this._recognition.beginReport({ richText: "", text: "" });
+    return this._recognition.report.begin("", "");
   }
 
   async finishReport(): Promise<void> {
     if (!this._config.saveReport) return;
-    await this.copyReport();
+    const content = await this.copyReport();
     this.clearReport();
-    this._recognition.finishReport();
+    await this._recognition.report.finish(content[0], content[1]);
+  }
+
+  hasEmptyRequiredFields(): boolean {
+    return this._navigationFieldManager.hasEmptyRequiredFields();
   }
 
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to copy");
+        return;
+      }
       this._recognition.stop();
       await this.copyReport();
       this.onIaraCommand?.("iara copiar laudo");
     });
     this._recognition.commands.add("iara finalizar laudo", async () => {
+      if (this.hasEmptyRequiredFields()) {
+        this.onIaraCommand?.("required fields to finish");
+        return;
+      }
       this._recognition.stop();
       await this.finishReport();
       this.onIaraCommand?.("iara finalizar laudo");
@@ -125,6 +131,27 @@ export abstract class EditorAdapter {
     this._recognition.commands.add("iara imprimir", () => {
       this.print();
     });
+    this._recognition.commands.add("iara próximo campo", () => {
+      this._navigationFieldManager.nextField();
+    });
+    this._recognition.commands.add("iara campo anterior", () => {
+      this._navigationFieldManager.previousField();
+    });
+    this._recognition.commands.add("next", () => {
+      this._navigationFieldManager.nextField();
+    });
+    this._recognition.commands.add(
+      `buscar (\\p{Letter}+)`,
+      (detail, command, param, groups) => {
+        try {
+          this._navigationFieldManager.goToField(groups ? groups[1] : "");
+        } catch (e) {
+          this.onIaraCommand?.("buscar");
+        } finally {
+          console.info(detail, command, param);
+        }
+      }
+    );
   }
 
   private _initListeners(): void {

@@ -202,7 +202,7 @@ Status: ?</pre
             enableToolbar: true,
             height: "800px",
             serviceUrl:
-              "https://ej2services.syncfusion.com/production/web-services/api/documenteditor/",
+              "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/",
           });
         editorContainer.appendTo("#editor-container");
 
@@ -222,7 +222,7 @@ Status: ?</pre
         recognition.interimResults = true;
 
         const syncfusionAdapter = new IaraSyncfusionAdapter(
-          editorContainer,
+          editorContainer.documentEditor,
           recognition
         );
 

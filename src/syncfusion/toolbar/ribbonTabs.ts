@@ -541,8 +541,54 @@ export const tabsConfig = (
           ],
         },
         {
+          id: "navigation_fields_content",
+          header: "Marcadores",
+          groupIconCss: "e-icons e-align-center",
+          collections: [
+            {
+              items: [
+                {
+                  displayOptions: DisplayMode.Classic,
+                  type: "DropDown",
+                  id: "navigation_fields",
+                  dropDownSettings: {
+                    iconCss: "e-icons e-bookmark",
+                    content: "Campos de navegação",
+                    items: [
+                      {
+                        id: "add_field",
+                        iconCss: "e-icons e-plus",
+                        text: "Adicionar campo",
+                      },
+                      {
+                        id: "add_mandatory_field",
+                        iconCss: "e-icons e-lock",
+                        text: "Adicionar campo obrigatório",
+                      },
+                      {
+                        id: "add_optional_field",
+                        iconCss: "e-icons e-circle-info",
+                        text: "Adicionar campo opcional",
+                      },
+                      {
+                        id: "next_field",
+                        iconCss: "e-icons e-arrow-right",
+                        text: "Próximo campo",
+                      },
+                      {
+                        id: "previous_field",
+                        iconCss: "e-icons e-arrow-left",
+                        text: "Campo anterior",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           id: "export_group",
-          orientation: "Row",
           header: editorContainerLocale.grid["Export"],
           groupIconCss: "e-icons e-align-center",
           collections: [
@@ -559,6 +605,31 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title: editorContainerLocale.grid["Pdfexport"],
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "track_changes",
+          header: "Revisão",
+          collections: [
+            {
+              items: [
+                {
+                  id: "trackChangesBtn",
+                  type: "Button",
+                  buttonSettings: {
+                    iconCss: "e-icons e-changes-track",
+                    content: "Rastrear mudanças",
+                    clicked: function () {
+                      toolbarButtonClick("ToggleTrackChanges", editor, config);
+                    },
+                  },
+                  ribbonTooltipSettings: {
+                    title:
+                      editorContainerLocale.documenteditor["Tracked changes"],
                   },
                 },
               ],

@@ -9,8 +9,8 @@ import {
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { tabsConfig } from "./ribbonTabs";
 import { IaraSFDT } from "../content";
+import { tabsConfig } from "./ribbonTabs";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -242,6 +242,14 @@ const toolbarButtonClick = (
       //Show or hide the hidden characters like spaces, tab, paragraph marks, and breaks.
       editor.documentEditor.documentEditorSettings.showHiddenMarks =
         !editor.documentEditor.documentEditorSettings.showHiddenMarks;
+      break;
+    case "ToggleTrackChanges":
+      editor.documentEditor.enableTrackChanges =
+        !editor.documentEditor.enableTrackChanges;
+      changeActiveState(
+        editor.documentEditor.enableTrackChanges,
+        "trackChangesBtn"
+      );
       break;
     default:
       break;

@@ -106,9 +106,6 @@ export class IaraEditorInferenceFormatter {
       return a.replace(new RegExp(`(por|x) ${oldText}`, "gui"), `x ${newText}`);
     }, text);
 
-    //convert the 'por' before or after a number and return the formatted expression without a space ex:1x1
-    text = text.replace(/(\d+(?:,\d+)?) (por|x) (?=\d+(?:,\d+)?)/giu, "$1x");
-
     return text;
   }
 

@@ -1,5 +1,4 @@
 import { DocumentEditor, ImageFormat } from "@syncfusion/ej2-documenteditor";
-import { IaraSpeechRecognition } from "../speech";
 import {
   PdfBitmap,
   PdfDocument,
@@ -11,17 +10,17 @@ import {
 import { IaraSyncfusionConfig } from ".";
 
 export enum IaraSyncfusionContentTypes {
-  SFDT = "SFDT",
-  HTML = "HTML",
-  RTF = "RTF",
+  SFDT = "sfdt",
+  HTML = "html",
+  RTF = "rtf",
 }
 
 export class IaraSFDT {
   public html: string | undefined;
+  public plainText: string | undefined;
   public rtf: string | undefined;
-  public pdf: string | undefined;
 
-  constructor(public value: string, private _authHeaders: HeadersInit) {}
+  constructor(public value: string, private _editor: DocumentEditor) {}
 
   static detectContentType(content: string): IaraSyncfusionContentTypes {
     if (content.startsWith("{\\rtf")) return IaraSyncfusionContentTypes.RTF;
@@ -31,88 +30,74 @@ export class IaraSFDT {
     else throw new Error("Content type not recognized.");
   }
 
-  static async fromContent(content: string, authHeaders: HeadersInit) {
+  static async fromContent(content: string, editor: DocumentEditor) {
     const contentType = IaraSFDT.detectContentType(content);
-    switch (contentType) {
-      case IaraSyncfusionContentTypes.SFDT:
-        return new IaraSFDT(content, authHeaders);
-      case IaraSyncfusionContentTypes.HTML:
-        return IaraSFDT.fromHtml(content, authHeaders);
-      case IaraSyncfusionContentTypes.RTF:
-        return IaraSFDT.fromRtf(content, authHeaders);
-    }
+    if (contentType === IaraSyncfusionContentTypes.SFDT)
+      return new IaraSFDT(content, editor);
+    else return IaraSFDT.import(content, editor, contentType);
   }
 
-  static async fromEditor(editor: DocumentEditor, authHeaders: HeadersInit) {
+  static async fromEditor(editor: DocumentEditor) {
     const value: string = await editor
       .saveAsBlob("Sfdt")
       .then((blob: Blob) => blob.text());
-    return new IaraSFDT(value, authHeaders);
+    return new IaraSFDT(value, editor);
   }
 
-  static async fromHtml(content: string, authHeaders: HeadersInit) {
-    content = content.replace(/<br>/g, "<br/>");
-    const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/html_to_sfdt/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...authHeaders,
-        },
-        body: JSON.stringify({ html: content }),
-      }
-    );
-    const responseText = await response.text();
-    if (!response.ok) {
-      throw new Error(responseText);
-    }
-
-    return new IaraSFDT(responseText, authHeaders);
-  }
-
-  static async fromRtf(content: string, authHeaders: HeadersInit) {
-    const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/rtf_to_sfdt/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...authHeaders,
-        },
-        body: JSON.stringify({ rtf: content }),
-      }
-    );
-    const responseText = await response.text();
-    if (!response.ok) {
-      throw new Error(responseText);
-    }
-
-    return new IaraSFDT(responseText, authHeaders);
-  }
-
-  static async toHtml(
+  static async import(
     content: string,
-    authHeaders: HeadersInit
-  ): Promise<string> {
+    editor: DocumentEditor,
+    contentType?: IaraSyncfusionContentTypes
+  ) {
+    if (!contentType) contentType = IaraSFDT.detectContentType(content);
+    if (contentType === IaraSyncfusionContentTypes.HTML)
+      content = content.replace(/<br>/g, "<br/>");
+    const mimeType =
+      contentType === IaraSyncfusionContentTypes.SFDT
+        ? "application/json"
+        : `text/${contentType}`;
+    const formData = new FormData();
+    formData.append(
+      "Files",
+      new Blob([content], { type: mimeType }),
+      `file.${contentType}`
+    );
+
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_html/",
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/Import",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const responseText = await response.text();
+    if (!response.ok) {
+      throw new Error(responseText);
+    }
+
+    return new IaraSFDT(responseText, editor);
+  }
+
+  static async toHtml(content: string): Promise<string> {
+    const response = await fetch(
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...authHeaders,
         },
-        body: content,
+        body: JSON.stringify({
+          Content: content,
+          FileName: "file.html",
+        }),
       }
     );
-    const responseJson = await response.json();
+    const responseText = await response.text();
     if (!response.ok) {
-      throw new Error(responseJson);
+      throw new Error(responseText);
     }
 
-    let { html } = responseJson;
-    html = responseJson.html.replace(
+    const html = responseText.replace(
       `<?xml version="1.0" encoding="utf-8"?>`,
       ""
     );
@@ -120,28 +105,26 @@ export class IaraSFDT {
     return html;
   }
 
-  static async toRtf(
-    content: string,
-    authHeaders: HeadersInit
-  ): Promise<string> {
+  static async toRtf(content: string): Promise<string> {
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/sfdt_to_rtf/",
+      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...authHeaders,
         },
-        body: content,
+        body: JSON.stringify({
+          Content: content,
+          FileName: "file.rtf",
+        }),
       }
     );
-    const responseJson = await response.json();
+    const responseText = await response.text();
     if (!response.ok) {
-      throw new Error(responseJson);
+      throw new Error(responseText);
     }
 
-    const { rtf } = responseJson;
-    return rtf;
+    return responseText;
   }
 
   static toPdf(content: any, config?: IaraSyncfusionConfig) {
@@ -208,14 +191,27 @@ export class IaraSFDT {
     }
   }
 
+  static async editorToPlainText(editor: DocumentEditor): Promise<string> {
+    const plainText = await editor
+      .saveAsBlob("Txt")
+      .then((blob: Blob) => blob.text());
+    return plainText;
+  }
+
   async toHtml(): Promise<string> {
-    return this.html
-      ? this.html
-      : IaraSFDT.toHtml(this.value, this._authHeaders);
+    if (!this.html) this.html = await IaraSFDT.toHtml(this.value);
+    return this.html;
   }
 
   async toRtf(): Promise<string> {
-    return this.rtf ? this.rtf : IaraSFDT.toRtf(this.value, this._authHeaders);
+    if (!this.rtf) this.rtf = await IaraSFDT.toRtf(this.value);
+    return this.rtf;
+  }
+
+  async toPlainText(): Promise<string> {
+    if (!this.plainText)
+      this.plainText = await IaraSFDT.editorToPlainText(this._editor);
+    return this.plainText;
   }
 
   toString(): string {
@@ -224,26 +220,31 @@ export class IaraSFDT {
 }
 
 export class IaraSyncfusionEditorContentManager {
-  private _isPlainTextDirty = true;
-  private _isSfdtDirty = true;
-  private _plainText: string | undefined;
+  private _isDirty = true;
   private _sfdt: IaraSFDT | undefined;
 
-  constructor(
-    private _editor: DocumentEditor,
-    private _recognition: IaraSpeechRecognition,
-    onContentChange: () => void
-  ) {
+  constructor(private _editor: DocumentEditor, onContentChange: () => void) {
     this._editor.contentChange = () => {
       this._onContentChange();
       onContentChange();
     };
   }
 
+  async fromContent(content: string) {
+    this._sfdt = await IaraSFDT.fromContent(content, this._editor);
+    return this._sfdt;
+  }
+
+  async fromEditor() {
+    const sfdt = await IaraSFDT.fromEditor(this._editor);
+    this._sfdt = sfdt;
+    return this._sfdt;
+  }
+
   async getContent(): Promise<[string, string, string, string]> {
     const sfdt = await this._getSfdtContent();
     return Promise.all([
-      this.getPlainTextContent(),
+      sfdt.toPlainText(),
       sfdt.toHtml(),
       sfdt.toRtf(),
       sfdt.value,
@@ -255,8 +256,9 @@ export class IaraSyncfusionEditorContentManager {
     return sfdt.toHtml();
   }
 
-  getPlainTextContent(): Promise<string> {
-    return this._getPlainTextContent();
+  async getPlainTextContent(): Promise<string> {
+    const sfdt = await this._getSfdtContent();
+    return sfdt.toPlainText();
   }
 
   async getRtfContent(): Promise<string> {
@@ -268,33 +270,20 @@ export class IaraSyncfusionEditorContentManager {
     return this._getSfdtContent();
   }
 
+  import(content: string, contentType?: IaraSyncfusionContentTypes) {
+    return IaraSFDT.import(content, this._editor, contentType);
+  }
+
   private async _getSfdtContent(): Promise<IaraSFDT> {
-    if (this._isSfdtDirty) {
-      this._isSfdtDirty = false;
-      this._sfdt = await IaraSFDT.fromEditor(
-        this._editor,
-        this._recognition.internal.iaraAPIMandatoryHeaders as HeadersInit
-      );
+    if (this._isDirty) {
+      this._isDirty = false;
+      await this.fromEditor();
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
-
     return this._sfdt;
   }
 
-  private async _getPlainTextContent(): Promise<string> {
-    if (this._isPlainTextDirty) {
-      this._isPlainTextDirty = false;
-      this._plainText = await this._editor
-        .saveAsBlob("Txt")
-        .then((blob: Blob) => blob.text());
-    }
-    if (!this._plainText) throw new Error("Invalid plain text content");
-
-    return this._plainText;
-  }
-
   private _onContentChange(): void {
-    this._isPlainTextDirty = true;
-    this._isSfdtDirty = true;
+    this._isDirty = true;
   }
 }
