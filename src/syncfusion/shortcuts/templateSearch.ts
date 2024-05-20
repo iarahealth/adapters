@@ -3,6 +3,10 @@ import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 
 //braun
+import {
+  DocumentEditor,
+  DocumentEditorKeyDownEventArgs,
+} from "@syncfusion/ej2-documenteditor";
 // import { Button } from '@syncfusion/ej2-buttons';
 
 export class IaraSyncfusionTemplateSearch {
@@ -13,7 +17,8 @@ export class IaraSyncfusionTemplateSearch {
     private _onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
-    ) => void
+    ) => void,
+    private _editor: DocumentEditor,
   ) {
     this._template = (data: {
       name: string;
@@ -60,7 +65,63 @@ export class IaraSyncfusionTemplateSearch {
       this.filter(this._listviewInstance, this._dataSource);
     });
     this._onTemplateSelected(this._listviewInstance, dialogObj);
+
+    // this._editor.keyDown = this.onKeyDown.bind(this);
+
+    // const atMenuElements = document.getElementsByClassName("e-list-item e-level-1");
+
+    // console.log(atMenuElements);
+
+    // for(var i=0; i<atMenuElements.length; i++){
+    //   atMenuElements[i].addEventListener("keyup", () => {
+    //       console.log(atMenuElements);
+    //   });
+    // }
+
+    // Array.from(atMenuElements).forEach(function(atMenuElement) {
+    //   atMenuElement.addEventListener('keydown', atMenuItemEnter());
+    // });
+
+    // document.getElementsByClassName("e-list-item e-level-1")?.addEventListener("keydown", (event) => {
+      // The parameter event is of the type KeyboardEvent
+      // addRow(event);
+    // });
+      // addEventListener("keyup", () => {
+      // this.filter(this._listviewInstance, this._dataSource);
+    // }
+    // );
+
+    // dialogObj.addEventListener()
+      // .keyDown = this.onKeyDown.bind(this);
   }
+
+
+  //braun
+  atMenuItemEnter(): void
+  {
+    console.log('ENTEROU');
+  }
+
+  //braun
+  onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
+    console.log(args.event);
+    switch (args.event.key) {
+      case "Enter":
+        // this.shortcutByAt();
+        console.log('ENTERERRRRRR');
+        break;
+    }
+  }
+
+  //braun
+  shortcutByTabAndShiftTab(args: DocumentEditorKeyDownEventArgs): void {
+    if (args.event.shiftKey && args.event.key == "Tab") {
+      // this._navigationFieldManager.previousField(true);
+    } else if (args.event.key == "Tab") {
+      // this._navigationFieldManager.nextField(true);
+    }
+  }
+
 
   filter(
     listObj: ListView,
@@ -82,6 +143,8 @@ export class IaraSyncfusionTemplateSearch {
 
 
       //braun
+
+
       // console.log('PAGANDO VALUE DA QUERY', value);
       // console.log('PAGANDO VALUE DA QUERY', data.length);
       // if (data.length > 0)
@@ -101,15 +164,79 @@ export class IaraSyncfusionTemplateSearch {
 
       listObj.dataBind();
 
+
+
       if (data.length > 0)
       {
+
+        // console.log('this._editor.keyDown', this._editor.keyDown);
+        // console.log('this.onKeyDown.bind(this)', this.onKeyDown.bind(this));
+
         // this._listviewInstance['liCollection'][0].focus();
         // listObj['liCollection'][0].focus();
 
         // console.log('DATA', data[0]);
         // console.log('LISTOBJ', listObj['liCollection'][0] as HTMLElement);
-        const selectedItem = listObj['liCollection'][0] as HTMLElement;
-        selectedItem.classList.add('e-active');
+        let atMenuItems = listObj['liCollection'];
+        let firstItem = atMenuItems[0] as HTMLElement;
+        firstItem.classList.add('e-active');
+
+        // const listItems = document.querySelectorAll('.list-item');
+
+        //  console.log('AT MENU ITENS', atMenuItems);
+        // console.log('LIST ITEMS', listItems);
+        // listObj.addEventListener('keydown', this.atMenuItemEnter);
+        atMenuItems.forEach((item: any) => {
+
+          console.log('FOREACH');
+
+
+          item.addEventListener('keypress', (event: any) => {
+
+            console.log('ENTROU');
+
+            if (event.key === 'Enter') {
+
+              console.log('ENTERENTERNENTNERN');
+              // Executar ações desejadas
+            }
+          });
+        });
+
+
+
+      // let clickEvent = () => {
+      //     console.log('some event content here...')
+      //   }
+
+      // atMenuItens.forEach((item: any) => {
+      //     item.addEventListener('keypress', clickEvent)
+      // });
+
+
+            // for(var i=0; i<atMenuElements.length; i++){
+    //   atMenuElements[i].addEventListener("keyup", () => {
+    //       console.log(atMenuElements);
+    //   });
+    // }
+
+    // Array.from(atMenuItens).forEach(atMenuItem => {
+    //   atMenuItem.addEventListener('keydown', this.atMenuItemEnter());
+    // });
+
+    // atMenuItens.forEach(atMenuItem => {
+    //   atMenuItem.addEventListener('click', event => {
+    //     atMenuItem.addEventListener('keydown', this.atMenuItemEnter());
+    //   })
+    // })
+
+        // const atMenuElements = document.getElementsByClassName("e-list-item e-level-1");
+        // console.log(atMenuElements);
+
+
+        // if (args.event.key == "Tab") {
+        //   this._navigationFieldManager.nextField(true);
+        // }
         // console.log('LISTDATA', listData);
 
         // const selectedItem2222: string = data[0]['name'];
