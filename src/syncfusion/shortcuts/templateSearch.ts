@@ -3,7 +3,7 @@ import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 
 //braun
-import { Button } from '@syncfusion/ej2-buttons';
+// import { Button } from '@syncfusion/ej2-buttons';
 
 export class IaraSyncfusionTemplateSearch {
   private _template: (data: { name: string }) => string;
@@ -47,7 +47,7 @@ export class IaraSyncfusionTemplateSearch {
     const dialogObj = DialogUtility.alert({
       title: "<div class='dlg-template'>Selecione</div>",
       content: `<div class="e-list-wrapper" >
-      <input class="e-input" type="text" id="textbox" placeholder="Buscar" title="Type in a name">
+      <input class="e-input" autocomplete="false" type="text" id="textbox" placeholder="Buscar" title="Type in a name">
       <div id='listview' style="overflow: auto; max-height: 300px;"></div>
       </div>`,
       width: "350px",
@@ -104,15 +104,15 @@ export class IaraSyncfusionTemplateSearch {
       if (data.length > 0)
       {
         // this._listviewInstance['liCollection'][0].focus();
-        listObj['liCollection'][0].focus();
+        // listObj['liCollection'][0].focus();
 
         // console.log('DATA', data[0]);
-        console.log('LISTOBJ', listObj['liCollection'][0] as HTMLElement);
+        // console.log('LISTOBJ', listObj['liCollection'][0] as HTMLElement);
         const selectedItem = listObj['liCollection'][0] as HTMLElement;
         selectedItem.classList.add('e-active');
         // console.log('LISTDATA', listData);
 
-        const selectedItem2222: string = data[0]['name'];
+        // const selectedItem2222: string = data[0]['name'];
         // console.log(this._listviewInstance.localData[0]);
         // const firstElement = this._listviewInstance.element.getElementsByTagName('name').value = selectedItem;
         // const firstElement = this._listviewInstance.element.getElementsByClassName('e-list-item-header')[0];
