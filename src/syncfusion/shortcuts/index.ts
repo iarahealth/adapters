@@ -62,7 +62,7 @@ export class IaraSyncfusionShortcutsManager {
         return oldTemplate.category === "Template" ? -1 : 1;
       }
     });
-    new IaraSyncfusionTemplateSearch(sortOrder, this.onTemplateSelected, this._editor);
+    new IaraSyncfusionTemplateSearch(sortOrder, this.onTemplateSelected);
   }
 
   shortcutByTabAndShiftTab(args: DocumentEditorKeyDownEventArgs): void {
