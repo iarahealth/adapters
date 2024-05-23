@@ -3,7 +3,6 @@ import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
   DisplayMode,
   FileMenuEventArgs,
-  ItemOrientation,
   RibbonGroupButtonSelection,
   RibbonItemSize,
   RibbonTabModel,
@@ -34,34 +33,6 @@ export const tabsConfig = (
   const { changeFontColor, changeFontSize, changeFontFamily } =
     ribbonMethods.ribbonFontMethods(editor);
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
-
-  const navigationBtn = [
-    {
-      id: "add_field",
-      iconCss: "e-icons e-plus",
-      text: "Adicionar campo",
-    },
-    {
-      id: "add_mandatory_field",
-      iconCss: "e-icons e-lock",
-      text: "Adicionar campo obrigatório",
-    },
-    {
-      id: "add_optional_field",
-      iconCss: "e-icons e-circle-info",
-      text: "Adicionar campo opcional",
-    },
-    {
-      id: "next_field",
-      iconCss: "e-icons e-arrow-right",
-      text: "Próximo campo",
-    },
-    {
-      id: "previous_field",
-      iconCss: "e-icons e-arrow-left",
-      text: "Campo anterior",
-    },
-  ];
 
   const tabs = [
     {
