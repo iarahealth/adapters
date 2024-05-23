@@ -2,12 +2,15 @@ import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
 import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
   DisplayMode,
+  FileMenuEventArgs,
+  ItemOrientation,
   RibbonGroupButtonSelection,
   RibbonItemSize,
   RibbonTabModel,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
 import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
@@ -15,7 +18,8 @@ export const tabsConfig = (
   toolbarButtonClick: (
     arg: string,
     editor: DocumentEditorContainer,
-    config?: IaraSyncfusionConfig
+    config?: IaraSyncfusionConfig,
+    navigationFields?: IaraSyncfusionNavigationFieldManager
   ) => void,
   editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
   config: IaraSyncfusionConfig,
@@ -24,11 +28,41 @@ export const tabsConfig = (
     ribbonParagraphMethods: (
       editor: DocumentEditorContainer
     ) => RibbonParagraphMethods;
-  }
+  },
+  navigationFunc: (funcId: string) => void
 ): RibbonTabModel[] => {
   const { changeFontColor, changeFontSize, changeFontFamily } =
     ribbonMethods.ribbonFontMethods(editor);
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
+
+  const navigationBtn = [
+    {
+      id: "add_field",
+      iconCss: "e-icons e-plus",
+      text: "Adicionar campo",
+    },
+    {
+      id: "add_mandatory_field",
+      iconCss: "e-icons e-lock",
+      text: "Adicionar campo obrigatório",
+    },
+    {
+      id: "add_optional_field",
+      iconCss: "e-icons e-circle-info",
+      text: "Adicionar campo opcional",
+    },
+    {
+      id: "next_field",
+      iconCss: "e-icons e-arrow-right",
+      text: "Próximo campo",
+    },
+    {
+      id: "previous_field",
+      iconCss: "e-icons e-arrow-left",
+      text: "Campo anterior",
+    },
+  ];
+
   const tabs = [
     {
       groups: [
@@ -541,16 +575,14 @@ export const tabsConfig = (
           ],
         },
         {
-          id: "navigation_fields_content",
           header: "Marcadores",
-          groupIconCss: "e-icons e-align-center",
+          isCollapsible: false,
           collections: [
             {
               items: [
                 {
-                  displayOptions: DisplayMode.Classic,
                   type: "DropDown",
-                  id: "navigation_fields",
+                  allowedSizes: RibbonItemSize.Large,
                   dropDownSettings: {
                     iconCss: "e-icons e-bookmark",
                     content: "Campos de navegação",
@@ -581,6 +613,9 @@ export const tabsConfig = (
                         text: "Campo anterior",
                       },
                     ],
+                    select: (e: FileMenuEventArgs) => {
+                      navigationFunc(e.element.id);
+                    },
                   },
                 },
               ],

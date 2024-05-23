@@ -83,10 +83,17 @@ export class IaraSyncfusionAdapter
       this._config
     );
 
+    this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
+      this._documentEditor,
+      this._config,
+      _recognition
+    );
+
     if (this._config.replaceToolbar && this._editorContainer) {
       this._toolbarManager = new IaraSyncfusionToolbarManager(
         this._editorContainer,
-        this._config
+        this._config,
+        this._navigationFieldManager
       );
       this._toolbarManager.init();
     }
@@ -101,12 +108,6 @@ export class IaraSyncfusionAdapter
     this._documentEditor.addEventListener(
       "destroyed",
       this._onEditorDestroyed.bind(this)
-    );
-
-    this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
-      this._documentEditor,
-      this._config,
-      _recognition
     );
 
     new IaraSyncfusionShortcutsManager(
@@ -169,9 +170,9 @@ export class IaraSyncfusionAdapter
 
   clearReport(): void {
     this._documentEditor.enableTrackChanges = false;
-    this._documentEditor.selection.selectAll();
-    this._documentEditor.editor.delete();
-    this._styleManager.setEditorDefaultFont();
+    this._documentEditor.selection?.selectAll();
+    this._documentEditor.editor?.delete();
+    if (this._documentEditor.editor) this._styleManager?.setEditorDefaultFont();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -280,7 +281,7 @@ export class IaraSyncfusionAdapter
       this._documentEditor.selection.characterFormat.fontSize
     );
     // Set the default editor format after inserting the template
-    this._documentEditor.setDefaultCharacterFormat({
+    this._documentEditor?.setDefaultCharacterFormat({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
     });
