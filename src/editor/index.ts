@@ -74,14 +74,6 @@ export abstract class EditorAdapter {
     this._initListeners();
     this._recognition.internal.settings.replaceCommandActivationStringBeforeCallback =
       true;
-    if (this._config.saveReport && !this._recognition.report["_key"]) {
-      if (this._recognition.ready) this.beginReport().catch(console.error);
-      else {
-        this._recognition.addEventListener("iaraSpeechRecognitionReady", () => {
-          this.beginReport().catch(console.error);
-        });
-      }
-    }
   }
 
   abstract blockEditorWhileSpeaking(status: boolean): void;
@@ -184,6 +176,24 @@ export abstract class EditorAdapter {
     plainContent: string,
     richContent: string
   ): Promise<string> {
-    return this._recognition.report.change(plainContent, richContent);
+    if (this._recognition.report["_key"]) {
+      return this._recognition.report.change(plainContent, richContent);
+    }
+    throw new Error("Need a report key to update.");
+  }
+
+  protected async _beginReport(): Promise<void> {
+    if (this._config.saveReport && !this._recognition.report["_key"]) {
+      if (this._recognition.ready) {
+        this._recognition.report["_key"] = await this.beginReport();
+      } else {
+        this._recognition.addEventListener(
+          "iaraSpeechRecognitionReady",
+          async () => {
+            this._recognition.report["_key"] = await this.beginReport();
+          }
+        );
+      }
+    }
   }
 }

@@ -271,7 +271,10 @@ export class IaraSyncfusionAdapter
     console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
-    else this._documentEditor.editor.paste(sfdt.value);
+    else {
+      this._documentEditor.editor.paste(sfdt.value);
+      this._documentEditor.editor.onBackSpace();
+    }
     console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
@@ -357,30 +360,31 @@ export class IaraSyncfusionAdapter
   }
 
   private async _saveReport(): Promise<void> {
-    const contentDate = new Date();
-    this._contentDate = contentDate;
+    if (this._documentEditor.isDocumentEmpty) return;
+    if (!this._recognition.report["_key"]) await this._beginReport();
+
     let spanContent = "";
-
-    const element = document.querySelector(".e-de-status-bar");
-    if (element) {
-      this.savingReportSpan.style.width = "120px";
-      this.savingReportSpan.style.margin = "10px";
-      this.savingReportSpan.style.fontSize = "12px";
-      this.savingReportSpan.style.color = "black";
-      spanContent =
-        this._languageManager.languages.language.iaraTranslate.saveMessage
-          .loading;
-      this.savingReportSpan.innerHTML = `<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>${spanContent}`;
-      element.insertBefore(this.savingReportSpan, element.firstChild);
-    }
-
     try {
+      const contentDate = new Date();
+      this._contentDate = contentDate;
+
       const content: string[] = await this._contentManager.getContent();
+      const element = document.querySelector(".e-de-status-bar");
+
+      if (element) {
+        this.savingReportSpan.style.width = "120px";
+        this.savingReportSpan.style.margin = "10px";
+        this.savingReportSpan.style.fontSize = "12px";
+        this.savingReportSpan.style.color = "black";
+        spanContent =
+          this._languageManager.languages.language.iaraTranslate.saveMessage
+            .loading;
+        this.savingReportSpan.innerHTML = `<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>${spanContent}`;
+        element.insertBefore(this.savingReportSpan, element.firstChild);
+      }
 
       if (contentDate !== this._contentDate) return;
-      if (!this._recognition.report["_key"]) {
-        await this.beginReport();
-      }
+
       await this._updateReport(content[0], content[1]);
       spanContent =
         this._languageManager.languages.language.iaraTranslate.saveMessage

@@ -284,7 +284,7 @@ export const toolBarSettings = (
   });
 
   const onSelectionChange = () => {
-    if (editor.documentEditor.selection) {
+    if (editor && editor.documentEditor.selection) {
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
