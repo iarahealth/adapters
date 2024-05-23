@@ -2,7 +2,7 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
+
 import {
   Ribbon,
   RibbonColorPicker,
@@ -11,6 +11,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { tabsConfig } from "./ribbonTabs";
+import { IaraLanguages } from "../language/language";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -258,7 +259,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
+  editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
@@ -283,7 +284,7 @@ export const toolBarSettings = (
   });
 
   const onSelectionChange = () => {
-    if (editor.documentEditor.selection) {
+    if (editor && editor.documentEditor.selection) {
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
