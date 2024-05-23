@@ -392,20 +392,27 @@ export class IaraSyncfusionAdapter
     listViewInstance: ListView,
     dialogObj: Dialog
   ): void {
-    document.getElementById("listview")?.addEventListener("click", () => {
-      const selecteditem: SelectedCollection =
-        listViewInstance.getSelectedItems() as SelectedCollection;
-      const item = selecteditem.data as unknown as {
-        name: string;
-        category: string;
-        content: string;
-      };
-      this.undo();
+    ['click','keyup'].forEach((event) => {
+      document.getElementById("listview")?.addEventListener(event, (e) => {
+        const click = e as PointerEvent;
+        const keyup = e as KeyboardEvent;
+        if (keyup.key === 'Enter' || click.pointerType === 'mouse')
+        {
+          const selecteditem: SelectedCollection =
+          listViewInstance.getSelectedItems() as SelectedCollection;
+          const item = selecteditem.data as unknown as {
+            name: string;
+            category: string;
+            content: string;
+          };
+          this.undo();
 
-      if (item.category === "Template") this.insertTemplate(item.content);
-      else this.insertText(item.content);
+          if (item.category === "Template") this.insertTemplate(item.content);
+          else this.insertText(item.content);
 
-      dialogObj.hide();
+          dialogObj.hide();
+        }
+      });
     });
   }
 

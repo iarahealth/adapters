@@ -28,7 +28,7 @@ export class IaraSyncfusionTemplateSearch {
           data.items.length > 1
             ? data.items[0].category + "s"
             : data.items[0].category
-        }</span> 
+        }</span>
         <span class="count"> ${data.items.length} Item(s)</span>
       </div>`;
     };
@@ -44,7 +44,7 @@ export class IaraSyncfusionTemplateSearch {
     const dialogObj = DialogUtility.alert({
       title: "<div class='dlg-template'>Selecione</div>",
       content: `<div class="e-list-wrapper" >
-      <input class="e-input" type="text" id="textbox" placeholder="Buscar" title="Type in a name">
+      <input class="e-input" autocomplete="false" type="text" id="textbox" placeholder="Buscar" title="Type in a name">
       <div id='listview' style="overflow: auto; max-height: 300px;"></div>
       </div>`,
       width: "350px",
@@ -61,13 +61,13 @@ export class IaraSyncfusionTemplateSearch {
 
   filter(
     listObj: ListView,
-    listData: { name: string; category: string; content: string }[]
+    listData: { name: string; category: string; content: string }[],
   ): void {
     if (document.getElementById("textbox")) {
       const value = (document.getElementById("textbox") as HTMLInputElement)
         .value;
-      const data: unknown[] = new DataManager(listData).executeLocal(
-        new Query().where("name", "startswith", value, true)
+      const data: any[] = new DataManager(listData).executeLocal(
+        new Query().where("name", "contains", value, true)
       );
       if (!value) {
         listObj.dataSource = listData.slice();
@@ -77,6 +77,13 @@ export class IaraSyncfusionTemplateSearch {
         }[];
       }
       listObj.dataBind();
+
+      if (data.length > 0)
+      {
+        let atMenuItems = listObj['liCollection'];
+        let firstItem = atMenuItems[0] as HTMLElement;
+        firstItem.classList.add('e-active');
+      }
     }
     return;
   }
