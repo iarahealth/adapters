@@ -56,45 +56,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     _recognition: IaraSpeechRecognition
   ) {
     super(_recognition);
-    const navigationBtn = <HTMLElement>(
-      document.getElementById("navigation_fields")
-    );
-
-    if (!navigationBtn) return;
-
-    navigationBtn.addEventListener("click", () => {
-      const insertBtn = <HTMLElement>document.getElementById("add_field");
-      const nextFieldBtn = <HTMLElement>document.getElementById("next_field");
-      const previousFieldBtn = <HTMLElement>(
-        document.getElementById("previous_field")
-      );
-      const insertMandatoryFieldBtn = <HTMLElement>(
-        document.getElementById("add_mandatory_field")
-      );
-      const insertOptionalFieldBtn = <HTMLElement>(
-        document.getElementById("add_optional_field")
-      );
-
-      const selectedText = this._documentEditor.selection.text
-        ? this._documentEditor.selection.text.trim()
-        : undefined;
-
-      insertBtn.addEventListener("click", () => {
-        this.insertField(selectedText);
-      });
-      insertMandatoryFieldBtn.addEventListener("click", () => {
-        this.insertMandatoryField(selectedText);
-      });
-      insertOptionalFieldBtn.addEventListener("click", () => {
-        this.insertOptionalField(selectedText);
-      });
-      nextFieldBtn.addEventListener("click", () => {
-        this.nextField();
-      });
-      previousFieldBtn.addEventListener("click", () => {
-        this.previousField();
-      });
-    });
   }
 
   insertField(content = "Escreva uma dica de texto"): void {

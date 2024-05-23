@@ -4,11 +4,13 @@ import { toolBarSettings } from "./config";
 import { IaraSyncfusionConfig } from "..";
 import { createElement } from "@syncfusion/ej2-base";
 import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
     private _editorContainer: DocumentEditorContainer,
-    private _config: IaraSyncfusionConfig
+    private _config: IaraSyncfusionConfig,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
   ) {}
 
   public init(): void {
@@ -35,7 +37,8 @@ export class IaraSyncfusionToolbarManager {
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
       editorContainerLocale,
-      this._config
+      this._config,
+      this._navigationFieldManager
     );
     const editorToolbarContainer = <HTMLElement>(
       document.querySelector(".e-de-ctnr-toolbar")
