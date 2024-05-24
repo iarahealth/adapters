@@ -3,6 +3,7 @@ import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
 import { IaraEditorNavigationFieldManager } from "./navigationFields";
+import { RibbonOptions } from "../syncfusion/toolbar/ribbonOptions";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -14,6 +15,7 @@ export interface IaraEditorConfig {
   };
   saveReport: boolean;
   zoomFactor: string;
+  ribbonConfig?: RibbonOptions;
 }
 
 export abstract class EditorAdapter {
