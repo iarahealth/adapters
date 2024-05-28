@@ -11,60 +11,40 @@ export interface RibbonOptions
 
   displayMode?: 'Classic' | 'Simplified',
   ribbonItems?:
-  [
-    {
-      file?: [
-        'open',
-        'undo',
-        'redo',
-      ]
-    },
-    {
-      insert?: [
-        'image',
-        'table',
-      ]
-    },
-    {
-      clipboard?: [
-        'copy',
-        'cut',
-        'paste'
-      ]
-    },
-    {
-      font?: [
-        'fontFamily',
-        'fontSize',
-        'fontColor',
-        'bold',
-        'italic',
-        'underline',
-        'strikeThrough'
-      ]
-    },
-    {
-      paragraph?: [
-        'decreaseIdent',
-        'increaseIdent',
-        'lineSpacing',
-        'bullets',
-        'numbering',
-        'paragraphMark',
-        'alignLeft',
-        'alignCenter',
-        'alignRight',
-        'justify'
-      ]
-    },
-    {
-      navigation?: []
-    },
-    {
-      trackchanges?: []
-    },
-    {
+  {
+    file?: ('open' | 'undo' | 'redo')[],
+    insert?: [
+      'image',
+      'table',
+    ],
+    clipboard?: [
+      'copy',
+      'cut',
+      'paste'
+    ],
+    font?: [
+      'fontFamily',
+      'fontSize',
+      'fontColor',
+      'bold',
+      'italic',
+      'underline',
+      'strikeThrough'
+    ],
+    paragraph?: [
+      'decreaseIdent',
+      'increaseIdent',
+      'lineSpacing',
+      'bullets',
+      'numbering',
+      'paragraphMark',
+      'alignLeft',
+      'alignCenter',
+      'alignRight',
+      'justify'
+    ],
+    navigation?: [],
+      trackchanges?: [],
       export?: []
-    }
-  ]
+  }
 }

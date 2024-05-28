@@ -331,6 +331,7 @@ export const toolBarSettings = (
       ribbonMethods,
       navigationFunc
     ),
+    activeLayout: config.ribbonConfig?.displayMode
   });
 
   const onSelectionChange = () => {

@@ -67,12 +67,21 @@ export class IaraSyncfusionToolbarManager {
 
     this.ribbonItensLayout("Classic");
 
+    //braun
+    if (this._config.ribbonConfig?.displayMode && this._config.ribbonConfig?.displayMode === 'Simplified')
+    {
+      this.ribbonItensLayout('Simplified');
+    }
+
+
+
     ribbonCollapseBtn.addEventListener("click", () => {
       this.ribbonItensLayout(toolbarRibbonItems.activeLayout);
     });
   }
 
   ribbonItensLayout(layout: string): void {
+    console.log('85', layout);
     const editorContainerViewer = <HTMLElement>(
       document.querySelector(".e-de-tool-ctnr-properties-pane")
     );
