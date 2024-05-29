@@ -721,9 +721,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                      "Bold Tooltip"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Bold Tooltip"],
                   },
                 },
                 {
@@ -740,9 +739,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                      "Italic Tooltip"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Italic Tooltip"],
                   },
                 },
                 {
@@ -759,9 +757,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                      "Underline Tooltip"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Underline Tooltip"],
                   },
                 },
                 {
@@ -778,9 +775,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                      "Strikethrough"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Strikethrough"],
                   },
                 },
                 {
@@ -841,7 +837,7 @@ export const tabsConfig = (
                     value: editor.documentEditor.selection.characterFormat
                       .fontColor
                       ? editor.documentEditor.selection.characterFormat
-                        .fontColor
+                          .fontColor
                       : `#000`,
                   },
                 },
@@ -860,9 +856,8 @@ export const tabsConfig = (
                         },
                         ribbonTooltipSettings: {
                           title:
-                            editorContainerLocale.documenteditorcontainer[
-                            "Align left Tooltip"
-                            ],
+                            editorContainerLocale.language.syncfusionTranslate
+                              .documenteditorcontainer["Align left Tooltip"],
                         },
                       },
                       {
@@ -872,9 +867,8 @@ export const tabsConfig = (
                         },
                         ribbonTooltipSettings: {
                           title:
-                            editorContainerLocale.documenteditorcontainer[
-                            "Align center"
-                            ],
+                            editorContainerLocale.language.syncfusionTranslate
+                              .documenteditorcontainer["Align center"],
                         },
                       },
                       {
@@ -884,9 +878,8 @@ export const tabsConfig = (
                         },
                         ribbonTooltipSettings: {
                           title:
-                            editorContainerLocale.documenteditorcontainer[
-                            "Align right Tooltip"
-                            ],
+                            editorContainerLocale.language.syncfusionTranslate
+                              .documenteditorcontainer["Align right Tooltip"],
                         },
                       },
                       {
@@ -896,17 +889,16 @@ export const tabsConfig = (
                         },
                         ribbonTooltipSettings: {
                           title:
-                            editorContainerLocale.documenteditorcontainer[
-                            "Justify Tooltip"
-                            ],
+                            editorContainerLocale.language.syncfusionTranslate
+                              .documenteditorcontainer["Justify Tooltip"],
                         },
                       },
                     ],
                   },
                 },
-              ]
-            }
-          ]
+              ],
+            },
+          ],
         },
         {
           id: "paragraph_group",
@@ -928,7 +920,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer["Bullets"],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Bullets"],
                   },
                 },
                 {
@@ -943,9 +936,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                        "Numbering"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Numbering"],
                   },
                 },
                 {
@@ -981,9 +973,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                        "Paragraph"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Paragraph"],
                   },
                 },
               ],
@@ -1009,7 +1000,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer[
                         "Insert a table into the document"
                       ],
                   },
@@ -1019,14 +1011,17 @@ export const tabsConfig = (
                   allowedSizes: RibbonItemSize.Small,
                   buttonSettings: {
                     content:
-                      editorContainerLocale.documenteditorcontainer["Image"],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Image"],
                     iconCss: "e-icons e-image",
                     clicked: function () {
                       toolbarOpenFile("image", editor);
                     },
                   },
                   ribbonTooltipSettings: {
-                    title: editorContainerLocale.richtexteditor["image"],
+                    title:
+                      editorContainerLocale.language.syncfusionTranslate
+                        .richtexteditor["image"],
                   },
                 },
                 {
@@ -1042,9 +1037,8 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                      editorContainerLocale.documenteditorcontainer[
-                        "Undo Tooltip"
-                      ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Undo Tooltip"],
                   },
                 },
                 {
@@ -1060,22 +1054,19 @@ export const tabsConfig = (
                   },
                   ribbonTooltipSettings: {
                     title:
-                    editorContainerLocale.documenteditorcontainer[
-                      "Redo Tooltip"
-                    ],
+                      editorContainerLocale.language.syncfusionTranslate
+                        .documenteditorcontainer["Redo Tooltip"],
                   },
                 },
               ],
             },
           ],
-        }
-      ]
-    }
+        },
+      ],
+    },
   ];
 
-
-  if (config.editRibbon)
-  {
+  if (config.editRibbon) {
     editor.documentEditor.zoomFactor = Number(0.95);
     return simplifiedTabs;
   }
