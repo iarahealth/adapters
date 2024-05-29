@@ -1,5 +1,4 @@
-export interface RibbonOptions
-{
+export interface RibbonOptions {
   //braun
   /*
   ribbonconfig funciona do vazio para o personalizado, na seguinte regra:
@@ -8,43 +7,34 @@ export interface RibbonOptions
   o mesmo para os niveis mais inferiores nos botes de cada conjunto
   */
 
-
-  displayMode?: 'Classic' | 'Simplified',
-  ribbonItems?:
-  {
-    file?: ('open' | 'undo' | 'redo')[],
-    insert?: [
-      'image',
-      'table',
-    ],
-    clipboard?: [
-      'copy',
-      'cut',
-      'paste'
-    ],
-    font?: [
-      'fontFamily',
-      'fontSize',
-      'fontColor',
-      'bold',
-      'italic',
-      'underline',
-      'strikeThrough'
-    ],
-    paragraph?: [
-      'decreaseIdent',
-      'increaseIdent',
-      'lineSpacing',
-      'bullets',
-      'numbering',
-      'paragraphMark',
-      'alignLeft',
-      'alignCenter',
-      'alignRight',
-      'justify'
-    ],
-    navigation?: [],
-      trackchanges?: [],
-      export?: []
-  }
+  displayMode?: "Classic" | "Simplified";
+  ribbonItems?: {
+    file?: ("open" | "undo" | "redo")[];
+    insert?: ("image" | "table")[];
+    clipboard?: ("copy" | "cut" | "paste")[];
+    font?: (
+      | "fontFamily"
+      | "fontSize"
+      | "fontColor"
+      | "bold"
+      | "italic"
+      | "underline"
+      | "strikeThrough"
+    )[];
+    paragraph?: (
+      | "decreaseIdent"
+      | "increaseIdent"
+      | "lineSpacing"
+      | "bullets"
+      | "numbering"
+      | "paragraphMark"
+      | "alignLeft"
+      | "alignCenter"
+      | "alignRight"
+      | "justify"
+    )[];
+    navigation?: "navigation";
+    trackchanges?: "trackchanges";
+    export?: "export";
+  };
 }
