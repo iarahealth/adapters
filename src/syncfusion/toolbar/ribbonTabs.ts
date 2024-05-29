@@ -504,6 +504,42 @@ export const tabsConfig = (
     return fileItems;
   };
 
+
+  /*
+    const insertItems = [
+      { items: [allItems.image] },
+      { items: [allItems.table] },
+    ];
+  */
+
+  // return collection (insertItems, config.ribbonConfig?.ribbonItems.insert)
+  /*
+  funcao collection (collectionItems, collectionTab)
+  if (
+      config.ribbonConfig?.ribbonItems &&
+      Object.keys(collectionTab).length
+    ){
+      if (collectionTab) {
+        if (collectionTab.length > 0) {
+          let insertCustomItems: { items: RibbonItemModel[] }[] = [];
+          collectionTab.map(items => {
+            items.map(item => {
+              insertCustomItems = [
+                ...insertCustomItems,
+                { items: [allItems[item]] },
+              ];
+            });
+          });
+          return insertCustomItems;
+        }
+        return collectionItems;
+      }
+      return [];
+    }
+    return collectionItems;
+  */
+
+  
   const insertCollection = () => {
     const insertItems = [
       { items: [allItems.image] },
