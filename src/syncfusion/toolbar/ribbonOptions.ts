@@ -11,7 +11,7 @@ export interface RibbonOptions {
   ribbonItems?: {
     file?: ("open" | "undo" | "redo")[];
     insert?: ("image" | "table")[][];
-    clipboard?: ("copy" | "cut" | "paste")[];
+    clipboard?: ("copy" | "cut" | "paste")[][];
     font?: (
       | "fontFamily"
       | "fontSize"
@@ -20,7 +20,7 @@ export interface RibbonOptions {
       | "italic"
       | "underline"
       | "strikeThrough"
-    )[];
+    )[][];
     paragraph?: (
       | "decreaseIdent"
       | "increaseIdent"
@@ -32,7 +32,7 @@ export interface RibbonOptions {
       | "alignCenter"
       | "alignRight"
       | "justify"
-    )[];
+    )[][];
     navigation?: "navigation";
     trackchanges?: "trackchanges";
     export?: "export";

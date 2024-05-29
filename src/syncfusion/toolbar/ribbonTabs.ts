@@ -515,7 +515,7 @@ export const tabsConfig = (
     ) {
       if (config.ribbonConfig?.ribbonItems.insert) {
         if (config.ribbonConfig?.ribbonItems.insert.length > 0) {
-          let insertCustomItems: { items: any[] }[] = [];
+          let insertCustomItems: { items: RibbonItemModel[] }[] = [];
           config.ribbonConfig?.ribbonItems.insert.map(items => {
             items.map(item => {
               insertCustomItems = [
@@ -534,100 +534,37 @@ export const tabsConfig = (
   };
 
   const clipboardCollection = () => {
+    const clipboardItems = [
+      { items: [allItems.paste] },
+      { items: [allItems.copy, allItems.cut] },
+    ];
     if (
       config.ribbonConfig?.ribbonItems &&
       Object.keys(config.ribbonConfig?.ribbonItems).length
     ) {
       if (config.ribbonConfig?.ribbonItems.clipboard) {
         if (config.ribbonConfig?.ribbonItems.clipboard.length > 0) {
-          const clipboardItems: RibbonItemModel[] = [];
-
-          config.ribbonConfig?.ribbonItems.clipboard.map(item => {
-            if (item == "paste") clipboardItems.push(allItems.paste);
-            if (item == "copy") clipboardItems.push(allItems.copy);
-            if (item == "cut") clipboardItems.push(allItems.cut);
+          let clipboardCustomItems: { items: RibbonItemModel[] }[] = [];
+          config.ribbonConfig?.ribbonItems.clipboard.map(items => {
+            items.map(item => {
+              clipboardCustomItems = [
+                ...clipboardCustomItems,
+                { items: [allItems[item]] },
+              ];
+            });
           });
-
-          return [
-            {
-              items: clipboardItems,
-            },
-          ];
+          return clipboardCustomItems;
         }
-        return [
-          {
-            items: [allItems.paste],
-          },
-          {
-            items: [allItems.cut, allItems.copy],
-          },
-        ];
+        return clipboardItems;
       }
       return [];
     }
-    return [
-      {
-        items: [allItems.paste],
-      },
-      {
-        items: [allItems.cut, allItems.copy],
-      },
-    ];
+    return clipboardItems;
   };
 
   const fontCollection = () => {
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.font) {
-        if (config.ribbonConfig?.ribbonItems.font.length > 0) {
-          const clipboardFirstItems: RibbonItemModel[] = [];
-          const clipboardSecondItems: RibbonItemModel[] = [];
-          config.ribbonConfig?.ribbonItems.font.map(item => {
-            if (item == "fontFamily")
-              clipboardFirstItems.push(allItems.fontFamily);
-            if (item == "fontSize") clipboardFirstItems.push(allItems.fontSize);
-            if (item == "fontColor")
-              clipboardSecondItems.push(allItems.fontColor);
-            if (item == "bold") clipboardSecondItems.push(allItems.bold);
-            if (item == "italic") clipboardSecondItems.push(allItems.italic);
-            if (item == "underline")
-              clipboardSecondItems.push(allItems.underline);
-            if (item == "strikeThrough")
-              clipboardSecondItems.push(allItems.strikeThrough);
-          });
-
-          return [
-            {
-              items: clipboardFirstItems,
-            },
-            {
-              items: clipboardSecondItems,
-            },
-          ];
-        }
-        return [
-          {
-            items: [allItems.fontFamily, allItems.fontSize],
-          },
-          {
-            items: [
-              allItems.fontColor,
-              allItems.bold,
-              allItems.italic,
-              allItems.underline,
-              allItems.strikeThrough,
-            ],
-          },
-        ];
-      }
-      return [];
-    }
-    return [
-      {
-        items: [allItems.fontFamily, allItems.fontSize],
-      },
+    const fontItems = [
+      { items: [allItems.fontFamily, allItems.fontColor] },
       {
         items: [
           allItems.fontColor,
@@ -638,87 +575,32 @@ export const tabsConfig = (
         ],
       },
     ];
-  };
-
-  const paragraphCollection = () => {
     if (
       config.ribbonConfig?.ribbonItems &&
       Object.keys(config.ribbonConfig?.ribbonItems).length
     ) {
-      if (config.ribbonConfig?.ribbonItems.paragraph) {
-        if (config.ribbonConfig?.ribbonItems.paragraph.length > 0) {
-          const paragraphFirstItems: RibbonItemModel[] = [];
-          const paragraphSecondItems: RibbonItemModel[] = [];
-          config.ribbonConfig?.ribbonItems.paragraph.map(item => {
-            if (item == "decreaseIdent")
-              paragraphFirstItems.push(allItems.decreaseIdent);
-            if (item == "increaseIdent")
-              paragraphFirstItems.push(allItems.increaseIdent);
-            if (item == "lineSpacing")
-              paragraphFirstItems.push(allItems.lineSpacing);
-            if (item == "bullets") paragraphFirstItems.push(allItems.bullets);
-            if (item == "numbering")
-              paragraphFirstItems.push(allItems.numbering);
-            if (item == "paragraphMark")
-              paragraphFirstItems.push(allItems.paragraphMark);
-            if (item == "alignLeft")
-              paragraphSecondItems.push(allItems.alignLeft);
-            if (item == "alignCenter")
-              paragraphSecondItems.push(allItems.alignCenter);
-            if (item == "alignRight")
-              paragraphSecondItems.push(allItems.alignRight);
-            if (item == "justify") paragraphSecondItems.push(allItems.justify);
+      if (config.ribbonConfig?.ribbonItems.font) {
+        if (config.ribbonConfig?.ribbonItems.font.length > 0) {
+          let fontCustomItems: { items: RibbonItemModel[] }[] = [];
+          config.ribbonConfig?.ribbonItems.font.map(items => {
+            items.map(item => {
+              fontCustomItems = [
+                ...fontCustomItems,
+                { items: [allItems[item]] },
+              ];
+            });
           });
-
-          return [
-            {
-              items: paragraphFirstItems,
-            },
-            {
-              type: "GroupButton",
-              allowedSizes: RibbonItemSize.Small,
-              groupButtonSettings: {
-                selection: RibbonGroupButtonSelection.Single,
-                header: "Alignment",
-                items: paragraphSecondItems,
-              },
-            },
-          ];
+          return fontCustomItems;
         }
-        return [
-          {
-            items: [
-              allItems.decreaseIdent,
-              allItems.increaseIdent,
-              allItems.lineSpacing,
-              allItems.bullets,
-              allItems.numbering,
-              allItems.paragraphMark,
-            ],
-          },
-          {
-            items: [
-              {
-                type: "GroupButton",
-                allowedSizes: RibbonItemSize.Small,
-                groupButtonSettings: {
-                  selection: RibbonGroupButtonSelection.Single,
-                  header: "Alignment",
-                  items: [
-                    allItems.alignLeft,
-                    allItems.alignCenter,
-                    allItems.alignRight,
-                    allItems.justify,
-                  ],
-                },
-              },
-            ],
-          },
-        ];
+        return fontItems;
       }
       return [];
     }
-    return [
+    return fontItems;
+  };
+
+  const paragraphCollection = () => {
+    const paragraphItems = [
       {
         items: [
           allItems.decreaseIdent,
@@ -730,24 +612,42 @@ export const tabsConfig = (
         ],
       },
       {
-        items: [
-          {
-            type: "GroupButton",
-            allowedSizes: RibbonItemSize.Small,
-            groupButtonSettings: {
-              selection: RibbonGroupButtonSelection.Single,
-              header: "Alignment",
-              items: [
-                allItems.alignLeft,
-                allItems.alignCenter,
-                allItems.alignRight,
-                allItems.justify,
-              ],
-            },
-          },
-        ],
+        type: "GroupButton",
+        allowedSizes: RibbonItemSize.Small,
+        groupButtonSettings: {
+          selection: RibbonGroupButtonSelection.Single,
+          header: "Alignment",
+          items: [
+            allItems.alignLeft,
+            allItems.alignCenter,
+            allItems.alignRight,
+            allItems.justify,
+          ],
+        },
       },
     ];
+    if (
+      config.ribbonConfig?.ribbonItems &&
+      Object.keys(config.ribbonConfig?.ribbonItems).length
+    ) {
+      if (config.ribbonConfig?.ribbonItems.paragraph) {
+        if (config.ribbonConfig?.ribbonItems.paragraph.length > 0) {
+          let paragraphCustomItems: { items: RibbonItemModel[] }[] = [];
+          config.ribbonConfig?.ribbonItems.paragraph.map(items => {
+            items.map(item => {
+              paragraphCustomItems = [
+                ...paragraphCustomItems,
+                { items: [allItems[item]] },
+              ];
+            });
+          });
+          return paragraphCustomItems;
+        }
+        return paragraphItems;
+      }
+      return [];
+    }
+    return paragraphItems;
   };
 
   const navigationCollection = () => {
