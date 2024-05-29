@@ -10,7 +10,7 @@ export interface RibbonOptions {
   displayMode?: "Classic" | "Simplified";
   ribbonItems?: {
     file?: ("open" | "undo" | "redo")[];
-    insert?: ("image" | "table")[];
+    insert?: ("image" | "table")[][];
     clipboard?: ("copy" | "cut" | "paste")[];
     font?: (
       | "fontFamily"

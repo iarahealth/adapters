@@ -35,7 +35,7 @@ export const tabsConfig = (
     ribbonMethods.ribbonFontMethods(editor);
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
 
-  const allItems: any = {
+  const allItems = {
     open: {
       type: "Button",
       buttonSettings: {
@@ -484,79 +484,53 @@ export const tabsConfig = (
   };
 
   const fileCollection = () => {
+    const fileItems = [
+      { items: [allItems.open, allItems.undo, allItems.redo] },
+    ];
     if (
       config.ribbonConfig?.ribbonItems &&
       Object.keys(config.ribbonConfig?.ribbonItems).length
     ) {
       if (config.ribbonConfig?.ribbonItems.file) {
         if (config.ribbonConfig?.ribbonItems.file.length > 0) {
-          const fileItems: RibbonItemModel[] =
-            config.ribbonConfig?.ribbonItems.file.map(item => {
-              return allItems[item];
-            });
-          return [
-            {
-              items: fileItems,
-            },
-          ];
+          const fileCustomItems: RibbonItemModel[] =
+            config.ribbonConfig?.ribbonItems.file.map(item => allItems[item]);
+          return [{ items: fileCustomItems }];
         }
-        return [
-          {
-            items: [allItems.open, allItems.undo, allItems.redo],
-          },
-        ];
+        return fileItems;
       }
       return [];
     }
-    return [
-      {
-        items: [allItems.open, allItems.undo, allItems.redo],
-      },
-    ];
+    return fileItems;
   };
 
   const insertCollection = () => {
+    const insertItems = [
+      { items: [allItems.image] },
+      { items: [allItems.table] },
+    ];
     if (
       config.ribbonConfig?.ribbonItems &&
       Object.keys(config.ribbonConfig?.ribbonItems).length
     ) {
       if (config.ribbonConfig?.ribbonItems.insert) {
         if (config.ribbonConfig?.ribbonItems.insert.length > 0) {
-          const insertItemsFirst: RibbonItemModel[] = [];
-          const insertItemsSecond: RibbonItemModel[] = [];
-          config.ribbonConfig?.ribbonItems.insert.map(item => {
-            if (item == "image") insertItemsFirst.push(allItems.image);
-            if (item == "table") insertItemsSecond.push(allItems.table);
+          let insertCustomItems: { items: any[] }[] = [];
+          config.ribbonConfig?.ribbonItems.insert.map(items => {
+            items.map(item => {
+              insertCustomItems = [
+                ...insertCustomItems,
+                { items: [allItems[item]] },
+              ];
+            });
           });
-
-          return [
-            {
-              items: insertItemsFirst,
-            },
-            {
-              items: insertItemsSecond,
-            },
-          ];
+          return insertCustomItems;
         }
-        return [
-          {
-            items: [allItems.image],
-          },
-          {
-            items: [allItems.table],
-          },
-        ];
+        return insertItems;
       }
       return [];
     }
-    return [
-      {
-        items: [allItems.image],
-      },
-      {
-        items: [allItems.table],
-      },
-    ];
+    return insertItems;
   };
 
   const clipboardCollection = () => {
