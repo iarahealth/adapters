@@ -26,6 +26,11 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
 }
 
+declare class ClipboardItem {
+  constructor(data: { [mimeType: string]: Blob });
+  types: string[];
+}
+
 export class IaraSyncfusionAdapter
   extends EditorAdapter
   implements EditorAdapter
@@ -147,24 +152,39 @@ export class IaraSyncfusionAdapter
 
     this.showSpinner();
     try {
-      const content = await this._contentManager.getContent();
+      const rtfContent = await this._contentManager.getRtfContent();
 
+      this._documentEditor.selection.copy();
+      const clipboardItem = (await (navigator as any).clipboard.read()).find(
+        (item: ClipboardItem) => item.types.includes("text/html")
+      );
+
+      let htmlContent = await (await clipboardItem.getType("text/html")).text();
       // By pretending our html comes from google docs, we can paste it into
       // tinymce without losing the formatting for some reason.
-      const htmlContent = content[1].replace(
-        '<div class="Section0">',
-        '<div class="Section0" id="docs-internal-guid-iara">'
+      htmlContent = htmlContent.replace(
+        /(<[^>\s]+)/iu,
+        '$1 id="docs-internal-guid-iara"'
       );
-      console.log("copyReport", content[0], htmlContent, content[2]);
+      htmlContent = htmlContent.replace(
+        /background-color: rgb\(33, 36, 41\);/g,
+        ""
+      );
+
+      const plainContent = await (
+        await clipboardItem.getType("text/plain")
+      ).text();
+
+      console.log("copyReport", plainContent, htmlContent, rtfContent);
       this._recognition.automation.copyText(
-        content[0],
+        plainContent,
         htmlContent,
-        content[2]
+        rtfContent
       );
       this.hideSpinner();
       this._documentEditor.selection.moveNextPosition();
 
-      return content.slice(0, 3);
+      return [plainContent, htmlContent, rtfContent];
     } catch (error) {
       this.hideSpinner();
       this._documentEditor.selection.moveToDocumentStart();
