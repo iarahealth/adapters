@@ -10,9 +10,8 @@ import {
   RibbonTabModel,
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
-import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
-import { RibbonOptions } from "./ribbonOptions";
+import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
