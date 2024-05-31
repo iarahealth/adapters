@@ -3,6 +3,7 @@ import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
   DisplayMode,
   FileMenuEventArgs,
+  RibbonCollectionModel,
   RibbonGroupButtonSelection,
   RibbonItemModel,
   RibbonItemSize,
@@ -11,6 +12,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { RibbonOptions } from "./ribbonOptions";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
@@ -371,49 +373,64 @@ export const tabsConfig = (
       },
     },
 
-    alignLeft: {
-      iconCss: "e-icons e-align-left",
-      selected: true,
-      click: function () {
-        toolbarButtonClick("AlignLeft", editor);
-      },
-      ribbonTooltipSettings: {
-        title:
-          editorContainerLocale.documenteditorcontainer["Align left Tooltip"],
+    alignment: {
+      type: "GroupButton",
+      allowedSizes: RibbonItemSize.Small,
+      groupButtonSettings: {
+        selection: RibbonGroupButtonSelection.Single,
+        header: "Alignment",
+        items: [
+          {
+            iconCss: "e-icons e-align-left",
+            selected: true,
+            click: function () {
+              toolbarButtonClick("AlignLeft", editor);
+            },
+            ribbonTooltipSettings: {
+              title:
+                editorContainerLocale.documenteditorcontainer[
+                  "Align left Tooltip"
+                ],
+            },
+          },
+
+          {
+            iconCss: "e-icons e-align-center",
+            click: function () {
+              toolbarButtonClick("AlignCenter", editor);
+            },
+            ribbonTooltipSettings: {
+              title:
+                editorContainerLocale.documenteditorcontainer["Align center"],
+            },
+          },
+          {
+            iconCss: "e-icons e-align-right",
+            click: function () {
+              toolbarButtonClick("AlignRight", editor);
+            },
+            ribbonTooltipSettings: {
+              title:
+                editorContainerLocale.documenteditorcontainer[
+                  "Align right Tooltip"
+                ],
+            },
+          },
+          {
+            iconCss: "e-icons e-justify",
+            click: function () {
+              toolbarButtonClick("Justify", editor);
+            },
+            ribbonTooltipSettings: {
+              title:
+                editorContainerLocale.documenteditorcontainer[
+                  "Justify Tooltip"
+                ],
+            },
+          },
+        ],
       },
     },
-
-    alignCenter: {
-      iconCss: "e-icons e-align-center",
-      click: function () {
-        toolbarButtonClick("AlignCenter", editor);
-      },
-      ribbonTooltipSettings: {
-        title: editorContainerLocale.documenteditorcontainer["Align center"],
-      },
-    },
-
-    alignRight: {
-      iconCss: "e-icons e-align-right",
-      click: function () {
-        toolbarButtonClick("AlignRight", editor);
-      },
-      ribbonTooltipSettings: {
-        title:
-          editorContainerLocale.documenteditorcontainer["Align right Tooltip"],
-      },
-    },
-
-    justify: {
-      iconCss: "e-icons e-justify",
-      click: function () {
-        toolbarButtonClick("Justify", editor);
-      },
-      ribbonTooltipSettings: {
-        title: editorContainerLocale.documenteditorcontainer["Justify Tooltip"],
-      },
-    },
-
     navigation: {
       type: "DropDown",
       allowedSizes: RibbonItemSize.Large,
@@ -453,7 +470,7 @@ export const tabsConfig = (
       },
     },
 
-    exportPdf: {
+    export: {
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
@@ -467,7 +484,7 @@ export const tabsConfig = (
       },
     },
 
-    trackChanges: {
+    trackchanges: {
       id: "trackChangesBtn",
       type: "Button",
       buttonSettings: {
@@ -483,292 +500,113 @@ export const tabsConfig = (
     },
   };
 
-  const fileCollection = () => {
-    const fileItems = [
-      { items: [allItems.open, allItems.undo, allItems.redo] },
-    ];
+  const collection = (
+    collectionItems: RibbonCollectionModel[],
+    collectionTab:
+      | "file"
+      | "insert"
+      | "clipboard"
+      | "font"
+      | "paragraph"
+      | "navigation"
+      | "export"
+      | "trackchanges"
+  ) => {
     if (
       config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
+      Object.keys(config.ribbonConfig.ribbonItems).length
     ) {
-      if (config.ribbonConfig?.ribbonItems.file) {
-        if (config.ribbonConfig?.ribbonItems.file.length > 0) {
-          const fileCustomItems: RibbonItemModel[] =
-            config.ribbonConfig?.ribbonItems.file.map(item => allItems[item]);
-          return [{ items: fileCustomItems }];
+      if (config.ribbonConfig.ribbonItems[collectionTab]) {
+        if (
+          collectionTab === "navigation" ||
+          collectionTab === "export" ||
+          collectionTab === "trackchanges"
+        ) {
+          return collectionItems;
         }
-        return fileItems;
-      }
-      return [];
-    }
-    return fileItems;
-  };
+        if (config.ribbonConfig.ribbonItems[collectionTab].length > 0) {
+          let collectionCustomItems: { items: RibbonItemModel[] }[] = [];
+          const ribbonItems = config.ribbonConfig?.ribbonItems[collectionTab];
 
-
-  /*
-    const insertItems = [
-      { items: [allItems.image] },
-      { items: [allItems.table] },
-    ];
-  */
-
-  // return collection (insertItems, config.ribbonConfig?.ribbonItems.insert)
-  /*
-  funcao collection (collectionItems, collectionTab)
-  if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(collectionTab).length
-    ){
-      if (collectionTab) {
-        if (collectionTab.length > 0) {
-          let insertCustomItems: { items: RibbonItemModel[] }[] = [];
-          collectionTab.map(items => {
-            items.map(item => {
-              insertCustomItems = [
-                ...insertCustomItems,
-                { items: [allItems[item]] },
-              ];
-            });
+          ribbonItems.forEach(items => {
+            collectionCustomItems = [
+              ...collectionCustomItems,
+              { items: items.map(item => allItems[item]) },
+            ];
           });
-          return insertCustomItems;
+          return collectionCustomItems;
         }
         return collectionItems;
       }
       return [];
     }
     return collectionItems;
-  */
-
-  
-  const insertCollection = () => {
-    const insertItems = [
-      { items: [allItems.image] },
-      { items: [allItems.table] },
-    ];
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.insert) {
-        if (config.ribbonConfig?.ribbonItems.insert.length > 0) {
-          let insertCustomItems: { items: RibbonItemModel[] }[] = [];
-          config.ribbonConfig?.ribbonItems.insert.map(items => {
-            items.map(item => {
-              insertCustomItems = [
-                ...insertCustomItems,
-                { items: [allItems[item]] },
-              ];
-            });
-          });
-          return insertCustomItems;
-        }
-        return insertItems;
-      }
-      return [];
-    }
-    return insertItems;
   };
 
-  const clipboardCollection = () => {
-    const clipboardItems = [
-      { items: [allItems.paste] },
-      { items: [allItems.copy, allItems.cut] },
-    ];
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.clipboard) {
-        if (config.ribbonConfig?.ribbonItems.clipboard.length > 0) {
-          let clipboardCustomItems: { items: RibbonItemModel[] }[] = [];
-          config.ribbonConfig?.ribbonItems.clipboard.map(items => {
-            items.map(item => {
-              clipboardCustomItems = [
-                ...clipboardCustomItems,
-                { items: [allItems[item]] },
-              ];
-            });
-          });
-          return clipboardCustomItems;
-        }
-        return clipboardItems;
-      }
-      return [];
-    }
-    return clipboardItems;
-  };
+  const fileItems = [{ items: [allItems.open, allItems.undo, allItems.redo] }];
 
-  const fontCollection = () => {
-    const fontItems = [
-      { items: [allItems.fontFamily, allItems.fontColor] },
-      {
-        items: [
-          allItems.fontColor,
-          allItems.bold,
-          allItems.italic,
-          allItems.underline,
-          allItems.strikeThrough,
-        ],
-      },
-    ];
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.font) {
-        if (config.ribbonConfig?.ribbonItems.font.length > 0) {
-          let fontCustomItems: { items: RibbonItemModel[] }[] = [];
-          config.ribbonConfig?.ribbonItems.font.map(items => {
-            items.map(item => {
-              fontCustomItems = [
-                ...fontCustomItems,
-                { items: [allItems[item]] },
-              ];
-            });
-          });
-          return fontCustomItems;
-        }
-        return fontItems;
-      }
-      return [];
-    }
-    return fontItems;
-  };
+  const insertItems = [
+    { items: [allItems.image] },
+    { items: [allItems.table] },
+  ];
 
-  const paragraphCollection = () => {
-    const paragraphItems = [
-      {
-        items: [
-          allItems.decreaseIdent,
-          allItems.increaseIdent,
-          allItems.lineSpacing,
-          allItems.bullets,
-          allItems.numbering,
-          allItems.paragraphMark,
-        ],
-      },
-      {
-        type: "GroupButton",
-        allowedSizes: RibbonItemSize.Small,
-        groupButtonSettings: {
-          selection: RibbonGroupButtonSelection.Single,
-          header: "Alignment",
-          items: [
-            allItems.alignLeft,
-            allItems.alignCenter,
-            allItems.alignRight,
-            allItems.justify,
-          ],
-        },
-      },
-    ];
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.paragraph) {
-        if (config.ribbonConfig?.ribbonItems.paragraph.length > 0) {
-          let paragraphCustomItems: { items: RibbonItemModel[] }[] = [];
-          config.ribbonConfig?.ribbonItems.paragraph.map(items => {
-            items.map(item => {
-              paragraphCustomItems = [
-                ...paragraphCustomItems,
-                { items: [allItems[item]] },
-              ];
-            });
-          });
-          return paragraphCustomItems;
-        }
-        return paragraphItems;
-      }
-      return [];
-    }
-    return paragraphItems;
-  };
+  const clipboardItems = [
+    { items: [allItems.paste] },
+    { items: [allItems.cut, allItems.copy] },
+  ];
 
-  const navigationCollection = () => {
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.navigation) {
-        return [
-          {
-            items: [allItems.navigation],
-          },
-        ];
-      } else {
-        return [];
-      }
-    }
-    return [
-      {
-        items: [allItems.navigation],
-      },
-    ];
-  };
+  const fontItems = [
+    { items: [allItems.fontFamily, allItems.fontSize] },
+    {
+      items: [
+        allItems.fontColor,
+        allItems.bold,
+        allItems.italic,
+        allItems.underline,
+        allItems.strikeThrough,
+      ],
+    },
+  ];
 
-  const exporPdfCollection = () => {
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.export) {
-        return [
-          {
-            items: [allItems.exportPdf],
-          },
-        ];
-      } else {
-        return [];
-      }
-    }
-    return [
-      {
-        items: [allItems.exportPdf],
-      },
-    ];
-  };
+  const paragraphItems = [
+    {
+      items: [
+        allItems.decreaseIdent,
+        allItems.increaseIdent,
+        allItems.lineSpacing,
+        allItems.bullets,
+        allItems.numbering,
+        allItems.paragraphMark,
+      ],
+    },
+    {
+      items: [allItems.alignment],
+    },
+  ];
 
-  const trackChangesCollection = () => {
-    if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig?.ribbonItems).length
-    ) {
-      if (config.ribbonConfig?.ribbonItems.trackchanges) {
-        return [
-          {
-            items: [allItems.trackChanges],
-          },
-        ];
-      } else {
-        return [];
-      }
-    }
-    return [
-      {
-        items: [allItems.trackChanges],
-      },
-    ];
-  };
+  const naviagtionItem = [{ items: [allItems.navigation] }];
+
+  const exportItem = [{ items: [allItems.export] }];
+
+  const trackChangeItem = [{ items: [allItems.trackchanges] }];
 
   const tabs: RibbonTabModel[] = [
     {
       groups: [
         {
-          collections: fileCollection(),
+          collections: collection(fileItems, "file"),
         },
         {
           header: editorContainerLocale.documenteditor["Insert"],
           id: "insert",
-          collections: insertCollection(),
+          collections: collection(insertItems, "insert"),
         },
         {
           header:
             editorContainerLocale.documenteditorcontainer["Local Clipboard"],
           id: "clipboard",
           groupIconCss: "e-icons e-paste",
-          collections: clipboardCollection(),
+          collections: collection(clipboardItems, "clipboard"),
         },
         {
           header: editorContainerLocale.documenteditor["Font"],
@@ -777,30 +615,30 @@ export const tabsConfig = (
           overflowHeader: "More Font Options",
           id: "font",
           orientation: "Row",
-          collections: fontCollection(),
+          collections: collection(fontItems, "font"),
         },
         {
           id: "paragraph_group",
           orientation: "Row",
           header: editorContainerLocale.documenteditorcontainer["Paragraph"],
           groupIconCss: "e-icons e-align-center",
-          collections: paragraphCollection(),
+          collections: collection(paragraphItems, "paragraph"),
         },
         {
           header: "Marcadores",
           isCollapsible: false,
-          collections: navigationCollection(),
+          collections: collection(naviagtionItem, "navigation"),
         },
         {
           id: "export_group",
           header: editorContainerLocale.grid["Export"],
           groupIconCss: "e-icons e-align-center",
-          collections: exporPdfCollection(),
+          collections: collection(exportItem, "export"),
         },
         {
           id: "track_changes",
           header: "Revisão",
-          collections: trackChangesCollection(),
+          collections: collection(trackChangeItem, "trackchanges"),
         },
       ],
     },

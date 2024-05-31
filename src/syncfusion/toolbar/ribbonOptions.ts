@@ -9,7 +9,7 @@ export interface RibbonOptions {
 
   displayMode?: "Classic" | "Simplified";
   ribbonItems?: {
-    file?: ("open" | "undo" | "redo")[];
+    file?: ("open" | "undo" | "redo")[][];
     insert?: ("image" | "table")[][];
     clipboard?: ("copy" | "cut" | "paste")[][];
     font?: (
@@ -28,10 +28,7 @@ export interface RibbonOptions {
       | "bullets"
       | "numbering"
       | "paragraphMark"
-      | "alignLeft"
-      | "alignCenter"
-      | "alignRight"
-      | "justify"
+      | "alignment"
     )[][];
     navigation?: "navigation";
     trackchanges?: "trackchanges";
