@@ -10,7 +10,7 @@ import {
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
-import { tabsConfig } from "./ribbonTabs";
+import { tabsConfig } from "./tabs";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 
 export interface RibbonFontMethods {
@@ -331,7 +331,7 @@ export const toolBarSettings = (
       ribbonMethods,
       navigationFunc
     ),
-    activeLayout: config.ribbonConfig?.displayMode
+    activeLayout: config.ribbon?.displayMode,
   });
 
   const onSelectionChange = () => {

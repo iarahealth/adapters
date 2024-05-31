@@ -69,8 +69,8 @@ export class IaraSyncfusionToolbarManager {
 
     //braun
     if (
-      this._config.ribbonConfig?.displayMode &&
-      this._config.ribbonConfig?.displayMode === "Simplified"
+      this._config.ribbon?.displayMode &&
+      this._config.ribbon?.displayMode === "Simplified"
     ) {
       this.ribbonItensLayout("Simplified");
     }

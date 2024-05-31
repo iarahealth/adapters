@@ -12,6 +12,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { RibbonFontMethods, RibbonParagraphMethods } from "./config";
+import { RibbonCollection, RibbonCustomItems } from "./ribbon";
 
 export const tabsConfig = (
   editor: DocumentEditorContainer,
@@ -499,27 +500,40 @@ export const tabsConfig = (
     },
   };
 
+  const defaultCollections = {
+    file: true,
+    insert: true,
+    clipboard: true,
+    font: true,
+    paragraph: true,
+    navigation: false,
+    export: false,
+    documentReview: false,
+  };
+
   const collection = (
     collectionItems: RibbonCollectionModel[],
-    collectionTab:
-      | "file"
-      | "insert"
-      | "clipboard"
-      | "font"
-      | "paragraph"
-      | "navigation"
-      | "export"
-      | "documentReview"
+    collectionTab: RibbonCollection
   ) => {
     if (
-      config.ribbonConfig?.ribbonItems &&
-      Object.keys(config.ribbonConfig.ribbonItems).length
+      config.ribbon?.collection &&
+      Object.keys(config.ribbon.collection).length
     ) {
-      if (config.ribbonConfig.ribbonItems[collectionTab]) {
-        if (config.ribbonConfig.ribbonItems[collectionTab].length > 0) {
+      if (config.ribbon.collection[collectionTab] !== undefined) {
+        if (!Array.isArray(config.ribbon.collection[collectionTab])) {
+          defaultCollections[collectionTab] =
+            !!config.ribbon.collection[collectionTab];
+
+          if (defaultCollections[collectionTab]) {
+            return collectionItems;
+          }
+        } else {
           let collectionCustomItems: { items: RibbonItemModel[] }[] = [];
-          const ribbonItems = config.ribbonConfig?.ribbonItems[collectionTab];
-          ribbonItems.forEach(items => {
+          const ribbon = config.ribbon.collection[
+            collectionTab
+          ] as RibbonCustomItems;
+
+          ribbon.forEach(items => {
             collectionCustomItems = [
               ...collectionCustomItems,
               { items: items.map(item => allItems[item]) },
@@ -527,11 +541,12 @@ export const tabsConfig = (
           });
           return collectionCustomItems;
         }
-        return collectionItems;
       }
-      return [];
     }
-    return collectionItems;
+    if (defaultCollections[collectionTab]) {
+      return collectionItems;
+    }
+    return [];
   };
 
   const fileItems = [{ items: [allItems.open, allItems.undo, allItems.redo] }];
