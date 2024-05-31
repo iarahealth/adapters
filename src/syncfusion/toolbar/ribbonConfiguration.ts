@@ -1,4 +1,4 @@
-export interface RibbonOptions {
+export interface RibbonConfiguration {
   //braun
   /*
   ribbonconfig funciona do vazio para o personalizado, na seguinte regra:
@@ -30,8 +30,8 @@ export interface RibbonOptions {
       | "paragraphMark"
       | "alignment"
     )[][];
-    navigation?: "navigation";
-    trackchanges?: "trackchanges";
-    export?: "export";
+    navigation?: "navigationField"[][];
+    documentReview?: "trackchanges"[][];
+    export?: "exportPdf"[][];
   };
 }

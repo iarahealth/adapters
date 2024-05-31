@@ -430,7 +430,7 @@ export const tabsConfig = (
         ],
       },
     },
-    navigation: {
+    navigationField: {
       type: "DropDown",
       allowedSizes: RibbonItemSize.Large,
       dropDownSettings: {
@@ -469,7 +469,7 @@ export const tabsConfig = (
       },
     },
 
-    export: {
+    exportPdf: {
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
@@ -509,24 +509,16 @@ export const tabsConfig = (
       | "paragraph"
       | "navigation"
       | "export"
-      | "trackchanges"
+      | "documentReview"
   ) => {
     if (
       config.ribbonConfig?.ribbonItems &&
       Object.keys(config.ribbonConfig.ribbonItems).length
     ) {
       if (config.ribbonConfig.ribbonItems[collectionTab]) {
-        if (
-          collectionTab === "navigation" ||
-          collectionTab === "export" ||
-          collectionTab === "trackchanges"
-        ) {
-          return collectionItems;
-        }
         if (config.ribbonConfig.ribbonItems[collectionTab].length > 0) {
           let collectionCustomItems: { items: RibbonItemModel[] }[] = [];
           const ribbonItems = config.ribbonConfig?.ribbonItems[collectionTab];
-
           ribbonItems.forEach(items => {
             collectionCustomItems = [
               ...collectionCustomItems,
@@ -583,11 +575,11 @@ export const tabsConfig = (
     },
   ];
 
-  const naviagtionItem = [{ items: [allItems.navigation] }];
+  const naviagtionItem = [{ items: [allItems.navigationField] }];
 
-  const exportItem = [{ items: [allItems.export] }];
+  const exportItem = [{ items: [allItems.exportPdf] }];
 
-  const trackChangeItem = [{ items: [allItems.trackchanges] }];
+  const documentReviewItem = [{ items: [allItems.trackchanges] }];
 
   const tabs: RibbonTabModel[] = [
     {
@@ -637,7 +629,7 @@ export const tabsConfig = (
         {
           id: "track_changes",
           header: "Revisão",
-          collections: collection(trackChangeItem, "trackchanges"),
+          collections: collection(documentReviewItem, "documentReview"),
         },
       ],
     },
