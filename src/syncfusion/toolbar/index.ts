@@ -67,6 +67,13 @@ export class IaraSyncfusionToolbarManager {
 
     this.ribbonItensLayout("Classic");
 
+    if (
+      this._config.ribbon?.displayMode &&
+      this._config.ribbon?.displayMode === "Simplified"
+    ) {
+      this.ribbonItensLayout("Simplified");
+    }
+
     ribbonCollapseBtn.addEventListener("click", () => {
       this.ribbonItensLayout(toolbarRibbonItems.activeLayout);
     });
