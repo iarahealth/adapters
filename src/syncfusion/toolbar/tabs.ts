@@ -516,20 +516,20 @@ export const tabsConfig = (
     collectionTab: RibbonCollection
   ) => {
     if (
-      config.ribbon?.collection &&
-      Object.keys(config.ribbon.collection).length
+      config.ribbon?.collections &&
+      Object.keys(config.ribbon.collections).length
     ) {
-      if (config.ribbon.collection[collectionTab] !== undefined) {
-        if (!Array.isArray(config.ribbon.collection[collectionTab])) {
+      if (config.ribbon.collections[collectionTab] !== undefined) {
+        if (!Array.isArray(config.ribbon.collections[collectionTab])) {
           defaultCollections[collectionTab] =
-            !!config.ribbon.collection[collectionTab];
+            !!config.ribbon.collections[collectionTab];
 
           if (defaultCollections[collectionTab]) {
             return collectionItems;
           }
         } else {
           let collectionCustomItems: { items: RibbonItemModel[] }[] = [];
-          const ribbon = config.ribbon.collection[
+          const ribbon = config.ribbon.collections[
             collectionTab
           ] as RibbonCustomItems;
 
