@@ -2,7 +2,7 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
+
 import {
   Ribbon,
   RibbonColorPicker,
@@ -12,6 +12,7 @@ import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { tabsConfig } from "./tabs";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { IaraLanguages } from "../language/language";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -278,9 +279,9 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
-  config: IaraSyncfusionConfig,
-  navigationFields?: IaraSyncfusionNavigationFieldManager
+  navigationFields: IaraSyncfusionNavigationFieldManager,
+  editorContainerLocale: IaraLanguages,
+  config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
     setTimeout(() => {

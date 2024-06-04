@@ -66,7 +66,7 @@ export class IaraSyncfusionTemplateSearch {
     if (document.getElementById("textbox")) {
       const value = (document.getElementById("textbox") as HTMLInputElement)
         .value;
-      const data: any[] = new DataManager(listData).executeLocal(
+      const data: unknown[] = new DataManager(listData).executeLocal(
         new Query().where("name", "contains", value, true)
       );
       if (!value) {

@@ -14,6 +14,7 @@ export interface IaraEditorConfig {
     size: number;
   };
   saveReport: boolean;
+  language: "pt-BR" | "es";
   zoomFactor: string;
   ribbon?: Ribbon;
 }
@@ -27,6 +28,7 @@ export abstract class EditorAdapter {
     darkMode: false,
     saveReport: true,
     zoomFactor: "100%",
+    language: "pt-BR"
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 
