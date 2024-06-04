@@ -1,5 +1,4 @@
 import { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
 import {
   DisplayMode,
   FileMenuEventArgs,
