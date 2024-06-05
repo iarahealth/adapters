@@ -10,7 +10,8 @@ import {
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
-import { tabsConfig } from "./ribbonTabs";
+import { tabsConfig } from "./tabs";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { IaraLanguages } from "../language/language";
 
 export interface RibbonFontMethods {
@@ -131,8 +132,12 @@ function onInsertImage(
 const toolbarButtonClick = (
   arg: string,
   editor: DocumentEditorContainer,
-  config?: IaraSyncfusionConfig
+  config?: IaraSyncfusionConfig,
+  navigationFields?: IaraSyncfusionNavigationFieldManager
 ): void => {
+  const selectedText = editor.documentEditor.selection.text
+    ? editor.documentEditor.selection.text.trim()
+    : undefined;
   switch (arg) {
     case "undo":
       editor.documentEditor.editorHistory.undo();
@@ -252,6 +257,21 @@ const toolbarButtonClick = (
         "trackChangesBtn"
       );
       break;
+    case "AddField":
+      navigationFields?.insertField(selectedText);
+      break;
+    case "AddMandatoryField":
+      navigationFields?.insertMandatoryField(selectedText);
+      break;
+    case "AddOptionalField":
+      navigationFields?.insertOptionalField(selectedText);
+      break;
+    case "NextField":
+      navigationFields?.nextField();
+      break;
+    case "PreviousField":
+      navigationFields?.previousField();
+      break;
     default:
       break;
   }
@@ -259,6 +279,7 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
+  navigationFields: IaraSyncfusionNavigationFieldManager,
   editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
 ): Ribbon => {
@@ -272,6 +293,35 @@ export const toolBarSettings = (
     ribbonFontMethods: () => ribbonFontMethods(editor),
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
   };
+
+  const navigationFunc = (funcId: string) => {
+    if (funcId === "add_field") {
+      toolbarButtonClick("AddField", editor, undefined, navigationFields);
+    }
+    if (funcId === "add_mandatory_field") {
+      toolbarButtonClick(
+        "AddMandatoryField",
+        editor,
+        undefined,
+        navigationFields
+      );
+    }
+    if (funcId === "add_optional_field") {
+      toolbarButtonClick(
+        "AddOptionalField",
+        editor,
+        undefined,
+        navigationFields
+      );
+    }
+    if (funcId === "next_field") {
+      toolbarButtonClick("NextField", editor, undefined, navigationFields);
+    }
+    if (funcId === "previous_field") {
+      toolbarButtonClick("PreviousField", editor, undefined, navigationFields);
+    }
+  };
+
   const ribbonConfig: Ribbon = new Ribbon({
     tabs: tabsConfig(
       editor,
@@ -279,8 +329,10 @@ export const toolBarSettings = (
       toolbarButtonClick,
       editorContainerLocale,
       config,
-      ribbonMethods
+      ribbonMethods,
+      navigationFunc
     ),
+    activeLayout: config.ribbon?.displayMode,
   });
 
   const onSelectionChange = () => {

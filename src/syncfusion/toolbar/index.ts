@@ -3,12 +3,14 @@ import { toolBarSettings } from "./config";
 import { IaraSyncfusionConfig } from "..";
 import { createElement } from "@syncfusion/ej2-base";
 import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
     private _editorContainer: DocumentEditorContainer,
     private _config: IaraSyncfusionConfig,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private _languageManager: IaraSyncfusionLanguageManager
   ) {}
 
@@ -33,6 +35,7 @@ export class IaraSyncfusionToolbarManager {
   private _addRibbonToolbar(): void {
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
+      this._navigationFieldManager,
       this._languageManager.languages,
       this._config
     );
@@ -63,8 +66,12 @@ export class IaraSyncfusionToolbarManager {
 
     this.ribbonItensLayout("Classic");
 
-    if (this._config.editRibbon)
+    if (
+      this._config.ribbon?.displayMode &&
+      this._config.ribbon?.displayMode === "Simplified"
+    ) {
       this.ribbonItensLayout("Simplified");
+    }
 
     ribbonCollapseBtn.addEventListener("click", () => {
       this.ribbonItensLayout(toolbarRibbonItems.activeLayout);

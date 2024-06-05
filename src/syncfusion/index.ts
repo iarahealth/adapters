@@ -86,10 +86,17 @@ export class IaraSyncfusionAdapter
       this._config
     );
 
+    this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
+      this._documentEditor,
+      this._config,
+      _recognition
+    );
+
     if (this._config.replaceToolbar && this._editorContainer) {
       this._toolbarManager = new IaraSyncfusionToolbarManager(
         this._editorContainer,
         this._config,
+        this._navigationFieldManager,
         this._languageManager
       );
       this._toolbarManager.init();
@@ -105,12 +112,6 @@ export class IaraSyncfusionAdapter
     this._documentEditor.addEventListener(
       "destroyed",
       this._onEditorDestroyed.bind(this)
-    );
-
-    this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
-      this._documentEditor,
-      this._config,
-      _recognition
     );
 
     new IaraSyncfusionShortcutsManager(
@@ -174,9 +175,9 @@ export class IaraSyncfusionAdapter
 
   clearReport(): void {
     this._documentEditor.enableTrackChanges = false;
-    this._documentEditor.selection.selectAll();
-    this._documentEditor.editor.delete();
-    this._styleManager.setEditorDefaultFont();
+    this._documentEditor.selection?.selectAll();
+    this._documentEditor.editor?.delete();
+    if (this._documentEditor.editor) this._styleManager?.setEditorDefaultFont();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -285,7 +286,7 @@ export class IaraSyncfusionAdapter
       this._documentEditor.selection.characterFormat.fontSize
     );
     // Set the default editor format after inserting the template
-    this._documentEditor.setDefaultCharacterFormat({
+    this._documentEditor?.setDefaultCharacterFormat({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
     });
@@ -402,20 +403,27 @@ export class IaraSyncfusionAdapter
     listViewInstance: ListView,
     dialogObj: Dialog
   ): void {
-    document.getElementById("listview")?.addEventListener("click", () => {
-      const selecteditem: SelectedCollection =
-        listViewInstance.getSelectedItems() as SelectedCollection;
-      const item = selecteditem.data as unknown as {
-        name: string;
-        category: string;
-        content: string;
-      };
-      this.undo();
+    ['click','keyup'].forEach((event) => {
+      document.getElementById("listview")?.addEventListener(event, (e) => {
+        const click = e as PointerEvent;
+        const keyup = e as KeyboardEvent;
+        if (keyup.key === 'Enter' || click.pointerType === 'mouse')
+        {
+          const selecteditem: SelectedCollection =
+          listViewInstance.getSelectedItems() as SelectedCollection;
+          const item = selecteditem.data as unknown as {
+            name: string;
+            category: string;
+            content: string;
+          };
+          this.undo();
 
-      if (item.category === "Template") this.insertTemplate(item.content);
-      else this.insertText(item.content);
+          if (item.category === "Template") this.insertTemplate(item.content);
+          else this.insertText(item.content);
 
-      dialogObj.hide();
+          dialogObj.hide();
+        }
+      });
     });
   }
 
