@@ -614,16 +614,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
           this._documentEditor.editor.insertText(field.content);
           this._documentEditor.editor.deleteBookmark(field.name);
         } else {
-          this._documentEditor.editor.delete();
-          this._documentEditor.editor.onBackSpace();
           this._documentEditor.editor.deleteBookmark(field.name);
+          this._documentEditor.editor.delete();
         }
       }
       if (field.name.includes("Optional")) {
         if (field.title) {
-          this._documentEditor.editor.delete();
-          this._documentEditor.editor.onBackSpace();
           this._documentEditor.editor.deleteBookmark(field.name);
+          this._documentEditor.editor.delete();
         }
       }
     });

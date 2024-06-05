@@ -28,7 +28,7 @@ export class IaraSyncfusionTemplateSearch {
           data.items.length > 1
             ? data.items[0].category + "s"
             : data.items[0].category
-        }</span> 
+        }</span>
         <span class="count"> ${data.items.length} Item(s)</span>
       </div>`;
     };
@@ -67,7 +67,7 @@ export class IaraSyncfusionTemplateSearch {
       const value = (document.getElementById("textbox") as HTMLInputElement)
         .value;
       const data: unknown[] = new DataManager(listData).executeLocal(
-        new Query().where("name", "startswith", value, true)
+        new Query().where("name", "contains", value, true)
       );
       if (!value) {
         listObj.dataSource = listData.slice();
