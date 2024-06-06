@@ -107,7 +107,7 @@ export class IaraSFDT {
 
   static async toRtf(content: string): Promise<string> {
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
+      "https://syncfusion-documenteditor-server-dev-qink2fdpcq-uc.a.run.app/api/documenteditor/ExportSFDT/",
       {
         method: "POST",
         headers: {
