@@ -403,14 +403,13 @@ export class IaraSyncfusionAdapter
     listViewInstance: ListView,
     dialogObj: Dialog
   ): void {
-    ['click','keyup'].forEach((event) => {
-      document.getElementById("listview")?.addEventListener(event, (e) => {
+    ["click", "keyup"].forEach(event => {
+      document.getElementById("listview")?.addEventListener(event, e => {
         const click = e as PointerEvent;
         const keyup = e as KeyboardEvent;
-        if (keyup.key === 'Enter' || click.pointerType === 'mouse')
-        {
+        if (keyup.key === "Enter" || click.pointerType === "mouse") {
           const selecteditem: SelectedCollection =
-          listViewInstance.getSelectedItems() as SelectedCollection;
+            listViewInstance.getSelectedItems() as SelectedCollection;
           const item = selecteditem.data as unknown as {
             name: string;
             category: string;

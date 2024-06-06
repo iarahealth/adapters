@@ -1,10 +1,10 @@
-import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import { toolBarSettings } from "./config";
-import { IaraSyncfusionConfig } from "..";
 import { createElement } from "@syncfusion/ej2-base";
-import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
-import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { SelectingEventArgs, TabItemModel } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionConfig } from "..";
 import { IaraSyncfusionLanguageManager } from "../language";
+import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { toolBarSettings } from "./config";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
