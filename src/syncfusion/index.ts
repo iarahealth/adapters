@@ -162,15 +162,12 @@ export class IaraSyncfusionAdapter
       let htmlContent = await (await clipboardItem.getType("text/html")).text();
       // By pretending our html comes from google docs, we can paste it into
       // tinymce without losing the formatting for some reason.
-      htmlContent = htmlContent.replace(
-        /(<[^>\s]+)/iu,
-        '$1 id="docs-internal-guid-iara"'
-      );
-      htmlContent = htmlContent.replace(
-        /background-color: rgb\(33, 36, 41\);/g,
-        ""
-      );
-      htmlContent = `<!-- x-tinymce/html -->${htmlContent}`;
+      htmlContent = htmlContent
+        .replace(
+          '<meta charset="utf-8">',
+          '<meta charset="utf-8"><!-- x-tinymce/html -->'
+        )
+        .replace(/background-color: rgb\(33, 36, 41\);/g, "");
 
       const plainContent = await (
         await clipboardItem.getType("text/plain")
