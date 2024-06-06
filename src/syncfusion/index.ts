@@ -170,6 +170,7 @@ export class IaraSyncfusionAdapter
         /background-color: rgb\(33, 36, 41\);/g,
         ""
       );
+      htmlContent = `<!-- x-tinymce/html -->${htmlContent}`;
 
       const plainContent = await (
         await clipboardItem.getType("text/plain")
