@@ -28,7 +28,7 @@ export abstract class EditorAdapter {
     darkMode: false,
     saveReport: true,
     zoomFactor: "100%",
-    language: "pt-BR"
+    language: "pt-BR",
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
 

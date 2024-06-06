@@ -41,8 +41,9 @@ export const tabsConfig = (
     open: {
       type: "Button",
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate
-        .documenteditorcontainer["Open"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Open"],
         isToggle: true,
         iconCss: "e-icons e-folder-open",
         clicked: function () {
@@ -50,15 +51,16 @@ export const tabsConfig = (
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate
-        .PdfViewer["Open"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate.PdfViewer["Open"],
       },
     },
     undo: {
       type: "Button",
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate
-        .documenteditorcontainer["Undo"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Undo"],
         isToggle: true,
         iconCss: "e-icons e-undo",
         clicked: function () {
@@ -66,14 +68,17 @@ export const tabsConfig = (
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Undo Tooltip"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Undo Tooltip"],
       },
     },
     redo: {
       type: "Button",
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate
-        .documenteditorcontainer["Redo"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Redo"],
         isToggle: true,
         iconCss: "e-icons e-redo",
         clicked: function () {
@@ -81,28 +86,37 @@ export const tabsConfig = (
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Redo Tooltip"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Redo Tooltip"],
       },
     },
     image: {
       type: "Button",
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Image"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Image"],
         iconCss: "e-icons e-image",
         clicked: function () {
           toolbarOpenFile("image", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.richtexteditor["image"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate.richtexteditor[
+            "image"
+          ],
       },
     },
 
     table: {
       type: "Button",
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate
-        .richtexteditor["inserttablebtn"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate.richtexteditor[
+            "inserttablebtn"
+          ],
         iconCss: "e-icons e-table",
         clicked: function () {
           toolbarButtonClick("insertTable", editor);
@@ -110,9 +124,8 @@ export const tabsConfig = (
       },
       ribbonTooltipSettings: {
         title:
-          editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer[
-            "Insert a table into the document"
-          ],
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Insert a table into the document"],
       },
     },
 
@@ -120,13 +133,19 @@ export const tabsConfig = (
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-paste",
-        content: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Paste"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Paste"
+          ],
         clicked: function () {
           toolbarButtonClick("Paste", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Paste"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Paste"
+          ],
       },
     },
 
@@ -134,13 +153,19 @@ export const tabsConfig = (
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-copy",
-        content: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Copy"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Copy"
+          ],
         clicked: function () {
           toolbarButtonClick("copy", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Copy"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Copy"
+          ],
       },
     },
 
@@ -148,13 +173,19 @@ export const tabsConfig = (
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-cut",
-        content: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Cut"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Cut"
+          ],
         clicked: function () {
           toolbarButtonClick("cut", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.filemanager["Tooltip-Cut"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate.filemanager[
+            "Tooltip-Cut"
+          ],
       },
     },
 
@@ -219,8 +250,9 @@ export const tabsConfig = (
       id: "bold",
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
-        content: editorContainerLocale.language.syncfusionTranslate
-        .documenteditorcontainer["Bold Tooltip"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Bold Tooltip"],
         isToggle: true,
         iconCss: "e-icons e-bold",
         clicked: function () {
@@ -228,7 +260,9 @@ export const tabsConfig = (
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Bold Tooltip"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Bold Tooltip"],
       },
     },
 
@@ -238,14 +272,18 @@ export const tabsConfig = (
       id: "italic",
       buttonSettings: {
         isToggle: true,
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Italic Tooltip"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Italic Tooltip"],
         clicked: function () {
           toolbarButtonClick("italic", editor);
         },
         iconCss: "e-icons e-italic",
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Italic Tooltip"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Italic Tooltip"],
       },
     },
 
@@ -255,7 +293,9 @@ export const tabsConfig = (
       id: "underline",
       buttonSettings: {
         isToggle: true,
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Underline Tooltip"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Underline Tooltip"],
         clicked: function () {
           toolbarButtonClick("underline", editor);
         },
@@ -263,7 +303,8 @@ export const tabsConfig = (
       },
       ribbonTooltipSettings: {
         title:
-          editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Underline Tooltip"],
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Underline Tooltip"],
       },
     },
 
@@ -273,14 +314,18 @@ export const tabsConfig = (
       id: "strikethrough",
       buttonSettings: {
         iconCss: "e-icons e-strikethrough",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Strikethrough"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Strikethrough"],
         isToggle: true,
         clicked: function () {
           toolbarButtonClick("strikethrough", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Strikethrough"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Strikethrough"],
       },
     },
 
@@ -289,13 +334,17 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         iconCss: "e-icons e-decrease-indent",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Decrease indent"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Decrease indent"],
         clicked: function () {
           toolbarButtonClick("DecreaseIndent", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Decrease indent"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Decrease indent"],
       },
     },
 
@@ -304,13 +353,17 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         iconCss: "e-icons e-increase-indent",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Increase indent"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Increase indent"],
         clicked: function () {
           toolbarButtonClick("IncreaseIndent", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Increase indent"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Increase indent"],
       },
     },
 
@@ -339,13 +392,17 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         iconCss: "e-icons e-list-unordered-3",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Bullets"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Bullets"],
         clicked: function () {
           toolbarButtonClick("Bullets", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Bullets"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Bullets"],
       },
     },
 
@@ -354,13 +411,17 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         iconCss: "e-icons e-list-ordered",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Numbering"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Numbering"],
         clicked: function () {
           toolbarButtonClick("Numbering", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Numbering"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Numbering"],
       },
     },
 
@@ -369,13 +430,17 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         iconCss: "e-icons e-paragraph",
-        content: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Paragraph"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Paragraph"],
         clicked: function () {
           toolbarButtonClick("ShowParagraphMark", editor);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Paragraph"],
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Paragraph"],
       },
     },
 
@@ -393,9 +458,8 @@ export const tabsConfig = (
             },
             ribbonTooltipSettings: {
               title:
-                editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer[
-                  "Align left Tooltip"
-                ],
+                editorContainerLocale.language.syncfusionTranslate
+                  .documenteditorcontainer["Align left Tooltip"],
             },
           },
 
@@ -406,7 +470,8 @@ export const tabsConfig = (
             },
             ribbonTooltipSettings: {
               title:
-                editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Align center"],
+                editorContainerLocale.language.syncfusionTranslate
+                  .documenteditorcontainer["Align center"],
             },
           },
           {
@@ -416,9 +481,8 @@ export const tabsConfig = (
             },
             ribbonTooltipSettings: {
               title:
-                editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer[
-                  "Align right Tooltip"
-                ],
+                editorContainerLocale.language.syncfusionTranslate
+                  .documenteditorcontainer["Align right Tooltip"],
             },
           },
           {
@@ -428,9 +492,8 @@ export const tabsConfig = (
             },
             ribbonTooltipSettings: {
               title:
-                editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer[
-                  "Justify Tooltip"
-                ],
+                editorContainerLocale.language.syncfusionTranslate
+                  .documenteditorcontainer["Justify Tooltip"],
             },
           },
         ],
@@ -441,38 +504,37 @@ export const tabsConfig = (
       allowedSizes: RibbonItemSize.Large,
       dropDownSettings: {
         iconCss: "e-icons e-bookmark",
-        content: editorContainerLocale.language.iaraTranslate.customfields
-        .content,
+        content:
+          editorContainerLocale.language.iaraTranslate.customfields.content,
         items: [
           {
             id: "add_field",
             iconCss: "e-icons e-plus",
-            text: editorContainerLocale.language.iaraTranslate
-              .customfields.add,
+            text: editorContainerLocale.language.iaraTranslate.customfields.add,
           },
           {
             id: "add_mandatory_field",
             iconCss: "e-icons e-lock",
-            text: editorContainerLocale.language.iaraTranslate
-              .customfields.mandatory,
+            text: editorContainerLocale.language.iaraTranslate.customfields
+              .mandatory,
           },
           {
             id: "add_optional_field",
             iconCss: "e-icons e-circle-info",
-            text: editorContainerLocale.language.iaraTranslate
-              .customfields.optional,
+            text: editorContainerLocale.language.iaraTranslate.customfields
+              .optional,
           },
           {
             id: "next_field",
             iconCss: "e-icons e-arrow-right",
-            text: editorContainerLocale.language.iaraTranslate
-              .customfields.next,
+            text: editorContainerLocale.language.iaraTranslate.customfields
+              .next,
           },
           {
             id: "previous_field",
             iconCss: "e-icons e-arrow-left",
-            text: editorContainerLocale.language.iaraTranslate
-              .customfields.previous,
+            text: editorContainerLocale.language.iaraTranslate.customfields
+              .previous,
           },
         ],
         select: (e: FileMenuEventArgs) => {
@@ -485,16 +547,15 @@ export const tabsConfig = (
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
-        content: editorContainerLocale.language.syncfusionTranslate
-        .pivotview["pdf"],
+        content:
+          editorContainerLocale.language.syncfusionTranslate.pivotview["pdf"],
         clicked: function () {
           toolbarButtonClick("ExportToPDF", editor, config);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.syncfusionTranslate.grid[
-          "Pdfexport"
-        ]
+        title:
+          editorContainerLocale.language.syncfusionTranslate.grid["Pdfexport"],
       },
     },
 
@@ -503,14 +564,15 @@ export const tabsConfig = (
       type: "Button",
       buttonSettings: {
         iconCss: "e-icons e-changes-track",
-        content: editorContainerLocale.language.iaraTranslate.changes
-        .trackchanges,
+        content:
+          editorContainerLocale.language.iaraTranslate.changes.trackchanges,
         clicked: function () {
           toolbarButtonClick("ToggleTrackChanges", editor, config);
         },
       },
       ribbonTooltipSettings: {
-        title: editorContainerLocale.language.iaraTranslate.changes.trackchanges,
+        title:
+          editorContainerLocale.language.iaraTranslate.changes.trackchanges,
       },
     },
   };
@@ -618,19 +680,26 @@ export const tabsConfig = (
           collections: collection(fileItems, "file"),
         },
         {
-          header: editorContainerLocale.language.syncfusionTranslate.documenteditor["Insert"],
+          header:
+            editorContainerLocale.language.syncfusionTranslate.documenteditor[
+              "Insert"
+            ],
           id: "insert",
           collections: collection(insertItems, "insert"),
         },
         {
           header:
-            editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Local Clipboard"],
+            editorContainerLocale.language.syncfusionTranslate
+              .documenteditorcontainer["Local Clipboard"],
           id: "clipboard",
           groupIconCss: "e-icons e-paste",
           collections: collection(clipboardItems, "clipboard"),
         },
         {
-          header: editorContainerLocale.language.syncfusionTranslate.documenteditor["Font"],
+          header:
+            editorContainerLocale.language.syncfusionTranslate.documenteditor[
+              "Font"
+            ],
           groupIconCss: "e-icons e-bold",
           cssClass: "font-group",
           overflowHeader: "More Font Options",
@@ -641,18 +710,22 @@ export const tabsConfig = (
         {
           id: "paragraph_group",
           orientation: "Row",
-          header: editorContainerLocale.language.syncfusionTranslate.documenteditorcontainer["Paragraph"],
+          header:
+            editorContainerLocale.language.syncfusionTranslate
+              .documenteditorcontainer["Paragraph"],
           groupIconCss: "e-icons e-align-center",
           collections: collection(paragraphItems, "paragraph"),
         },
         {
-          header: editorContainerLocale.language.iaraTranslate.customfields.header,
+          header:
+            editorContainerLocale.language.iaraTranslate.customfields.header,
           isCollapsible: false,
           collections: collection(naviagtionItem, "navigation"),
         },
         {
           id: "export_group",
-          header: editorContainerLocale.language.syncfusionTranslate.grid["Export"],
+          header:
+            editorContainerLocale.language.syncfusionTranslate.grid["Export"],
           groupIconCss: "e-icons e-align-center",
           collections: collection(exportItem, "export"),
         },
