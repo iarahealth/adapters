@@ -125,8 +125,13 @@ export class IaraSFDT {
     if (!response.ok) {
       throw new Error(responseText);
     }
+    let rtf = responseText;
 
-    return responseText;
+    // Use older RTF unicode encoding for compatibility with RTF spec 1.4 and older
+    rtf = rtf.replace(/\\u(\d{1,4})\?/giu, (_match: string, group1: string) => {
+      return `\\'${parseInt(group1).toString(16)}`;
+    });
+    return rtf;
   }
 
   static toPdf(content: any, config?: IaraSyncfusionConfig) {
