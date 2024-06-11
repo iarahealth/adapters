@@ -25,6 +25,7 @@
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
     "@types/tinymce": "^4.6.8",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
     "@vitest/coverage-c8": "^0.29.8",
@@ -59,5 +60,8 @@
     "tinymce": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "uuid": "^10.0.0"
   }
 }

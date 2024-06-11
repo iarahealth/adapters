@@ -21,6 +21,7 @@ import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
 import { IaraSyncfusionLanguageManager } from "./language";
+import { IaraSyncfusionBookmarkManager } from "./bookmarks";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
@@ -40,6 +41,7 @@ export class IaraSyncfusionAdapter
   private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   private _languageManager: IaraSyncfusionLanguageManager;
+  private _bookmarkManager: IaraSyncfusionBookmarkManager;
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
 
   protected static DefaultConfig: IaraSyncfusionConfig = {
@@ -91,6 +93,11 @@ export class IaraSyncfusionAdapter
       this._documentEditor,
       this._config,
       _recognition
+    );
+
+    this._bookmarkManager = new IaraSyncfusionBookmarkManager(
+      this._documentEditor,
+      this._config
     );
 
     if (this._config.replaceToolbar && this._editorContainer) {
@@ -314,8 +321,12 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference();
     } else if (this._selectionManager) {
+      const initialStartOffset = this._selectionManager.isAtStartOfLine
+        ? "0;0;1"
+        : this._selectionManager.initialSelectionData.startOffset;
+
       this._documentEditor.selection.select(
-        this._selectionManager.initialSelectionData.startOffset,
+        initialStartOffset,
         this._inferenceEndOffset
       );
     }
@@ -333,6 +344,11 @@ export class IaraSyncfusionAdapter
       this._selectionManager.wordBeforeSelection,
       this._selectionManager.wordAfterSelection,
       this._selectionManager.isAtStartOfLine
+    );
+
+    this._bookmarkManager.insertInferenceField(
+      inference.isFirst,
+      inference.isFinal
     );
 
     if (text.length) this.insertText(text);
