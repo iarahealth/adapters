@@ -76,8 +76,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(content);
-    if (type === "Mandatory") this._documentEditor.editor.insertText(`*`);
-    if (type === "Optional") this._documentEditor.editor.insertText(`?`);
+    if (type === "Mandatory") {
+      if (!content.includes("*")) this._documentEditor.editor.insertText(`*`);
+    }
+    if (type === "Optional") {
+      if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
+    }
     this.getBookmarks();
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;

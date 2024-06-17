@@ -101,6 +101,10 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager.hasEmptyRequiredFields();
   }
 
+  navigationManagerFields(): IaraEditorNavigationFieldManager {
+    return this._navigationFieldManager;
+  }
+
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", async () => {
       if (this.hasEmptyRequiredFields()) {

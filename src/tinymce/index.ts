@@ -100,4 +100,7 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   hasEmptyRequiredFields(): boolean {
     throw new Error("Method not implemented.");
   }
+  insertField() {
+    throw new Error("Method not implemented.");
+  }
 }
