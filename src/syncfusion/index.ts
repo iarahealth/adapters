@@ -301,6 +301,7 @@ export class IaraSyncfusionAdapter
 
     this._navigationFieldManager.getBookmarks();
     this._documentEditor.selection.moveToDocumentEnd();
+    this._navigationFieldManager.nextField();
   }
 
   insertText(text: string): void {
