@@ -14,4 +14,7 @@ export class IaraTinyMceNavigationFieldManager extends IaraEditorNavigationField
   hasEmptyRequiredFields(): boolean {
     throw new Error("Method not implemented.");
   }
+  insertField(): void {
+    throw new Error("Method not implemented.");
+  }
 }
