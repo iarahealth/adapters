@@ -7,6 +7,7 @@ import {
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
+import { v4 as uuidv4 } from "uuid";
 import { IaraBookmark } from "./bookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
@@ -58,12 +59,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     super(_recognition);
   }
 
-  insertField(content = "Escreva uma dica de texto"): void {
-    const bookmarksCount = Date.now();
+  insertField(
+    content = "Escreva uma dica de texto",
+    title = "Nome do campo",
+    type: "Field" | "Mandatory" | "Optional" = "Field"
+  ): void {
+    const bookmarksCount = uuidv4();
     this._documentEditor.editor.insertText(" ");
     this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertBookmark(`Field-${bookmarksCount}`);
-    const title = "Nome do campo";
+    this._documentEditor.editor.insertBookmark(`${type}-${bookmarksCount}`);
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
     this._documentEditor.editor.insertText("<>");
@@ -72,53 +76,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this._documentEditor.selection.clear();
     this._documentEditor.selection.moveNextPosition();
     this._documentEditor.editor.insertText(content);
+    if (type === "Mandatory") this._documentEditor.editor.insertText(`*`);
+    if (type === "Optional") this._documentEditor.editor.insertText(`?`);
     this.getBookmarks();
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;
-    this.getOffsetsAndSelect(`Field-${bookmarksCount}`, true);
-    this.selectTitle(title, `Field-${bookmarksCount}`);
-  }
-
-  insertMandatoryField(content = "Escreva uma dica de texto"): void {
-    const bookmarksCount = Date.now();
-    this._documentEditor.editor.insertText(" ");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertBookmark(`Mandatory-${bookmarksCount}`);
-    const title = "Nome do campo";
-    this._documentEditor.editor.insertText("[]");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText("<>");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(title);
-    this._documentEditor.selection.clear();
-    this._documentEditor.selection.moveNextPosition();
-    this._documentEditor.editor.insertText(`${content}*`);
-    this.getBookmarks();
-    this.isFirstNextNavigation = true;
-    this.isFirstPreviousNavigation = true;
-    this.getOffsetsAndSelect(`Mandatory-${bookmarksCount}`, true);
-    this.selectTitle(title, `Mandatory-${bookmarksCount}`);
-  }
-
-  insertOptionalField(content = "Escreva uma dica de texto"): void {
-    const bookmarksCount = Date.now();
-    this._documentEditor.editor.insertText(" ");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertBookmark(`Optional-${bookmarksCount}`);
-    const title = "Nome do campo";
-    this._documentEditor.editor.insertText("[]");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText("<>");
-    this._documentEditor.selection.movePreviousPosition();
-    this._documentEditor.editor.insertText(title);
-    this._documentEditor.selection.clear();
-    this._documentEditor.selection.moveNextPosition();
-    this._documentEditor.editor.insertText(`${content}?`);
-    this.getBookmarks();
-    this.isFirstNextNavigation = true;
-    this.isFirstPreviousNavigation = true;
-    this.getOffsetsAndSelect(`Optional-${bookmarksCount}`, true);
-    this.selectTitle(title, `Optional-${bookmarksCount}`);
+    this.getOffsetsAndSelect(`${type}-${bookmarksCount}`, true);
+    this.selectTitle(title, `${type}-${bookmarksCount}`);
   }
 
   getBookmarks(setColor = true): void {
