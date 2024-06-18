@@ -322,9 +322,16 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference();
     } else if (this._selectionManager) {
-      const initialStartOffset = this._selectionManager.isAtStartOfLine
-        ? "0;0;1"
-        : this._selectionManager.initialSelectionData.startOffset;
+      let initialStartOffset =
+        this._selectionManager.initialSelectionData.startOffset;
+
+      if (this._selectionManager.isAtStartOfLine) {
+        if (initialStartOffset.split(";")[2] === "0") {
+          initialStartOffset = `${initialStartOffset.split(";")[0]};${
+            initialStartOffset.split(";")[1]
+          };1`;
+        }
+      }
 
       this._documentEditor.selection.select(
         initialStartOffset,
