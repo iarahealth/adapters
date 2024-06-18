@@ -13,6 +13,7 @@ export interface IaraLanguages {
         add: string;
         mandatory: string;
         optional: string;
+        additive: string;
         next: string;
         previous: string;
       };

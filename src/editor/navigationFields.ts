@@ -5,7 +5,11 @@ export abstract class IaraEditorNavigationFieldManager {
   abstract previousField(): void;
   abstract goToField(title: string): void;
   abstract hasEmptyRequiredFields(): boolean;
-
+  abstract insertField(
+    content?: string,
+    title?: string,
+    type?: "Field" | "Mandatory" | "Optional"
+  ): void;
   constructor(private _recognition: IaraSpeechRecognition) {
     this._recognition.addEventListener("iaraSpeechMikeForwardButtonPress", () =>
       this.nextField()

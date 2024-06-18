@@ -57,13 +57,21 @@ export class IaraSyncfusionContextMenuManager {
 
       switch (item) {
         case "add-navigation-field":
-          this._navigationFieldManager.insertField(selectedText);
+          this._navigationFieldManager.insertField(selectedText, undefined);
           break;
         case "add-mandatory-field":
-          this._navigationFieldManager.insertMandatoryField(selectedText);
+          this._navigationFieldManager.insertField(
+            selectedText,
+            undefined,
+            "Mandatory"
+          );
           break;
         case "add-optional-field":
-          this._navigationFieldManager.insertOptionalField(selectedText);
+          this._navigationFieldManager.insertField(
+            selectedText,
+            undefined,
+            "Optional"
+          );
           break;
       }
     };

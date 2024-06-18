@@ -509,7 +509,7 @@ export const tabsConfig = (
         items: [
           {
             id: "add_field",
-            iconCss: "e-icons e-plus",
+            iconCss: "e-icons e-add-above",
             text: editorContainerLocale.language.iaraTranslate.customfields.add,
           },
           {
@@ -523,6 +523,12 @@ export const tabsConfig = (
             iconCss: "e-icons e-circle-info",
             text: editorContainerLocale.language.iaraTranslate.customfields
               .optional,
+          },
+          {
+            id: "add_additive_field",
+            iconCss: "e-icons e-plus",
+            text: editorContainerLocale.language.iaraTranslate.customfields
+              .additive,
           },
           {
             id: "next_field",

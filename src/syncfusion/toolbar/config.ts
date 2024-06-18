@@ -258,13 +258,13 @@ const toolbarButtonClick = (
       );
       break;
     case "AddField":
-      navigationFields?.insertField(selectedText);
+      navigationFields?.insertField(selectedText, undefined);
       break;
     case "AddMandatoryField":
-      navigationFields?.insertMandatoryField(selectedText);
+      navigationFields?.insertField(selectedText, undefined, "Mandatory");
       break;
     case "AddOptionalField":
-      navigationFields?.insertOptionalField(selectedText);
+      navigationFields?.insertField(selectedText, undefined, "Optional");
       break;
     case "NextField":
       navigationFields?.nextField();
