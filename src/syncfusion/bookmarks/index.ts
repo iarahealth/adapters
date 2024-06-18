@@ -17,15 +17,17 @@ export class IaraSyncfusionBookmarkManager {
   ): void {
     if (isFirstInference) {
       this._documentEditor.editor.insertBookmark(`inferenceId_${uuidv4()}`);
-      this._config.darkMode
-        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          (this._documentEditor.selection.characterFormat.highlightColor =
-            "#0e5836")
-        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          (this._documentEditor.selection.characterFormat.highlightColor =
-            "#ccffe5");
+      if (this._config.highlightInference) {
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#0e5836")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#ccffe5");
+      }
     }
     if (isFinalInference) this.getBookmarks();
   }
