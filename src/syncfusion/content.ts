@@ -126,10 +126,13 @@ export class IaraSFDT {
 
     let rtf = responseText;
 
-    // Use older RTF unicode encoding for compatibility with RTF spec 1.4 and older
-    rtf = rtf.replace(/\\u(\d{1,4})\?/giu, (_match: string, group1: string) => {
-      return `\\'${parseInt(group1).toString(16)}`;
-    });
+    // Add older RTF unicode encoding as fallback for compatibility with RTF spec 1.4 and older
+    rtf = rtf.replace(
+      /(\\u(\d{1,4}))\?/giu,
+      (_match: string, group1: string, group2: string) => {
+        return `${group1}\\'${parseInt(group2).toString(16)}`;
+      }
+    );
     return rtf;
   }
 
