@@ -130,7 +130,7 @@ export class IaraSFDT {
     rtf = rtf.replace(
       /(\\u(\d{1,4}))\?/giu,
       (_match: string, group1: string, group2: string) => {
-        return `${group1}\\'${parseInt(group2).toString(16)}`;
+        return `${group1}\\'${parseInt(group2).toString(16).slice(-2)}`;
       }
     );
     return rtf;
