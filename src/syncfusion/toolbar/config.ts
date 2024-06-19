@@ -328,8 +328,6 @@ export const toolBarSettings = (
         navigationFields
       );
     }
-
-
     if (funcId === "next_field") {
       toolbarButtonClick("NextField", editor, undefined, navigationFields);
     }

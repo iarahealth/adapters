@@ -11,9 +11,9 @@ import { v4 as uuidv4 } from "uuid";
 import { IaraBookmark } from "./bookmark";
 
 //braun
-import { ItemModel } from '@syncfusion/ej2-splitbuttons';
-import { Dialog, DialogUtility } from '@syncfusion/ej2-popups';
-import { Grid } from '@syncfusion/ej2-grids';
+import { ItemModel } from "@syncfusion/ej2-splitbuttons";
+import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
+import { Edit, Grid, RowDD, rowDragAndDrop } from "@syncfusion/ej2-grids";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -90,8 +90,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
     //braun
     // if (type === "Additive") {
-      // console.log('ABRIR MODAL DE CAMPO ADITIVO');
-      // if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
+    // console.log('ABRIR MODAL DE CAMPO ADITIVO');
+    // if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
     // }
 
     this.getBookmarks();
@@ -589,96 +589,99 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return this.requiredFields();
   }
 
-
-  addAdditiveField()
-  {
-
+  addAdditiveField() {
     const okClick = () => {
       //funcao para gravar todos os dados
-      console.log('Additive OK');
-    }
+      console.log("Additive OK");
+    };
 
     const cancelClick = () => {
       dialogUtility.hide();
-      console.log('Additive Cancel');
-    }
+      console.log("Additive Cancel");
+    };
 
-    /* let grid: Grid = new Grid({
-      dataSource: [],
-      rowTemplate: '#rowtemplate',
+    const dataSource: {
+      Count: number;
+      Identification: string;
+      Phrase: string;
+      editType: "stringedit";
+    }[] = [
+      {
+        Count: 1,
+        Identification: "",
+        Phrase: "",
+        editType: "stringedit",
+      },
+    ];
+
+    Grid.Inject(RowDD);
+    Grid.Inject(Edit);
+
+    const grid: Grid = new Grid({
+      dataSource: dataSource,
+      editSettings: {
+        allowEditing: true,
+        allowAdding: true,
+        allowDeleting: true,
+      },
+      allowRowDragAndDrop: true,
       columns: [
-          { headerText: 'Employee Image', width: 150, textAlign: 'Center', field: 'OrderID' },
-          { headerText: 'Employee Details', width: 300, field: 'EmployeeID' }
-      ],
-      height: 315
-    }); */
-
-    let grid: Grid = new Grid({
-      dataSource: [
+        { field: "Count", headerText: "", width: 30 },
+        { field: "Identification", headerText: "Indentificação ->" },
         {
-          OrderID: 10258, CustomerID: 'ERNSH', EmployeeID: 1, OrderDate: new Date(8375418e5),
-          ShipName: 'Ernst Handel', ShipCity: 'Graz', ShipAddress: 'Kirchgasse 6',
-          ShipRegion: 'CJ', ShipPostalCode: '8010', ShipCountry: 'Austria', Freight: 140.51, Verified: !0
-      },
-      {
-          OrderID: 10259, CustomerID: 'CENTC', EmployeeID: 4, OrderDate: new Date(8376282e5),
-          ShipName: 'Centro comercial Moctezuma', ShipCity: 'México D.F.', ShipAddress: 'Sierras de Granada 9993',
-          ShipRegion: 'CJ', ShipPostalCode: '05022', ShipCountry: 'Mexico', Freight: 3.25, Verified: !1
-      },
-      {
-          OrderID: 10260, CustomerID: 'OTTIK', EmployeeID: 4, OrderDate: new Date(8377146e5),
-          ShipName: 'Ottilies Käseladen', ShipCity: 'Köln', ShipAddress: 'Mehrheimerstr. 369',
-          ShipRegion: 'CJ', ShipPostalCode: '50739', ShipCountry: 'Germany', Freight: 55.09, Verified: !0
-      },
+          field: "Phrase",
+          headerText: "Frase",
+        },
       ],
-      // toolbar: ['Add', 'Edit', 'Delete', 'Update', 'Cancel'],
-      editSettings: { allowEditing: true, allowAdding: true, allowDeleting: true },
-      columns: [
-          { field: 'OrderID', headerText: 'Order ID', textAlign: 'Right', isPrimaryKey: true, width: 100 },
-          { field: 'CustomerID', headerText: 'Customer ID', width: 120 },
-          {
-              field: 'Freight', headerText: 'Freight', textAlign: 'Right', editType: 'numericedit', width: 150, edit: {
-                  params: {
-                      validateDecimalOnType: true,
-                      decimals: 0,
-                      format: "N"
-                  }
-              }
-          },
-          { field: 'ShipCity', headerText: 'Ship City', editType: 'dropdownedit', width: 150 }
-      ],
-      height: 265
-  });
+    });
 
+    const content = `
+    <div class="col-lg-12 control-section">
+      <div class="content-wrapper" style="margin-bottom: 25px">
+        <form id="formId" class="form-horizontal">
+          <div class="tab">
+            <div class="form-group">
+              <div style="display: flex; align-items:center; width:100%; justify-content:center">
+                <label for="name">Título:</label>
+                <input style="width:220px" class="e-input" type="text" id="title" name="title" data-required-message="*Title Required" required=""  data-msg-containerid="titleError">
+                <div id="titleError"></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab">
+            <h4>Configurações</h4>
+             <div class="form-group" style="display: flex; align-items:center; gap: 4px; width:100%; justify-content:space-around">
+              <div style="display: flex; align-items:center;">
+                <label for="name">Delimitador:</label>
+                <input style="width:40px; margin-left: 10px" class="e-input-group e-corner" type="text" id="delimiter" name="delimiter" data-required-message="*Delimiter Required" required="" data-msg-containerid="delimiterError" placeholder="," value=",">
+                <div id="delimiterError"></div>
+              </div>
+              <div style="display: flex; align-items:center">
+                <label for="name">Delimitador final:</label>
+                <input style="width:40px;  margin-left: 10px" class="e-input-group e-corner" type="text" id="final-delimiter" name="final-delimiter"
+                  data-required-message="*Final Delimiter Required" required="" data-msg-containerid="finalDelimiterError" placeholder="e" value="e">
+                <div id="finalDelimiterError"></div>
+              </div>
+            </div>
+          </div>
+           <div class="tab">
+            <h4>Textos Aditivos</h4>
+             <div class="form-group" id="grid"></div>
+          </div>
+        </form>
+      </div>
+    </div>`;
 
     const dialogUtility = DialogUtility.confirm({
       title: "<div class='dlg-template'>Campo de Texto Aditivo</div>",
-      content: `<div class="e-list-wrapper" >
-      <label for="additive-field-title">Título</label>
-      <input class="e-input" autocomplete="false" type="text" id="additive-field-title" placeholder="Digite o título">
-      <div class='dlg-template'>Configurações</div>
-        <label>Delimitador</label>
-        <input class="e-input" autocomplete="false" type="text" id="additive-config-delimiter" placeholder="," value=",">
-        <label>Delimitador final</label>
-        <input class="e-input" autocomplete="false" type="text" id="additive-config-final-delimiter" placeholder="e" value="e">
-        <input type="checkbox" name="additive-config-capitalize" checked>Capitalizer 1ª escolha
-      <div class='dlg-template' id="additive-field-modal">Textos Aditivos</div>
-      <div id="Grid"></div>
-
-
-      </div>`,
+      content: content,
       width: "450px",
       showCloseIcon: true,
       closeOnEscape: true,
-      okButton: { text: 'OK', click: okClick },
-      cancelButton: { text: 'Cancel', click: cancelClick },
+      okButton: { text: "OK", click: okClick },
+      cancelButton: { text: "Cancel", click: cancelClick },
     });
 
-    grid.appendTo('#Grid');
-    // grid.appendTo('#additive-field-modal');
-
-
-
+    grid.appendTo("#grid");
   }
-
 }

@@ -51,6 +51,7 @@
     "@syncfusion/ej2-documenteditor": ">=24.2",
     "@syncfusion/ej2-locale": ">=24.2",
     "@syncfusion/ej2-ribbon": ">=24.2",
+    "@syncfusion/ej2-grids": ">=24.2",
     "tinymce": ">=6.5"
   },
   "peerDependenciesMeta": {
@@ -62,7 +63,6 @@
     }
   },
   "dependencies": {
-    "@syncfusion/ej2-grids": "^26.1.38",
     "uuid": "^10.0.0"
   }
 }
