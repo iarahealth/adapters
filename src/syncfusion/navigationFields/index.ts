@@ -14,6 +14,9 @@ import { IaraBookmark } from "./bookmark";
 import { ItemModel } from "@syncfusion/ej2-splitbuttons";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 import { Edit, Grid, RowDD, rowDragAndDrop } from "@syncfusion/ej2-grids";
+// import { loadCultureFiles } from '../common/culture-loader';
+import { InputObject, TextBox, LabelPosition } from '@syncfusion/ej2-inputs';
+import { Button } from '@syncfusion/ej2-buttons';
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -635,37 +638,74 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       ],
     });
 
+    const button: Button = new Button({
+      isPrimary: true,
+    });
+
+    const textBox: TextBox = new TextBox({
+      placeholder: "Outlined",
+      cssClass: "e-outline",
+    });
+
+
+
     const content = `
+    <link href="https://maxcdn.bootstrapcdn22222.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <div class="col-lg-12 control-section">
       <div class="content-wrapper" style="margin-bottom: 25px">
+
         <form id="formId" class="form-horizontal">
-          <div class="tab">
+
+          <div class="tab" style="border-bottom: 1px solid #e0e0e0;">
             <div class="form-group">
-              <div style="display: flex; align-items:center; width:100%; justify-content:center">
-                <label for="name">Título:</label>
-                <input style="width:220px" class="e-input" type="text" id="title" name="title" data-required-message="*Title Required" required=""  data-msg-containerid="titleError">
-                <div id="titleError"></div>
+
+              <div style="display: flex; align-items: center;">
+                <div style="display: flex;">
+                  <h5>Título:</h5>
+                </div>
+                <div style="display: flex; flex-grow: 10; padding-left: 1rem;">
+                    <input id="outlined" style="width: 100%;"/>
+                </div>
               </div>
+
             </div>
           </div>
-          <div class="tab">
-            <h4>Configurações</h4>
-             <div class="form-group" style="display: flex; align-items:center; gap: 4px; width:100%; justify-content:space-around">
-              <div style="display: flex; align-items:center;">
-                <label for="name">Delimitador:</label>
-                <input style="width:40px; margin-left: 10px" class="e-input-group e-corner" type="text" id="delimiter" name="delimiter" data-required-message="*Delimiter Required" required="" data-msg-containerid="delimiterError" placeholder="," value=",">
-                <div id="delimiterError"></div>
+
+
+          <div class="tab" style="border-bottom: 1px solid #e0e0e0;">
+              <h3 style="margin: 1rem 0 .5rem 0;">Configurações</h3>
+              <div style="display: flex; align-items: center;">
+
+                <div style="display: flex;">
+                  <h5 style="margin-right: 1rem;">Delimitador:</h5>
+                </div>
+
+                <div style="display: flex;">
+                  <input style="width: stretch;"
+                    type="text" id="delimiter-start" name="delimiter-start"
+                    data-required-message="*Delimiter Required" required=""
+                    data-msg-containerid="delimiterError" placeholder="," value=",">
+                  <div id="delimiterError"></div>
+                </div>
+
+                <div style="display: flex;">
+                  <h5 style="white-space: nowrap; margin: 0 1rem;">Delimitador final:</h5>
+                </div>
+
+                <div style="display: flex;">
+                  <input style="width: stretch;"
+                    type="text" id="delimiter-end" name="delimiter-end"
+                    data-required-message="*Final Delimiter Required" required=""
+                    data-msg-containerid="finalDelimiterError"  placeholder="e" value="e">
+                  <div id="finalDelimiterError"></div>
+                </div>
+
               </div>
-              <div style="display: flex; align-items:center">
-                <label for="name">Delimitador final:</label>
-                <input style="width:40px;  margin-left: 10px" class="e-input-group e-corner" type="text" id="final-delimiter" name="final-delimiter"
-                  data-required-message="*Final Delimiter Required" required="" data-msg-containerid="finalDelimiterError" placeholder="e" value="e">
-                <div id="finalDelimiterError"></div>
-              </div>
+
             </div>
           </div>
            <div class="tab">
-            <h4>Textos Aditivos</h4>
+            <h3 style="margin: 1rem 0 .5rem 0;">Textos Aditivos</h3>
              <div class="form-group" id="grid"></div>
           </div>
         </form>
@@ -683,5 +723,32 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
 
     grid.appendTo("#grid");
+
+    const outlineTextBox: TextBox = new TextBox({
+      placeholder: 'Título',
+      cssClass: 'e-outline',
+    });
+    outlineTextBox.appendTo('#outlined');
+
+    const delimeterStart: TextBox = new TextBox({
+      placeholder: ',',
+      cssClass: 'e-outline',
+    });
+    delimeterStart.appendTo('#delimiter-start');
+
+    const delimeterEnd: TextBox = new TextBox({
+      placeholder: 'e',
+      cssClass: 'e-outline',
+    });
+    delimeterEnd.appendTo('#delimiter-end');
+
+    const filledTextBox: TextBox = new TextBox({
+      placeholder: 'Filled',
+      cssClass: 'e-filled',
+      floatLabelType: 'Auto',
+    });
+    filledTextBox.appendTo('#filled');
+
+
   }
 }
