@@ -23,6 +23,11 @@ export interface IaraEditorConfig {
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
   public iaraRecognizes = true;
+  public selectedField: {
+    content: string;
+    title: string;
+    type: "Field" | "Mandatory" | "Optional";
+  } = { content: "", title: "", type: "Field" };
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -107,8 +112,15 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager;
   }
 
+  private _getNavigationFieldDeleted(): void {
+    const { content, title, type } = this.selectedField;
+    if (this.selectedField.content)
+      this._navigationFieldManager.insertField(content, title, type);
+  }
+
   private _initCommands(): void {
     this._recognition.commands.add("iara copiar laudo", async () => {
+      this._getNavigationFieldDeleted();
       if (this.hasEmptyRequiredFields()) {
         this.onIaraCommand?.("required fields to copy");
         return;
@@ -118,6 +130,7 @@ export abstract class EditorAdapter {
       this.onIaraCommand?.("iara copiar laudo");
     });
     this._recognition.commands.add("iara finalizar laudo", async () => {
+      this._getNavigationFieldDeleted();
       if (this.hasEmptyRequiredFields()) {
         this.onIaraCommand?.("required fields to finish");
         return;
@@ -142,17 +155,21 @@ export abstract class EditorAdapter {
       this.print();
     });
     this._recognition.commands.add("iara próximo campo", () => {
+      this._getNavigationFieldDeleted();
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add("iara campo anterior", () => {
+      this._getNavigationFieldDeleted();
       this._navigationFieldManager.previousField();
     });
     this._recognition.commands.add("next", () => {
+      this._getNavigationFieldDeleted();
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
       `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
+        this._getNavigationFieldDeleted();
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {

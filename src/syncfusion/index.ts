@@ -498,6 +498,8 @@ export class IaraSyncfusionAdapter
   }
 
   private _handleFirstInference(): void {
+    this._getCurrrentNavigateFieldSelected(this._documentEditor.selection.text);
+
     if (this._documentEditor.selection.text.length) {
       this._documentEditor.editor.delete();
     }
@@ -551,5 +553,22 @@ export class IaraSyncfusionAdapter
     }
 
     return false;
+  }
+
+  private _getCurrrentNavigateFieldSelected(field: string): void {
+    if (field.match(/\[(.*)\]/)) {
+      const { title, content } =
+        this._navigationFieldManager.getTitleAndContent(field);
+
+      let type: "Field" | "Mandatory" | "Optional" = "Field";
+      if (content.includes("*")) type = "Mandatory";
+      if (content.includes("?")) type = "Optional";
+
+      this.selectedField = {
+        content,
+        title,
+        type,
+      };
+    } else this.selectedField = { content: "", title: "", type: "Field" };
   }
 }
