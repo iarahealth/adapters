@@ -62,6 +62,7 @@
     }
   },
   "dependencies": {
+    "@syncfusion/ej2-grids": "^26.1.38",
     "uuid": "^10.0.0"
   }
 }

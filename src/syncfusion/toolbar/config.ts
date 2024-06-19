@@ -266,6 +266,10 @@ const toolbarButtonClick = (
     case "AddOptionalField":
       navigationFields?.insertField(selectedText, undefined, "Optional");
       break;
+    case "AddAdditiveField":
+      // navigationFields?.insertField(selectedText, undefined, "Additive");
+      navigationFields?.addAdditiveField();
+      break;
     case "NextField":
       navigationFields?.nextField();
       break;
@@ -314,6 +318,18 @@ export const toolBarSettings = (
         navigationFields
       );
     }
+
+    //braun
+    if (funcId === "add_additive_field") {
+      toolbarButtonClick(
+        "AddAdditiveField",
+        editor,
+        undefined,
+        navigationFields
+      );
+    }
+
+
     if (funcId === "next_field") {
       toolbarButtonClick("NextField", editor, undefined, navigationFields);
     }
