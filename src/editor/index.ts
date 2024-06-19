@@ -43,7 +43,6 @@ export abstract class EditorAdapter {
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        console.log("EVENT", event?.detail);
         if (event?.detail && this.iaraRecognizes)
           this.insertInference(event.detail);
       },
