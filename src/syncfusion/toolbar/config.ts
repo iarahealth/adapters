@@ -318,8 +318,6 @@ export const toolBarSettings = (
         navigationFields
       );
     }
-
-    //braun
     if (funcId === "add_additive_field") {
       toolbarButtonClick(
         "AddAdditiveField",

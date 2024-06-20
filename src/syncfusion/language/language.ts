@@ -23,6 +23,22 @@ export interface IaraLanguages {
         error: string;
         loading: string;
       };
+      additiveFieldModal: {
+        modalTitle: string;
+        titleField: string;
+        titlePlaceholder: string;
+        configTitle: string;
+        delimiterStartField: string;
+        delimiterStartRequired: string;
+        delimiterFinalField: string;
+        delimiterFinalPlaceholder: string;
+        delimiterFinalRequired: string;
+        additiveTextsTitle: string;
+        additiveTextsHeaderIdentifier: string;
+        additiveTextsHeaderPhrase: string;
+        modalBtnOk: string;
+        modalBtnCancel: string;
+      };
     };
   };
 }
