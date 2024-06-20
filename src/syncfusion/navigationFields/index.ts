@@ -100,7 +100,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       )[0];
     }
     this.sortByPosition();
-    if (this.bookmarks.length > 1)
+    if (this.bookmarks.length >= 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
 
     if (setColor) this.setColor();
