@@ -92,7 +92,8 @@ export class IaraSyncfusionAdapter
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
       this._documentEditor,
       this._config,
-      _recognition
+      _recognition,
+      this._languageManager
     );
 
     this._bookmarkManager = new IaraSyncfusionBookmarkManager(
