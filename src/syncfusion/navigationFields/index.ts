@@ -11,7 +11,6 @@ import { v4 as uuidv4 } from "uuid";
 import { IaraBookmark } from "./bookmark";
 import { DialogUtility } from "@syncfusion/ej2-popups";
 import { Edit, Grid, RowDD } from "@syncfusion/ej2-grids";
-// import { Edit, Grid, RowDD, rowDragAndDrop } from "@syncfusion/ej2-grids";
 import { TextBox } from '@syncfusion/ej2-inputs';
 // import { InputObject, LabelPosition } from '@syncfusion/ej2-inputs';
 // import { Button } from '@syncfusion/ej2-buttons';
@@ -726,14 +725,5 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       cssClass: 'e-outline',
     });
     delimeterEnd.appendTo('#delimiter-end');
-
-    // const filledTextBox: TextBox = new TextBox({
-    //   placeholder: 'Filled',
-    //   cssClass: 'e-filled',
-    //   floatLabelType: 'Auto',
-    // });
-    // filledTextBox.appendTo('#filled');
-
-
   }
 }
