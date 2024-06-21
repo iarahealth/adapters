@@ -122,7 +122,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       "iara copiar laudo",
       async (detail, command) => {
-        if (detail.transcript.length === command.length) {
+        if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
         }
         if (this.hasEmptyRequiredFields()) {
@@ -137,7 +137,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       "iara finalizar laudo",
       async (detail, command) => {
-        if (detail.transcript.length === command.length) {
+        if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
         }
         if (this.hasEmptyRequiredFields()) {
@@ -165,19 +165,19 @@ export abstract class EditorAdapter {
       this.print();
     });
     this._recognition.commands.add("iara próximo campo", (detail, command) => {
-      if (detail.transcript.length === command.length) {
+      if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add("iara campo anterior", (detail, command) => {
-      if (detail.transcript.length === command.length) {
+      if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.previousField();
     });
     this._recognition.commands.add("next", (detail, command) => {
-      if (detail.transcript.length === command.length) {
+      if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.nextField();
@@ -185,7 +185,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
-        if (detail.transcript.length === command.length) {
+        if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
         }
         try {
