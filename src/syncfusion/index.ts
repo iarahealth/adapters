@@ -269,8 +269,9 @@ export class IaraSyncfusionAdapter
     hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
-  insertParagraph(): void {
+  insertParagraph(setStyle = false): void {
     this._documentEditor.editor.insertText("\n");
+    if (setStyle) this._inferencehighlightColor();
   }
 
   async insertTemplate(
@@ -308,7 +309,7 @@ export class IaraSyncfusionAdapter
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
-      this.insertParagraph();
+      this.insertParagraph(true);
       line = line.trimStart();
       if (line) this._documentEditor.editor.insertText(line);
     });
@@ -338,6 +339,12 @@ export class IaraSyncfusionAdapter
         this._inferenceEndOffset
       );
     }
+
+    this._bookmarkManager.insertInferenceField(
+      inference.isFirst,
+      inference.isFinal
+    );
+
     if (!this._selectionManager) return;
 
     if (
@@ -352,11 +359,6 @@ export class IaraSyncfusionAdapter
       this._selectionManager.wordBeforeSelection,
       this._selectionManager.wordAfterSelection,
       this._selectionManager.isAtStartOfLine
-    );
-
-    this._bookmarkManager.insertInferenceField(
-      inference.isFirst,
-      inference.isFinal
     );
 
     if (text.length) this.insertText(text);
@@ -497,6 +499,23 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  private _getCurrrentNavigateFieldSelected(field: string): void {
+    if (field.match(/\[(.*)\]/)) {
+      const { title, content } =
+        this._navigationFieldManager.getTitleAndContent(field);
+
+      let type: "Field" | "Mandatory" | "Optional" = "Field";
+      if (content.includes("*")) type = "Mandatory";
+      if (content.includes("?")) type = "Optional";
+
+      this.selectedField = {
+        content,
+        title,
+        type,
+      };
+    } else this.selectedField = { content: "", title: "", type: "Field" };
+  }
+
   private _handleFirstInference(): void {
     this._getCurrrentNavigateFieldSelected(this._documentEditor.selection.text);
 
@@ -555,20 +574,17 @@ export class IaraSyncfusionAdapter
     return false;
   }
 
-  private _getCurrrentNavigateFieldSelected(field: string): void {
-    if (field.match(/\[(.*)\]/)) {
-      const { title, content } =
-        this._navigationFieldManager.getTitleAndContent(field);
-
-      let type: "Field" | "Mandatory" | "Optional" = "Field";
-      if (content.includes("*")) type = "Mandatory";
-      if (content.includes("?")) type = "Optional";
-
-      this.selectedField = {
-        content,
-        title,
-        type,
-      };
-    } else this.selectedField = { content: "", title: "", type: "Field" };
+  private _inferencehighlightColor(): void {
+    if (this._config.highlightInference) {
+      this._config.darkMode
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          (this._documentEditor.selection.characterFormat.highlightColor =
+            "#0e5836")
+        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          (this._documentEditor.selection.characterFormat.highlightColor =
+            "#ccffe5");
+    }
   }
 }
