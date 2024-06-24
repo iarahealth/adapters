@@ -18,7 +18,6 @@ export class IaraSyncfusionBookmarkManager {
       this._documentEditor.selection.movePreviousPosition();
     }
     if (isFinalInference) this.getBookmarks();
-    console.log(this._bookmarks, "BOOKS");
   }
 
   getBookmarks(): void {
