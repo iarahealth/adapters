@@ -1,5 +1,4 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
-import { IaraSyncfusionConfig } from "..";
 import { v4 as uuidv4 } from "uuid";
 
 export class IaraSyncfusionBookmarkManager {
