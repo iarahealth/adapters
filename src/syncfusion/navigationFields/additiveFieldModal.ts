@@ -203,7 +203,6 @@ export class IaraSyncfusionAdditiveFieldModal {
       const phrase = document.getElementById("phrase") as HTMLInputElement;
 
       dataSource = [
-        ...dataSource,
         { identifier: identifier.value, phrase: phrase.value, count: 1 },
       ];
       identifier.value = "";
