@@ -1,6 +1,7 @@
 import { ListView } from "@syncfusion/ej2-lists";
 import { DialogUtility } from "@syncfusion/ej2-popups";
 import { TextBox } from "@syncfusion/ej2-inputs";
+import { Button } from "@syncfusion/ej2-buttons";
 import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionAdditiveFieldModal {
@@ -15,17 +16,32 @@ export class IaraSyncfusionAdditiveFieldModal {
       console.log("Additive Cancel");
     };
 
-    const dataSource: {
-      Count: number;
-      Identification: string;
-      Phrase: string;
-    }[] = [
-      {
-        Count: 1,
-        Identification: "",
-        Phrase: "",
-      },
-    ];
+    const inputContentText = `
+      <div style="display: flex; align-items: center;">
+        <div style="display: flex; flex-direction: column;">
+          <h5 style="text-transform: uppercase;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderIdentifier}:</h5>
+          <div style="display: flex;">
+            <input style="width: stretch;" type="text" id="identifier" name="identifier" required="">
+          </div>
+        </div>
+        <div style="width: 80px; display: flex; align-items: center; justify-content: center; margin-top: 55px;" >
+          <span class='e-icons e-arrow-right e-large'></span>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <h5 style="text-transform: uppercase;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderPhrase}:</h5>
+          <div style="display: flex;">
+            <input style="width: stretch;" type="text" id="phrase" name="phrase" required="">
+          </div>
+        </div>
+      </div>
+    `;
+
+    const formContentText = `
+      <form id="formContentId" onsubmit="return false">
+        ${inputContentText}
+        <button id="addBtn" type='submit'>Adicionar Texto</button>
+      </form>
+      `;
 
     const content = `
         <form id="formId" class="form-horizontal">
@@ -49,11 +65,9 @@ export class IaraSyncfusionAdditiveFieldModal {
           <div class="tab" style="border-bottom: 1px solid #e0e0e0;">
               <h3 style="margin: 1rem 0 .5rem 0;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.configTitle}</h3>
               <div style="display: flex; align-items: center;">
-
                 <div style="display: flex;">
                   <h5 style="margin-right: 1rem;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterStartField}:</h5>
                 </div>
-
                 <div style="display: flex;">
                   <input style="width: stretch;"
                     type="text" id="delimiter-start" name="delimiter-start"
@@ -61,11 +75,9 @@ export class IaraSyncfusionAdditiveFieldModal {
                     data-msg-containerid="delimiterError" placeholder="," value=",">
                   <div id="delimiterError"></div>
                 </div>
-
                 <div style="display: flex;">
                   <h5 style="white-space: nowrap; margin: 0 1rem;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterFinalField}:</h5>
                 </div>
-
                 <div style="display: flex;">
                   <input style="width: stretch;"
                     type="text" id="delimiter-end" name="delimiter-end"
@@ -75,26 +87,16 @@ export class IaraSyncfusionAdditiveFieldModal {
                     value="${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterFinalPlaceholder}">
                   <div id="finalDelimiterError"></div>
                 </div>
-
               </div>
-
             </div>
           </div>
-           <div class="tab">
-            <h3 style="margin: 1rem 0 .5rem 0;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsTitle}</h3>
-            <div style="display: flex;">
-                  <h5 style="white-space: nowrap; margin: 0 1rem;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderIdentifier}:</h5>
-            </div>
-            <div style="display: flex;">
-              <input style="width: stretch;"
-                type="text" id="additve-text" name="additve-text"
-                data-required-message="*${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderIdentifier}" required=""
-                data-msg-containerid="indentifierError">
-              <div id="indentifierError"></div>
-            </div>
-            <div id='listview' style="overflow: auto; max-height: 300px;"></div>
-          </div>
-        </form>`;
+        </form>
+        <div class="tab">
+          <h3 style="margin: 1rem 0 .5rem 0;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsTitle}</h3>
+          ${formContentText}
+          <div id='listview' style="overflow: auto; max-height: 300px; margin-top: 20px;"></div>
+        </div>
+        `;
 
     const dialogUtility = DialogUtility.confirm({
       title: `<div class='dlg-template'>${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.modalTitle}</div>`,
@@ -114,11 +116,39 @@ export class IaraSyncfusionAdditiveFieldModal {
       },
     });
 
+    let dataSource: {
+      count: number;
+      identifier: string;
+      phrase: string;
+    }[] = [];
+
+    const listTemplate = (data: {
+      identifier: string;
+      phrase: string;
+      count: number;
+    }) => `<div style="overflow: auto;">
+        <div style="display: flex; align-items: center;">
+          <div style="width: 30px; display: flex; align-items: center; justify-content: center;">
+            ${data.count} <span class='e-icons e-drag-and-drop'></span>
+          </div>
+          <div>
+            <input value="${data.identifier}" style="width: 120px;" type="text" id="identifier" name="identifier" required="">
+          </div>
+          <div style="width: 80px; display: flex; align-items: center; justify-content: center;" >
+            <span class='e-icons e-arrow-right e-large'></span>
+          </div>
+          <div >
+            <input value="${data.phrase}" style="width: 155px;" type="text" id="phrase" name="phrase" required="">
+          </div>
+          <div style="width: 30px; display: flex; align-items: center; justify-content: center;">
+            <span class='e-icons e-delete-4'></span>
+          </div>
+        </div>
+    </div>`;
+
     const listviewInstance = new ListView({
       dataSource,
-      sortOrder: "None",
-      fields: { text: "name" },
-      template: "",
+      template: listTemplate,
     });
     listviewInstance.appendTo("#listview");
 
@@ -144,9 +174,42 @@ export class IaraSyncfusionAdditiveFieldModal {
     });
     delimeterEnd.appendTo("#delimiter-end");
 
-    const additveText: TextBox = new TextBox({
-      cssClass: "e-outline",
+    const identifierText: TextBox = new TextBox({
+      cssClass: "e-outline e-small",
     });
-    additveText.appendTo("#additve-text");
+    identifierText.appendTo("#identifier");
+
+    const phraseText: TextBox = new TextBox({
+      cssClass: "e-outline e-small",
+    });
+    phraseText.appendTo("#phrase");
+
+    const addBtn: Button = new Button({
+      cssClass: "e-outline",
+      isPrimary: true,
+    });
+    addBtn.appendTo("#addBtn");
+
+    const form = document.getElementById("formContentId") as HTMLFormElement;
+    const deleteData = Array.from(
+      document.getElementsByClassName("e-delete-4") as HTMLCollectionOf<Element>
+    );
+
+    const onSubmit = (event: Event) => {
+      event.preventDefault();
+      const identifier = document.getElementById(
+        "identifier"
+      ) as HTMLInputElement;
+      const phrase = document.getElementById("phrase") as HTMLInputElement;
+
+      dataSource = [
+        ...dataSource,
+        { identifier: identifier.value, phrase: phrase.value, count: 1 },
+      ];
+      identifier.value = "";
+      phrase.value = "";
+      listviewInstance.addItem(dataSource);
+    };
+    form.addEventListener("submit", onSubmit);
   }
 }
