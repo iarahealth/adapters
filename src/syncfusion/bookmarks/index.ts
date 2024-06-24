@@ -6,30 +6,19 @@ export class IaraSyncfusionBookmarkManager {
   private _bookmarks: { name: string; content: string; inferenceId: string }[] =
     [];
 
-  constructor(
-    private _documentEditor: DocumentEditor,
-    private _config: IaraSyncfusionConfig
-  ) {}
+  constructor(private _documentEditor: DocumentEditor) {}
 
   insertInferenceField(
     isFirstInference: boolean,
     isFinalInference: boolean
   ): void {
     if (isFirstInference) {
+      this._documentEditor.editor.insertText(" ");
       this._documentEditor.editor.insertBookmark(`inferenceId_${uuidv4()}`);
-      if (this._config.highlightInference) {
-        this._config.darkMode
-          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            (this._documentEditor.selection.characterFormat.highlightColor =
-              "#0e5836")
-          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            (this._documentEditor.selection.characterFormat.highlightColor =
-              "#ccffe5");
-      }
+      this._documentEditor.selection.movePreviousPosition();
     }
     if (isFinalInference) this.getBookmarks();
+    console.log(this._bookmarks, "BOOKS");
   }
 
   getBookmarks(): void {

@@ -96,8 +96,7 @@ export class IaraSyncfusionAdapter
     );
 
     this._bookmarkManager = new IaraSyncfusionBookmarkManager(
-      this._documentEditor,
-      this._config
+      this._documentEditor
     );
 
     if (this._config.replaceToolbar && this._editorContainer) {
@@ -269,9 +268,8 @@ export class IaraSyncfusionAdapter
     hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
   }
 
-  insertParagraph(setStyle = false): void {
+  insertParagraph(): void {
     this._documentEditor.editor.insertText("\n");
-    if (setStyle) this._inferencehighlightColor();
   }
 
   async insertTemplate(
@@ -305,11 +303,12 @@ export class IaraSyncfusionAdapter
     this._navigationFieldManager.nextField();
   }
 
-  insertText(text: string): void {
+  insertText(text: string, resetSytle = false): void {
+    if (resetSytle) this._selectionManager?.resetStyles();
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
-      this.insertParagraph(true);
+      this.insertParagraph();
       line = line.trimStart();
       if (line) this._documentEditor.editor.insertText(line);
     });
@@ -323,27 +322,11 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference();
     } else if (this._selectionManager) {
-      let initialStartOffset =
-        this._selectionManager.initialSelectionData.startOffset;
-
-      if (this._selectionManager.isAtStartOfLine) {
-        if (initialStartOffset.split(";")[2] === "0") {
-          initialStartOffset = `${initialStartOffset.split(";")[0]};${
-            initialStartOffset.split(";")[1]
-          };1`;
-        }
-      }
-
       this._documentEditor.selection.select(
-        initialStartOffset,
+        this._selectionManager.initialSelectionData.startOffset,
         this._inferenceEndOffset
       );
     }
-
-    this._bookmarkManager.insertInferenceField(
-      inference.isFirst,
-      inference.isFinal
-    );
 
     if (!this._selectionManager) return;
 
@@ -361,7 +344,12 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text);
+    this._bookmarkManager.insertInferenceField(
+      inference.isFirst,
+      inference.isFinal
+    );
+
+    if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
 
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
@@ -484,6 +472,7 @@ export class IaraSyncfusionAdapter
         if (event.button === 1) {
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
+            this._config,
             false
           );
         }
@@ -523,14 +512,16 @@ export class IaraSyncfusionAdapter
       this._documentEditor.editor.delete();
     }
     this._selectionManager = new IaraSyncfusionSelectionManager(
-      this._documentEditor
+      this._documentEditor,
+      this._config
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       this._documentEditor.selection.extendBackward();
       this._documentEditor.editor.delete();
       this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._documentEditor
+        this._documentEditor,
+        this._config
       );
     }
   }
@@ -572,19 +563,5 @@ export class IaraSyncfusionAdapter
     }
 
     return false;
-  }
-
-  private _inferencehighlightColor(): void {
-    if (this._config.highlightInference) {
-      this._config.darkMode
-        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          (this._documentEditor.selection.characterFormat.highlightColor =
-            "#0e5836")
-        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          (this._documentEditor.selection.characterFormat.highlightColor =
-            "#ccffe5");
-    }
   }
 }
