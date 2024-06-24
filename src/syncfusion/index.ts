@@ -97,8 +97,7 @@ export class IaraSyncfusionAdapter
     );
 
     this._bookmarkManager = new IaraSyncfusionBookmarkManager(
-      this._documentEditor,
-      this._config
+      this._documentEditor
     );
 
     if (this._config.replaceToolbar && this._editorContainer) {
@@ -305,7 +304,8 @@ export class IaraSyncfusionAdapter
     this._navigationFieldManager.nextField();
   }
 
-  insertText(text: string): void {
+  insertText(text: string, resetSytle = false): void {
+    if (resetSytle) this._selectionManager?.resetStyles();
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
@@ -323,22 +323,12 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference();
     } else if (this._selectionManager) {
-      let initialStartOffset =
-        this._selectionManager.initialSelectionData.startOffset;
-
-      if (this._selectionManager.isAtStartOfLine) {
-        if (initialStartOffset.split(";")[2] === "0") {
-          initialStartOffset = `${initialStartOffset.split(";")[0]};${
-            initialStartOffset.split(";")[1]
-          };1`;
-        }
-      }
-
       this._documentEditor.selection.select(
-        initialStartOffset,
+        this._selectionManager.initialSelectionData.startOffset,
         this._inferenceEndOffset
       );
     }
+
     if (!this._selectionManager) return;
 
     if (
@@ -360,7 +350,7 @@ export class IaraSyncfusionAdapter
       inference.isFinal
     );
 
-    if (text.length) this.insertText(text);
+    if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
 
     this._inferenceEndOffset = this._documentEditor.selection.endOffset;
@@ -483,6 +473,7 @@ export class IaraSyncfusionAdapter
         if (event.button === 1) {
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
+            this._config,
             false
           );
         }
@@ -498,19 +489,40 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  private _getCurrrentNavigateFieldSelected(field: string): void {
+    if (field.match(/\[(.*)\]/)) {
+      const { title, content } =
+        this._navigationFieldManager.getTitleAndContent(field);
+
+      let type: "Field" | "Mandatory" | "Optional" = "Field";
+      if (content.includes("*")) type = "Mandatory";
+      if (content.includes("?")) type = "Optional";
+
+      this.selectedField = {
+        content,
+        title,
+        type,
+      };
+    } else this.selectedField = { content: "", title: "", type: "Field" };
+  }
+
   private _handleFirstInference(): void {
+    this._getCurrrentNavigateFieldSelected(this._documentEditor.selection.text);
+
     if (this._documentEditor.selection.text.length) {
       this._documentEditor.editor.delete();
     }
     this._selectionManager = new IaraSyncfusionSelectionManager(
-      this._documentEditor
+      this._documentEditor,
+      this._config
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       this._documentEditor.selection.extendBackward();
       this._documentEditor.editor.delete();
       this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._documentEditor
+        this._documentEditor,
+        this._config
       );
     }
   }

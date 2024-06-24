@@ -23,7 +23,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     });
 
     // this.zoomInterval = setInterval(() => {
-    //   this.setZoomFactor(this._config.zoomFactor ?? "100%");
+    this.setZoomFactor(this._config.zoomFactor ?? "100%");
     // }, 100);
   }
 

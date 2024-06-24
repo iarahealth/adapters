@@ -23,6 +23,11 @@ export interface IaraEditorConfig {
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
   public iaraRecognizes = true;
+  public selectedField: {
+    content: string;
+    title: string;
+    type: "Field" | "Mandatory" | "Optional";
+  } = { content: "", title: "", type: "Field" };
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -107,25 +112,43 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager;
   }
 
+  private _getNavigationFieldDeleted(): void {
+    const { content, title, type } = this.selectedField;
+    if (this.selectedField.content)
+      this._navigationFieldManager.insertField(content, title, type);
+  }
+
   private _initCommands(): void {
-    this._recognition.commands.add("iara copiar laudo", async () => {
-      if (this.hasEmptyRequiredFields()) {
-        this.onIaraCommand?.("required fields to copy");
-        return;
+    this._recognition.commands.add(
+      "iara copiar laudo",
+      async (detail, command) => {
+        if (detail.transcript === command) {
+          this._getNavigationFieldDeleted();
+        }
+        if (this.hasEmptyRequiredFields()) {
+          this.onIaraCommand?.("required fields to copy");
+          return;
+        }
+        this._recognition.stop();
+        await this.copyReport();
+        this.onIaraCommand?.("iara copiar laudo");
       }
-      this._recognition.stop();
-      await this.copyReport();
-      this.onIaraCommand?.("iara copiar laudo");
-    });
-    this._recognition.commands.add("iara finalizar laudo", async () => {
-      if (this.hasEmptyRequiredFields()) {
-        this.onIaraCommand?.("required fields to finish");
-        return;
+    );
+    this._recognition.commands.add(
+      "iara finalizar laudo",
+      async (detail, command) => {
+        if (detail.transcript === command) {
+          this._getNavigationFieldDeleted();
+        }
+        if (this.hasEmptyRequiredFields()) {
+          this.onIaraCommand?.("required fields to finish");
+          return;
+        }
+        this._recognition.stop();
+        await this.finishReport();
+        this.onIaraCommand?.("iara finalizar laudo");
       }
-      this._recognition.stop();
-      await this.finishReport();
-      this.onIaraCommand?.("iara finalizar laudo");
-    });
+    );
     this._recognition.commands.add("iara negrito", () => {
       this._styleManager.toggleBold();
     });
@@ -141,18 +164,30 @@ export abstract class EditorAdapter {
     this._recognition.commands.add("iara imprimir", () => {
       this.print();
     });
-    this._recognition.commands.add("iara próximo campo", () => {
+    this._recognition.commands.add("iara próximo campo", (detail, command) => {
+      if (detail.transcript === command) {
+        this._getNavigationFieldDeleted();
+      }
       this._navigationFieldManager.nextField();
     });
-    this._recognition.commands.add("iara campo anterior", () => {
+    this._recognition.commands.add("iara campo anterior", (detail, command) => {
+      if (detail.transcript === command) {
+        this._getNavigationFieldDeleted();
+      }
       this._navigationFieldManager.previousField();
     });
-    this._recognition.commands.add("next", () => {
+    this._recognition.commands.add("next", (detail, command) => {
+      if (detail.transcript === command) {
+        this._getNavigationFieldDeleted();
+      }
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
       `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
+        if (detail.transcript === command) {
+          this._getNavigationFieldDeleted();
+        }
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
