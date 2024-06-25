@@ -1,11 +1,12 @@
+import { Button } from "@syncfusion/ej2-buttons";
+import { TextBox } from "@syncfusion/ej2-inputs";
 import { ListView } from "@syncfusion/ej2-lists";
 import { DialogUtility } from "@syncfusion/ej2-popups";
-import { TextBox } from "@syncfusion/ej2-inputs";
-import { Button } from "@syncfusion/ej2-buttons";
 import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionAdditiveFieldModal {
   constructor(private _languageManager: IaraSyncfusionLanguageManager) {
+    let countValue = 0;
     const okClick = () => {
       //funcao para gravar todos os dados
       console.log("Additive OK");
@@ -19,16 +20,16 @@ export class IaraSyncfusionAdditiveFieldModal {
     const inputContentText = `
       <div style="display: flex; align-items: center;">
         <div style="display: flex; flex-direction: column;">
-          <h5 style="text-transform: uppercase;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderIdentifier}:</h5>
+          <h5 style="text-transform: uppercase; margin: 4px;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderIdentifier}:</h5>
           <div style="display: flex;">
             <input style="width: stretch;" type="text" id="identifier" name="identifier" required="">
           </div>
         </div>
-        <div style="width: 80px; display: flex; align-items: center; justify-content: center; margin-top: 55px;" >
+        <div style="width: 80px; display: flex; align-items: center; justify-content: center; margin-top: 15px;" >
           <span class='e-icons e-arrow-right e-large'></span>
         </div>
         <div style="display: flex; flex-direction: column;">
-          <h5 style="text-transform: uppercase;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderPhrase}:</h5>
+          <h5 style="text-transform: uppercase; margin: 4px;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.additiveTextsHeaderPhrase}:</h5>
           <div style="display: flex;">
             <input style="width: stretch;" type="text" id="phrase" name="phrase" required="">
           </div>
@@ -39,7 +40,7 @@ export class IaraSyncfusionAdditiveFieldModal {
     const formContentText = `
       <form id="formContentId" onsubmit="return false">
         ${inputContentText}
-        <button id="addBtn" type='submit'>Adicionar Texto</button>
+        <button id="addBtn" type='submit' style="margin-top: 6px;">Adicionar Texto</button>
       </form>
       `;
 
@@ -104,15 +105,15 @@ export class IaraSyncfusionAdditiveFieldModal {
       width: "450px",
       showCloseIcon: true,
       closeOnEscape: true,
-      okButton: {
-        text: this._languageManager.languages.language.iaraTranslate
-          .additiveFieldModal.modalBtnOk,
-        click: okClick,
-      },
       cancelButton: {
         text: this._languageManager.languages.language.iaraTranslate
           .additiveFieldModal.modalBtnCancel,
         click: cancelClick,
+      },
+      okButton: {
+        text: this._languageManager.languages.language.iaraTranslate
+          .additiveFieldModal.modalBtnOk,
+        click: okClick,
       },
     });
 
@@ -127,28 +128,30 @@ export class IaraSyncfusionAdditiveFieldModal {
       phrase: string;
       count: number;
     }) => `<div style="overflow: auto;">
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; justify-content: center;">
           <div style="width: 30px; display: flex; align-items: center; justify-content: center;">
             ${data.count} <span class='e-icons e-drag-and-drop'></span>
           </div>
           <div>
-            <input value="${data.identifier}" style="width: 120px;" type="text" id="identifier" name="identifier" required="">
+            <input value="${data.identifier}" style="margin:0px;" class="e-listview e-input-group e-outline" type="text" id="identifiers" name="identifiers" required="">
           </div>
           <div style="width: 80px; display: flex; align-items: center; justify-content: center;" >
             <span class='e-icons e-arrow-right e-large'></span>
           </div>
-          <div >
-            <input value="${data.phrase}" style="width: 155px;" type="text" id="phrase" name="phrase" required="">
+          <div>
+            <input value="${data.phrase}" style="margin:0px;" class="e-listview e-input-group e-outline" type="text" id="phrases" name="phrases" required="">
           </div>
-          <div style="width: 30px; display: flex; align-items: center; justify-content: center;">
-            <span class='e-icons e-delete-4'></span>
+          <div style="width: 30px; display: flex; align-items: center; justify-content: center; margin:2px;">
+            <span class="e-icons e-delete-4 delete-icon"></span>
           </div>
         </div>
-    </div>`;
+      </div>`;
 
     const listviewInstance = new ListView({
       dataSource,
       template: listTemplate,
+      fields: { iconCss: "icon" },
+      actionComplete: onComplete,
     });
     listviewInstance.appendTo("#listview");
 
@@ -191,24 +194,40 @@ export class IaraSyncfusionAdditiveFieldModal {
     addBtn.appendTo("#addBtn");
 
     const form = document.getElementById("formContentId") as HTMLFormElement;
-    const deleteData = Array.from(
-      document.getElementsByClassName("e-delete-4") as HTMLCollectionOf<Element>
-    );
 
     const onSubmit = (event: Event) => {
       event.preventDefault();
+      countValue += 1;
       const identifier = document.getElementById(
         "identifier"
       ) as HTMLInputElement;
       const phrase = document.getElementById("phrase") as HTMLInputElement;
-
       dataSource = [
-        { identifier: identifier.value, phrase: phrase.value, count: 1 },
+        {
+          identifier: identifier.value,
+          phrase: phrase.value,
+          count: countValue,
+        },
       ];
       identifier.value = "";
       phrase.value = "";
       listviewInstance.addItem(dataSource);
+      onComplete();
     };
+
     form.addEventListener("submit", onSubmit);
+
+    function onComplete() {
+      const iconEle: HTMLCollection =
+        document.getElementsByClassName("delete-icon");
+
+      Array.prototype.forEach.call(iconEle, (element: HTMLElement) => {
+        element.addEventListener("click", () => {
+          countValue -= 1;
+          const li: HTMLElement = element.closest("li") as HTMLElement;
+          li.remove();
+        });
+      });
+    }
   }
 }
