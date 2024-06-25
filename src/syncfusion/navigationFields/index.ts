@@ -9,6 +9,8 @@ import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields"
 import { IaraSpeechRecognition } from "../../speech";
 import { v4 as uuidv4 } from "uuid";
 import { IaraBookmark } from "./bookmark";
+import { IaraSyncfusionLanguageManager } from "../language";
+import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -50,11 +52,11 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   bookmarks: IaraBookmark[] = [];
 
   private _previousBookmarksTitles: string[] = [];
-
   constructor(
     private _documentEditor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
-    _recognition: IaraSpeechRecognition
+    _recognition: IaraSpeechRecognition,
+    private _languageManager: IaraSyncfusionLanguageManager
   ) {
     super(_recognition);
   }
@@ -82,6 +84,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (type === "Optional") {
       if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
     }
+
     this.getBookmarks();
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;
@@ -574,5 +577,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.clearReportToCopyContent();
     }
     return this.requiredFields();
+  }
+
+  addAdditiveField() {
+    new IaraSyncfusionAdditiveFieldModal(this._languageManager);
   }
 }
