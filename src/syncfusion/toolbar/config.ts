@@ -267,7 +267,6 @@ const toolbarButtonClick = (
       navigationFields?.insertField(selectedText, undefined, "Optional");
       break;
     case "AddAdditiveField":
-      // navigationFields?.insertField(selectedText, undefined, "Additive");
       navigationFields?.addAdditiveField();
       break;
     case "NextField":
