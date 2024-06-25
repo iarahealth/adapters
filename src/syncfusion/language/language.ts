@@ -36,6 +36,7 @@ export interface IaraLanguages {
         additiveTextsTitle: string;
         additiveTextsHeaderIdentifier: string;
         additiveTextsHeaderPhrase: string;
+        addTextBtn: string;
         modalBtnOk: string;
         modalBtnCancel: string;
       };

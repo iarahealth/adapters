@@ -40,7 +40,7 @@ export class IaraSyncfusionAdditiveFieldModal {
     const formContentText = `
       <form id="formContentId" onsubmit="return false">
         ${inputContentText}
-        <button id="addBtn" type='submit' style="margin-top: 6px;">Adicionar Texto</button>
+        <button id="addBtn" type='submit' style="margin-top: 6px;">${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.addTextBtn}</button>
       </form>
       `;
 
