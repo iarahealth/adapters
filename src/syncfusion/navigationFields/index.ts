@@ -9,6 +9,8 @@ import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields"
 import { IaraSpeechRecognition } from "../../speech";
 import { v4 as uuidv4 } from "uuid";
 import { IaraBookmark } from "./bookmark";
+import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
+import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -54,9 +56,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   constructor(
     private _documentEditor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
-    _recognition: IaraSpeechRecognition
+    _recognition: IaraSpeechRecognition,
+    private _languageManager: IaraSyncfusionLanguageManager
   ) {
     super(_recognition);
+  }
+
+  addAdditiveField() {
+    new IaraSyncfusionAdditiveFieldModal(this._languageManager);
   }
 
   insertField(
