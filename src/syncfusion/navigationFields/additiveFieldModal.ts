@@ -1,29 +1,24 @@
 import { Button } from "@syncfusion/ej2-buttons";
+import * as Sortable from "sortablejs";
 import { TextBox } from "@syncfusion/ej2-inputs";
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 import { IaraSyncfusionLanguageManager } from "../language";
+import { SortableList } from "./bookmark";
 
 export class IaraSyncfusionAdditiveFieldModal {
   public inputContentText = "";
   public formContentText = "";
   public content = "";
-  public countValue = 0;
   public dataSource: {
-    count: number;
     identifier: string;
     phrase: string;
   }[] = [];
 
-  public listTemplate: (data: {
-    identifier: string;
-    phrase: string;
-    count: number;
-  }) => string;
+  public listTemplate: (data: { identifier: string; phrase: string }) => string;
 
   public listviewInstance: ListView;
   public dialogUtility: Dialog;
-  // private _languageManager: IaraSyncfusionLanguageManager;
 
   constructor(private _languageManager: IaraSyncfusionLanguageManager) {
     this.inputContentText = `
@@ -124,11 +119,10 @@ export class IaraSyncfusionAdditiveFieldModal {
     this.listTemplate = (data: {
       identifier: string;
       phrase: string;
-      count: number;
     }) => `<div style="overflow: auto;">
         <div style="display: flex; align-items: center; justify-content: center;">
           <div style="width: 30px; display: flex; align-items: center; justify-content: center;">
-            ${data.count} <span class='e-icons e-drag-and-drop'></span>
+            <span class="countValue"></span> <span class='e-icons e-drag-and-drop'></span>
           </div>
           <div>
             <input value="${data.identifier}" style="margin:0px;" class="e-listview e-input-group e-outline" type="text" id="identifiers" name="identifiers" required="">
@@ -158,50 +152,11 @@ export class IaraSyncfusionAdditiveFieldModal {
     const form = document.getElementById("formContentId") as HTMLFormElement;
 
     form.addEventListener("submit", this.onSubmit);
+
+    this.listviewInstance.element.ondrop = () => {
+      this.updateNumbersOfList();
+    };
   }
-
-  public onComplete(): void {
-    const iconEle: HTMLCollection =
-      document.getElementsByClassName("delete-icon");
-
-    Array.prototype.forEach.call(iconEle, (element: HTMLElement) => {
-      element.addEventListener("click", () => {
-        this.countValue -= 1;
-        const li: HTMLElement = element.closest("li") as HTMLElement;
-        li.remove();
-      });
-    });
-  }
-
-  public onSubmit = (event: Event) => {
-    event.preventDefault();
-    this.countValue += 1;
-    const identifier = document.getElementById(
-      "identifier"
-    ) as HTMLInputElement;
-    const phrase = document.getElementById("phrase") as HTMLInputElement;
-    this.dataSource = [
-      {
-        identifier: identifier.value,
-        phrase: phrase.value,
-        count: this.countValue,
-      },
-    ];
-    identifier.value = "";
-    phrase.value = "";
-    this.listviewInstance.addItem(this.dataSource);
-    this.onComplete();
-  };
-
-  public okClick = () => {
-    //funcao para gravar todos os dados
-    console.log("Additive OK");
-  };
-
-  public cancelClick = () => {
-    this.dialogUtility.hide();
-    console.log("Additive Cancel");
-  };
 
   private _addAllComponents = () => {
     const outlineTextBox: TextBox = new TextBox({
@@ -241,5 +196,63 @@ export class IaraSyncfusionAdditiveFieldModal {
       isPrimary: true,
     });
     addBtn.appendTo("#addBtn");
+  };
+
+  public cancelClick = () => {
+    this.dialogUtility.hide();
+    console.log("Additive Cancel");
+  };
+
+  public okClick = () => {
+    //funcao para gravar todos os dados
+    console.log("Additive OK");
+  };
+
+  public onComplete(): void {
+    const iconEle: HTMLCollection =
+      document.getElementsByClassName("delete-icon");
+
+    Array.prototype.forEach.call(iconEle, (element: HTMLElement) => {
+      element.addEventListener("click", () => {
+        const li: HTMLElement = element.closest("li") as HTMLElement;
+        li.remove();
+        this.updateNumbersOfList();
+      });
+    });
+  }
+
+  public onDragInDrop = () => {
+    const listView = document.getElementById("listview") as HTMLElement;
+    const ul = listView.firstElementChild?.firstElementChild as HTMLElement;
+    const sortable = Sortable as unknown as SortableList;
+    sortable.default.create(ul);
+  };
+
+  public onSubmit = (event: Event) => {
+    event.preventDefault();
+    const identifier = document.getElementById(
+      "identifier"
+    ) as HTMLInputElement;
+    const phrase = document.getElementById("phrase") as HTMLInputElement;
+
+    this.dataSource = [
+      {
+        identifier: identifier.value,
+        phrase: phrase.value,
+      },
+    ];
+    identifier.value = "";
+    phrase.value = "";
+    this.listviewInstance.addItem(this.dataSource);
+    this.onComplete();
+    this.onDragInDrop();
+    this.updateNumbersOfList();
+  };
+
+  public updateNumbersOfList = () => {
+    const countList = document.getElementsByClassName("countValue");
+    Array.prototype.map.call(countList, (count: HTMLElement, index) => {
+      count.textContent = `${index + 1}`;
+    });
   };
 }
