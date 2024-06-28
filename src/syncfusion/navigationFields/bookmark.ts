@@ -7,3 +7,9 @@ export interface IaraBookmark {
     end: string;
   };
 }
+
+export type SortableList = {
+  default: {
+    create: (arg0: HTMLElement) => void;
+  };
+};
