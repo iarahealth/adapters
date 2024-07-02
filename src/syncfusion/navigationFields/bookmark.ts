@@ -13,3 +13,13 @@ export type SortableList = {
     create: (arg0: HTMLElement) => void;
   };
 };
+
+export interface IaraAditiveBookmark {
+  title: string;
+  delimiterStart: string;
+  delimiterEnd: string;
+  aditiveTexts: {
+    identifier: string;
+    phrase: string;
+  }[];
+}

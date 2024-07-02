@@ -8,7 +8,7 @@ import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
 import { v4 as uuidv4 } from "uuid";
-import { IaraBookmark } from "./bookmark";
+import { IaraAditiveBookmark, IaraBookmark } from "./bookmark";
 import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
 
@@ -50,6 +50,17 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   isFirstNextNavigation = false;
   isFirstPreviousNavigation = false;
   bookmarks: IaraBookmark[] = [];
+  aditiveBookmark: IaraAditiveBookmark = {
+    title: "",
+    delimiterStart: "",
+    delimiterEnd: "",
+    aditiveTexts: [
+      {
+        identifier: "",
+        phrase: "",
+      },
+    ],
+  };
 
   private _previousBookmarksTitles: string[] = [];
 
@@ -63,7 +74,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   addAdditiveField() {
-    new IaraSyncfusionAdditiveFieldModal(this._languageManager);
+    new IaraSyncfusionAdditiveFieldModal(
+      this._languageManager,
+      this.aditiveBookmark
+    );
   }
 
   insertField(
