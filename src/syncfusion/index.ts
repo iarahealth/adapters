@@ -139,6 +139,12 @@ export class IaraSyncfusionAdapter
     });
 
     this._setScrollClickHandler();
+
+    console.log(this.documentEditor);
+    console.log(this.documentEditor.element);
+    this.documentEditor.element.addEventListener('resize', () => {
+      console.log('RESIZE');
+    });
   }
 
   blockEditorWhileSpeaking(status: boolean): void {

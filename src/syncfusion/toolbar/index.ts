@@ -104,7 +104,7 @@ export class IaraSyncfusionToolbarManager {
       this._editorContainer.resize();
     }
     if (layout === "Simplified") {
-      editorContainerViewer.style.height = "calc(100% - 82px)";
+      editorContainerViewer.style.height = "calc(100% - 22px)";
       ribbonGroupContent.forEach(ribbon => {
         const ribbons = ribbon as HTMLElement;
         ribbons.style.height = "auto";
