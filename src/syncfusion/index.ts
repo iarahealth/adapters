@@ -277,26 +277,20 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
-    console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
     else {
       this._documentEditor.editor.paste(sfdt.value);
       this._documentEditor.editor.onBackSpace();
     }
-    console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
 
-    console.log(
-      "insertTemplate2",
-      this._documentEditor.selection.characterFormat.fontFamily,
-      this._documentEditor.selection.characterFormat.fontSize
-    );
     // Set the default editor format after inserting the template
-    this._documentEditor?.setDefaultCharacterFormat({
+    this._styleManager.setEditorDefaultFont({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
+      fontColor: this._config.darkMode ? "#fff" : "#000",
     });
 
     this._navigationFieldManager.getBookmarks();
