@@ -513,7 +513,7 @@ export const tabsConfig = (
     },
     navigationField: {
       type: "DropDown",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : RibbonItemSize.Large,
       dropDownSettings: {
         iconCss: "e-icons e-bookmark",
         content:
