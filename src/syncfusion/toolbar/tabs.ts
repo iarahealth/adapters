@@ -136,7 +136,7 @@ export const tabsConfig = (
 
     paste: {
       type: "Button",
-allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paste",
         content:
@@ -157,7 +157,7 @@ allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small
 
     copy: {
       type: "Button",
-allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-copy",
         content:
@@ -178,7 +178,7 @@ allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small
 
     cut: {
       type: "Button",
-allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-cut",
         content:
@@ -563,7 +563,7 @@ allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small
 
     exportPdf: {
       type: "Button",
-allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
         content:
@@ -581,7 +581,7 @@ allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small
     trackchanges: {
       id: "trackChangesBtn",
       type: "Button",
-allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-changes-track",
         content:
