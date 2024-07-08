@@ -8,6 +8,7 @@ import type {
 import { IaraSyncfusionConfig } from ".";
 
 interface SelectionData {
+  bookmarkId?: string;
   characterFormat: SelectionCharacterFormatData;
   endOffset: string;
   startOffset: string;
@@ -35,11 +36,13 @@ export class IaraSyncfusionSelectionManager {
   constructor(
     private _editor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
+    bookmarkId?: string,
     getSurrondingWords = true
   ) {
     const characterFormat = this._editor.selection.characterFormat;
     this._inferencehighlightColor();
     this.initialSelectionData = {
+      bookmarkId: bookmarkId,
       characterFormat: {
         allCaps: characterFormat.allCaps,
         baselineAlignment: characterFormat.baselineAlignment,
