@@ -26,7 +26,8 @@ export class IaraSyncfusionInferenceBookmarkManager {
       const detail = event?.detail;
       if (!detail) return;
 
-      this._bookmarks[detail.inferenceId].recordingId = detail.recordingId;
+      this._bookmarks[`inferenceId_${detail.inferenceId}`].recordingId =
+        detail.recordingId;
     });
   }
 

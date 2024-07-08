@@ -214,10 +214,14 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
 
     Object.values(this._inferenceBookmarkManager.bookmarks).forEach(
       async (bookmark: IaraInferenceBookmark) => {
+        if (!bookmark.recordingId) return;
         await fetch(
           `${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`,
           {
-            headers: { ...this._recognition.internal.iaraAPIMandatoryHeaders, "Content-Type": "application/json" },
+            headers: {
+              ...this._recognition.internal.iaraAPIMandatoryHeaders,
+              "Content-Type": "application/json",
+            },
             method: "POST",
             body: JSON.stringify({
               evaluation: 5, // editor-made validation as documented
