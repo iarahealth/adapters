@@ -2,6 +2,12 @@ import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
+interface Font {
+  fontFamily?: string;
+  fontSize?: number;
+  fontColor: string;
+}
+
 export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   public zoomInterval: ReturnType<typeof setTimeout> | null = null;
 
@@ -13,18 +19,28 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
     this.setTheme(this._config.darkMode ? "dark" : "light");
     this.setEditorDefaultFont();
+    this.setZoomFactor(this._config.zoomFactor ?? "100%");
   }
 
-  setEditorDefaultFont(): void {
-    this._editor.setDefaultCharacterFormat({
-      fontFamily: this._config.font?.family,
-      fontSize: this._config.font?.size,
-      fontColor: this._config.darkMode ? "#fff" : "#000",
-    });
+  setEditorDefaultFont(font: Font = {
+    fontFamily: this._config.font?.family,
+    fontSize: this._config.font?.size,
+    fontColor: this._config.darkMode ? "#fff" : "#000",
+  }): void {
+    this._editor.setDefaultCharacterFormat(font);
 
-    // this.zoomInterval = setInterval(() => {
-    this.setZoomFactor(this._config.zoomFactor ?? "100%");
-    // }, 100);
+    // For each of the syncfusion pre-defined styles, set the font family and size
+    const styles = this._editor.documentHelper.preDefinedStyles.values.map(
+      style => {
+        return {
+          ...JSON.parse(style),
+          characterFormat: font,
+        };
+      }
+    );
+    styles.forEach(style => {
+      this._editor.editor.createStyle(JSON.stringify(style), true);
+    });
   }
 
   setEditorFontColor(color: string): void {

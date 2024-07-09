@@ -40,6 +40,7 @@ export const tabsConfig = (
   const allItems = {
     open: {
       type: "Button",
+      allowedSizes: RibbonItemSize.Small,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -57,6 +58,7 @@ export const tabsConfig = (
     },
     undo: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -75,6 +77,7 @@ export const tabsConfig = (
     },
     redo: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -93,6 +96,7 @@ export const tabsConfig = (
     },
     image: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -112,6 +116,7 @@ export const tabsConfig = (
 
     table: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate.richtexteditor[
@@ -131,6 +136,7 @@ export const tabsConfig = (
 
     paste: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paste",
         content:
@@ -151,6 +157,7 @@ export const tabsConfig = (
 
     copy: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-copy",
         content:
@@ -171,6 +178,7 @@ export const tabsConfig = (
 
     cut: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-cut",
         content:
@@ -191,6 +199,7 @@ export const tabsConfig = (
 
     fontFamily: {
       type: "ComboBox",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "fontFamilySelect",
       comboBoxSettings: {
         dataSource: config.font?.availableFamilies,
@@ -211,6 +220,7 @@ export const tabsConfig = (
 
     fontSize: {
       type: "ComboBox",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "fontSizeSelect",
       comboBoxSettings: {
         dataSource: config.font?.availableSizes.map(value => value.toString()),
@@ -231,6 +241,7 @@ export const tabsConfig = (
 
     fontColor: {
       type: "ColorPicker",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "fontColorSelect",
       displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
       colorPickerSettings: {
@@ -369,6 +380,7 @@ export const tabsConfig = (
 
     lineSpacing: {
       type: "ComboBox",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "lineSpacingSelect",
       comboBoxSettings: {
         dataSource: ["1", "1.15", "1.5", "2"],
@@ -501,7 +513,7 @@ export const tabsConfig = (
     },
     navigationField: {
       type: "DropDown",
-      allowedSizes: RibbonItemSize.Large,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : RibbonItemSize.Large,
       dropDownSettings: {
         iconCss: "e-icons e-bookmark",
         content:
@@ -551,6 +563,7 @@ export const tabsConfig = (
 
     exportPdf: {
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
         content:
@@ -568,6 +581,7 @@ export const tabsConfig = (
     trackchanges: {
       id: "trackChangesBtn",
       type: "Button",
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-changes-track",
         content:
@@ -708,7 +722,7 @@ export const tabsConfig = (
             ],
           groupIconCss: "e-icons e-bold",
           cssClass: "font-group",
-          overflowHeader: "More Font Options",
+          // overflowHeader: "More Font Options",
           id: "font",
           orientation: "Row",
           collections: collection(fontItems, "font"),
