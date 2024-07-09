@@ -13,24 +13,22 @@ import {
 } from "@syncfusion/ej2-popups";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
+import { IaraInferenceBookmark, IaraSyncfusionInferenceBookmarkManager } from "./inferenceBookmarks";
+import { IaraSyncfusionLanguageManager } from "./language";
 import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
-import { IaraSyncfusionLanguageManager } from "./language";
-import { IaraSyncfusionBookmarkManager } from "./bookmarks";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
 }
 
-export class IaraSyncfusionAdapter
-  extends EditorAdapter
-  implements EditorAdapter
-{
+export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
+  public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
   private _cursorSelection?: IaraSyncfusionSelectionManager;
@@ -38,18 +36,18 @@ export class IaraSyncfusionAdapter
   private _documentEditor: DocumentEditor;
   private _editorContainer?: DocumentEditorContainer;
   private _selectionManager?: IaraSyncfusionSelectionManager;
-  private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   private _languageManager: IaraSyncfusionLanguageManager;
-  private _bookmarkManager: IaraSyncfusionBookmarkManager;
-  protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
+  private _inferenceBookmarkManager: IaraSyncfusionInferenceBookmarkManager;
 
+  protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
+  public defaultFormat: CharacterFormatProperties = {};
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
@@ -60,14 +58,18 @@ export class IaraSyncfusionAdapter
     return this._documentEditor;
   }
 
-  public defaultFormat: CharacterFormatProperties = {};
-
   constructor(
     _editorInstance: DocumentEditorContainer | DocumentEditor,
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraSyncfusionConfig = IaraSyncfusionAdapter.DefaultConfig
   ) {
     super(_recognition, _config);
+
+    IaraSyncfusionAdapter.IARA_API_URL =
+      this._recognition.internal.initParams.region === "europe"
+        ? "https://api.iarahealth.eu/"
+        : "https://api.iarahealth.com/";
+    IaraSFDT.IARA_API_URL = IaraSyncfusionAdapter.IARA_API_URL;
 
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
@@ -80,7 +82,6 @@ export class IaraSyncfusionAdapter
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
-      this._recognition,
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
@@ -92,12 +93,13 @@ export class IaraSyncfusionAdapter
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
       this._documentEditor,
       this._config,
-      _recognition,
+      this._recognition,
       this._languageManager
     );
 
-    this._bookmarkManager = new IaraSyncfusionBookmarkManager(
-      this._documentEditor
+    this._inferenceBookmarkManager = new IaraSyncfusionInferenceBookmarkManager(
+      this._documentEditor,
+      this._recognition
     );
 
     if (this._config.replaceToolbar && this._editorContainer) {
@@ -164,7 +166,6 @@ export class IaraSyncfusionAdapter
         '<div class="Section0">',
         '<div class="Section0" id="docs-internal-guid-iara">'
       );
-      console.log("copyReport", content[0], htmlContent, content[2]);
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
@@ -206,6 +207,34 @@ export class IaraSyncfusionAdapter
     }
 
     this._documentEditor.search.searchResults.clear();
+  }
+
+  async finishReport(): Promise<void> {
+    this._inferenceBookmarkManager.refreshBookmarks();
+
+    Object.values(this._inferenceBookmarkManager.bookmarks).forEach(
+      async (bookmark: IaraInferenceBookmark) => {
+        if (!bookmark.recordingId) return;
+        await fetch(
+          `${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`,
+          {
+            headers: {
+              ...this._recognition.internal.iaraAPIMandatoryHeaders,
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+              evaluation: 5, // editor-made validation as documented
+              recording_id: bookmark.recordingId,
+              corrected_text: bookmark.content,
+            }),
+          }
+        );
+      }
+    );
+
+    await super.finishReport();
+    this._inferenceBookmarkManager.clearBookmarks();
   }
 
   formatSectionTitles(): void {
@@ -315,11 +344,11 @@ export class IaraSyncfusionAdapter
     if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
 
     if (inference.isFirst) {
-      this._handleFirstInference();
-    } else if (this._selectionManager) {
-      this._documentEditor.selection.select(
-        this._selectionManager.initialSelectionData.startOffset,
-        this._inferenceEndOffset
+      this._handleFirstInference(inference);
+    } else if (this._selectionManager?.initialSelectionData.bookmarkId) {
+      this._documentEditor.selection.selectBookmark(
+        this._selectionManager.initialSelectionData.bookmarkId,
+        true
       );
     }
 
@@ -339,15 +368,8 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    this._bookmarkManager.insertInferenceField(
-      inference.isFirst,
-      inference.isFinal
-    );
-
     if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
-
-    this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
   }
@@ -468,6 +490,7 @@ export class IaraSyncfusionAdapter
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
             this._config,
+            "",
             false
           );
         }
@@ -500,15 +523,20 @@ export class IaraSyncfusionAdapter
     } else this.selectedField = { content: "", title: "", type: "Field" };
   }
 
-  private _handleFirstInference(): void {
+  private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._getCurrrentNavigateFieldSelected(this._documentEditor.selection.text);
 
     if (this._documentEditor.selection.text.length) {
       this._documentEditor.editor.delete();
     }
+
+    const bookmarkId =
+      this._inferenceBookmarkManager.insertInferenceField(inference);
+
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
-      this._config
+      this._config,
+      bookmarkId
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
@@ -516,9 +544,12 @@ export class IaraSyncfusionAdapter
       this._documentEditor.editor.delete();
       this._selectionManager = new IaraSyncfusionSelectionManager(
         this._documentEditor,
-        this._config
+        this._config,
+        bookmarkId
       );
     }
+
+    this._documentEditor.selection.selectBookmark(bookmarkId, true);
   }
 
   private _handleTemplateInference(

@@ -4,7 +4,7 @@ import { TextBox } from "@syncfusion/ej2-inputs";
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 import { IaraSyncfusionLanguageManager } from "../language";
-import { SortableList } from "./bookmark";
+import { SortableList } from "./navigationBookmark";
 
 export class IaraSyncfusionAdditiveFieldModal {
   public inputContentText = "";

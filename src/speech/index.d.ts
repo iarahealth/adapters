@@ -644,6 +644,13 @@ export declare enum IaraEvent {
    * @alias IaraEvent.OGG_FILE_EXPORTED
    */
   OGG_FILE_EXPORTED = "iaraOggFileExported",
+
+  /**
+   * Info
+   *
+   * @alias IaraEvent.OGG_FILE_UPLOADED
+   */
+  OGG_FILE_UPLOADED = "iaraOggFileUploaded",
 }
 declare class IaraEventDetail {
   /**
@@ -962,6 +969,7 @@ export declare class IaraSpeechRecognitionDetail extends IaraEventDetail {
   richTranscriptModifiers?: string[];
   richTranscriptWithoutModifiers?: string;
   rid?: string;
+  inferenceId?: string;
   isFinal: boolean;
   isFirst: boolean;
   constructor(type: IaraEvent);

@@ -8,12 +8,12 @@ import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
 import { v4 as uuidv4 } from "uuid";
-import { IaraBookmark } from "./bookmark";
+import { IaraNavigationBookmark } from "./navigationBookmark";
 import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
-  previousBookmark: IaraBookmark = {
+  previousBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -22,7 +22,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       end: "",
     },
   };
-  nextBookmark: IaraBookmark = {
+  nextBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -38,7 +38,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     start: "",
     end: "",
   };
-  insertedBookmark: IaraBookmark = {
+  insertedBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -49,7 +49,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
   isFirstNextNavigation = false;
   isFirstPreviousNavigation = false;
-  bookmarks: IaraBookmark[] = [];
+  bookmarks: IaraNavigationBookmark[] = [];
 
   private _previousBookmarksTitles: string[] = [];
 
@@ -466,7 +466,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return 0;
   }
 
-  checkIsSelectedAndUpdatePrevious(previousIndex: number): IaraBookmark {
+  checkIsSelectedAndUpdatePrevious(
+    previousIndex: number
+  ): IaraNavigationBookmark {
     let selected = this.bookmarks[previousIndex];
 
     const compareCurrentOffsetWithPreviousOffset =
