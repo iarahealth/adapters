@@ -543,7 +543,9 @@ export class IaraSyncfusionAdapter
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
-      this._documentEditor.selection.extendBackward();
+      // Removes trailing space so that the formatter can determine whether the space is required or not. I.e. if the inference starts with a punctuation, there would be an extra space.
+      this._documentEditor.selection.movePreviousPosition();
+      this._documentEditor.selection.extendForward();
       this._documentEditor.editor.delete();
       this._selectionManager = new IaraSyncfusionSelectionManager(
         this._documentEditor,

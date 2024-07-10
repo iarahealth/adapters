@@ -40,7 +40,7 @@ export class IaraSyncfusionSelectionManager {
     getSurrondingWords = true
   ) {
     const characterFormat = this._editor.selection.characterFormat;
-    this._inferencehighlightColor();
+    this._inferencehighlightColor(bookmarkId ? true : false);
     this.initialSelectionData = {
       bookmarkId: bookmarkId,
       characterFormat: {
@@ -104,8 +104,8 @@ export class IaraSyncfusionSelectionManager {
     return wordBefore;
   }
 
-  private _inferencehighlightColor(): void {
-    if (this._config.highlightInference) {
+  private _inferencehighlightColor(hasBookmarkId = true): void {
+    if (this._config.highlightInference && hasBookmarkId) {
       this._config.darkMode
         ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore

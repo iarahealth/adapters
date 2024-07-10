@@ -37,16 +37,13 @@ export class IaraSyncfusionInferenceBookmarkManager {
 
   insertInferenceField(inference: IaraSpeechRecognitionDetail): string {
     const bookmarkId = `inferenceId_${inference.inferenceId || uuidv4()}`;
-    this._documentEditor.editor.insertText(" ");
     this._documentEditor.editor.insertBookmark(bookmarkId);
-    this._documentEditor.selection.movePreviousPosition();
 
     this._bookmarks[bookmarkId] = {
       content: "",
       name: bookmarkId,
       inferenceId: inference.inferenceId,
     };
-
     return bookmarkId;
   }
 
