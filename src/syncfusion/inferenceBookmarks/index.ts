@@ -12,7 +12,7 @@ export interface IaraInferenceBookmark {
   recordingId?: string;
 }
 
-export class IaraSyncfusionInferenceBookmarkManager {
+export class IaraSyncfusionInferenceBookmarksManager {
   private _bookmarks: Record<string, IaraInferenceBookmark> = {};
   public get bookmarks(): Record<string, IaraInferenceBookmark> {
     return this._bookmarks;
@@ -31,13 +31,22 @@ export class IaraSyncfusionInferenceBookmarkManager {
     });
   }
 
+  private _updateBookmark(bookmarkName: string): void {
+    if (!(bookmarkName in this._bookmarks)) return;
+    this._documentEditor.selection.selectBookmark(bookmarkName, true);
+    this._bookmarks[bookmarkName]["content"] =
+      this._documentEditor.selection.text;
+  }
+
   clearBookmarks(): void {
     this._bookmarks = {};
   }
 
-  insertInferenceField(inference: IaraSpeechRecognitionDetail): string {
-    const bookmarkId = `inferenceId_${inference.inferenceId || uuidv4()}`;
-    this._documentEditor.editor.insertBookmark(bookmarkId);
+  addBookmark(inference: IaraSpeechRecognitionDetail, bookmarkId?: string): string {
+    if (!bookmarkId) {
+      bookmarkId = `inferenceId_${inference.inferenceId || uuidv4()}`;
+      this._documentEditor.editor.insertBookmark(bookmarkId);
+    }
 
     this._bookmarks[bookmarkId] = {
       content: "",
@@ -47,17 +56,10 @@ export class IaraSyncfusionInferenceBookmarkManager {
     return bookmarkId;
   }
 
-  refreshBookmark(bookmarkName: string): void {
-    if (!(bookmarkName in this._bookmarks)) return;
-    this._documentEditor.selection.selectBookmark(bookmarkName);
-    this._bookmarks[bookmarkName]["content"] =
-      this._documentEditor.selection.text;
-  }
-
-  refreshBookmarks(): void {
+  updateBookmarks(): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
     editorBookmarks.forEach(bookmarkName => {
-      this.refreshBookmark(bookmarkName);
+      this._updateBookmark(bookmarkName);
     });
   }
 }
