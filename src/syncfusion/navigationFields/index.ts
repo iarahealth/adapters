@@ -2,15 +2,23 @@ import {
   BookmarkElementBox,
   Dictionary,
   DocumentEditor,
+  Point,
   TextPosition,
 } from "@syncfusion/ej2-documenteditor";
+import {
+  ContextMenu,
+  MenuItemModel,
+  ContextMenuModel,
+} from "@syncfusion/ej2-navigations";
+import { ListView } from "@syncfusion/ej2-lists";
+import { Dialog } from "@syncfusion/ej2-popups";
+import { v4 as uuidv4 } from "uuid";
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
-import { v4 as uuidv4 } from "uuid";
-import { IaraAditiveBookmark, IaraBookmark } from "./bookmark";
-import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
+import { IaraSyncfusionAditiveFieldModal } from "./aditiveFieldModal";
+import { IaraAditiveBookmark, IaraBookmark } from "./bookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraBookmark = {
@@ -73,11 +81,55 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     super(_recognition);
   }
 
-  addAdditiveField() {
-    new IaraSyncfusionAdditiveFieldModal(
-      this._languageManager,
-      this.aditiveBookmark
+  addAditiveField() {
+    new IaraSyncfusionAditiveFieldModal(this._languageManager, this.onSubmit);
+  }
+
+  insertAditiveField(aditive: IaraAditiveBookmark) {
+    const bookmarksCount = uuidv4();
+    this._documentEditor.editor.insertText(" ");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertBookmark(`Aditive-${bookmarksCount}`);
+    this._documentEditor.editor.insertText("[]");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText("<>");
+    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText(aditive.title);
+    this._documentEditor.selection.clear();
+    this._documentEditor.selection.moveNextPosition();
+    this.getBookmarks();
+    this.showContextMenuOnSel();
+    const bookmarkElement = this._documentEditor.editor.createBookmarkElements(
+      `Aditive-${bookmarksCount}`
     );
+    console.log(bookmarkElement, "bookmarkElement");
+    // this.getOffsetsAndSelect(`Aditive-${bookmarksCount}`, true);
+    const ulElement = document.createElement("ul");
+    // aditive.aditiveTexts.map((ad, index) => {
+    //   const liElement = document.createElement("li");
+    //   liElement.innerHTML = `${index} [] ${ad.identifier}`;
+    //   ulElement.appendChild(liElement);
+    // });
+    const menuItems: MenuItemModel[] = [
+      {
+        text: "Cut",
+      },
+      {
+        text: "Copy",
+      },
+      {
+        text: "Paste",
+      },
+    ];
+
+    // this._documentEditor.contextMenu.addCustomMenu(menuItems, false)
+
+    // const menuOptions: ContextMenuModel = {
+    //   items: menuItems,
+    // };
+    // const menuObj: ContextMenu = new ContextMenu(menuOptions);
+
+    // console.log(menuObj, "menuObj");
   }
 
   insertField(
@@ -287,7 +339,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (
       bookmarkName.includes("Field") ||
       bookmarkName.includes("Mandatory") ||
-      bookmarkName.includes("Optional")
+      bookmarkName.includes("Optional") ||
+      bookmarkName.includes("Aditive")
     ) {
       if (index !== -1) {
         this.bookmarks = this.bookmarks.map(item => {
@@ -419,6 +472,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
               "#CEEFFE");
+      }
+      if (bookmark.name.includes("Aditive")) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        this._documentEditor.selection.characterFormat.highlightColor =
+          "#403294";
+        this.selectTitle(bookmark.title, bookmark.name, true);
       }
     });
   }
@@ -595,5 +655,57 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.clearReportToCopyContent();
     }
     return this.requiredFields();
+  }
+
+  public onSubmit = (event: Event, listView: ListView, dialogObj: Dialog) => {
+    event.preventDefault();
+    const title = document.getElementById("outlined") as HTMLInputElement;
+    const identifierElement = document.getElementById(
+      "identifier"
+    ) as HTMLInputElement;
+    const phraseElement = document.getElementById("phrase") as HTMLInputElement;
+    const delimiterStart = document.getElementById(
+      "delimiter-start"
+    ) as HTMLInputElement;
+    const delimiterEnd = document.getElementById(
+      "delimiter-end"
+    ) as HTMLInputElement;
+
+    identifierElement.required = false;
+    phraseElement.required = false;
+
+    const additiveText = listView.localData as unknown as {
+      identifier: string;
+      phrase: string;
+    }[];
+
+    this.insertAditiveField({
+      title: title.value,
+      delimiterStart: delimiterStart.value,
+      delimiterEnd: delimiterEnd.value,
+      aditiveTexts: additiveText,
+    });
+
+    dialogObj.hide();
+  };
+
+  private showContextMenuOnSel(): void {
+    const xPos = 0;
+    const yPos = 0;
+
+    const menuItems: MenuItemModel[] = [
+      {
+        text: "Cut",
+      },
+      {
+        text: "Copy",
+      },
+      {
+        text: "Paste",
+      },
+    ];
+
+    this._documentEditor.contextMenu.contextMenuInstance.items = menuItems;
+    this._documentEditor.contextMenu.contextMenuInstance.open(yPos, xPos);
   }
 }

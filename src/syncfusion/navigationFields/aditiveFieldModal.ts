@@ -4,9 +4,9 @@ import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 import * as Sortable from "sortablejs";
 import { IaraSyncfusionLanguageManager } from "../language";
-import { IaraAditiveBookmark, SortableList } from "./bookmark";
+import { SortableList } from "./bookmark";
 
-export class IaraSyncfusionAdditiveFieldModal {
+export class IaraSyncfusionAditiveFieldModal {
   public content = "";
   public dataSource: {
     identifier: string;
@@ -21,7 +21,11 @@ export class IaraSyncfusionAdditiveFieldModal {
 
   constructor(
     private _languageManager: IaraSyncfusionLanguageManager,
-    public aditiveBookmark: IaraAditiveBookmark
+    public onSubmit: (
+      event: Event,
+      listView: ListView,
+      dialogObj: Dialog
+    ) => void
   ) {
     this.inputContentText = `
       <div style="display: flex; align-items: center;">
@@ -102,6 +106,7 @@ export class IaraSyncfusionAdditiveFieldModal {
       title: `<div class='dlg-template'>${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.modalTitle}</div>`,
       content: this.content,
       width: "450px",
+      isModal: false,
       showCloseIcon: true,
       closeOnEscape: true,
       cancelButton: {
@@ -154,7 +159,9 @@ export class IaraSyncfusionAdditiveFieldModal {
     closeModal.click = () => this.dialogUtility.hide();
 
     const form = document.getElementById("formContentId") as HTMLFormElement;
-    form.addEventListener("submit", this.onSubmit);
+    form.addEventListener("submit", event =>
+      this.onSubmit(event, this.listviewInstance, this.dialogUtility)
+    );
 
     this.listviewInstance.element.ondrop = () => {
       this.updateNumbersOfList();
@@ -242,37 +249,6 @@ export class IaraSyncfusionAdditiveFieldModal {
     const ul = listView.firstElementChild?.firstElementChild as HTMLElement;
     const sortable = Sortable as unknown as SortableList;
     sortable.default.create(ul);
-  };
-
-  public onSubmit = (event: Event) => {
-    event.preventDefault();
-    const title = document.getElementById("outlined") as HTMLInputElement;
-    const identifierElement = document.getElementById(
-      "identifier"
-    ) as HTMLInputElement;
-    const phraseElement = document.getElementById("phrase") as HTMLInputElement;
-    const delimiterStart = document.getElementById(
-      "delimiter-start"
-    ) as HTMLInputElement;
-    const delimiterEnd = document.getElementById(
-      "delimiter-end"
-    ) as HTMLInputElement;
-
-    identifierElement.required = false;
-    phraseElement.required = false;
-
-    const additiveText = this.listviewInstance.localData as unknown as {
-      identifier: string;
-      phrase: string;
-    }[];
-
-    this.aditiveBookmark = {
-      title: title.value,
-      delimiterStart: delimiterStart.value,
-      delimiterEnd: delimiterEnd.value,
-      aditiveTexts: additiveText,
-    };
-    this.dialogUtility.hide();
   };
 
   public updateNumbersOfList = () => {
