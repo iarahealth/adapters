@@ -2,7 +2,7 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
+
 import {
   Ribbon,
   RibbonColorPicker,
@@ -10,8 +10,9 @@ import {
 } from "@syncfusion/ej2-ribbon";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
-import { tabsConfig } from "./ribbonTabs";
+import { IaraLanguages } from "../language/language";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { tabsConfig } from "./tabs";
 
 export interface RibbonFontMethods {
   changeFontFamily: (
@@ -257,13 +258,16 @@ const toolbarButtonClick = (
       );
       break;
     case "AddField":
-      navigationFields?.insertField(selectedText);
+      navigationFields?.insertField(selectedText, undefined);
       break;
     case "AddMandatoryField":
-      navigationFields?.insertMandatoryField(selectedText);
+      navigationFields?.insertField(selectedText, undefined, "Mandatory");
       break;
     case "AddOptionalField":
-      navigationFields?.insertOptionalField(selectedText);
+      navigationFields?.insertField(selectedText, undefined, "Optional");
+      break;
+    case "AddAdditiveField":
+      navigationFields?.addAdditiveField();
       break;
     case "NextField":
       navigationFields?.nextField();
@@ -278,9 +282,9 @@ const toolbarButtonClick = (
 
 export const toolBarSettings = (
   editor: DocumentEditorContainer,
-  editorContainerLocale: (typeof EJ2_LOCALE)["pt-BR"],
-  config: IaraSyncfusionConfig,
-  navigationFields?: IaraSyncfusionNavigationFieldManager
+  navigationFields: IaraSyncfusionNavigationFieldManager,
+  editorContainerLocale: IaraLanguages,
+  config: IaraSyncfusionConfig
 ): Ribbon => {
   editor.selectionChange = () => {
     setTimeout(() => {
@@ -313,6 +317,14 @@ export const toolBarSettings = (
         navigationFields
       );
     }
+    if (funcId === "add_additive_field") {
+      toolbarButtonClick(
+        "AddAdditiveField",
+        editor,
+        undefined,
+        navigationFields
+      );
+    }
     if (funcId === "next_field") {
       toolbarButtonClick("NextField", editor, undefined, navigationFields);
     }
@@ -331,6 +343,7 @@ export const toolBarSettings = (
       ribbonMethods,
       navigationFunc
     ),
+    activeLayout: config.ribbon?.displayMode,
   });
 
   const onSelectionChange = () => {

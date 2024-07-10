@@ -16,6 +16,7 @@ export enum IaraSyncfusionContentTypes {
 }
 
 export class IaraSFDT {
+  public static IARA_API_URL = "https://api.iarahealth.com"; 
   public html: string | undefined;
   public plainText: string | undefined;
   public rtf: string | undefined;
@@ -64,7 +65,7 @@ export class IaraSFDT {
     );
 
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/Import",
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/Import`,
       {
         method: "POST",
         body: formData,
@@ -80,7 +81,7 @@ export class IaraSFDT {
 
   static async toHtml(content: string): Promise<string> {
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
       {
         method: "POST",
         headers: {
@@ -107,7 +108,7 @@ export class IaraSFDT {
 
   static async toRtf(content: string): Promise<string> {
     const response = await fetch(
-      "https://api.iarahealth.com/speech/syncfusion/api/documenteditor/ExportSFDT/",
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
       {
         method: "POST",
         headers: {

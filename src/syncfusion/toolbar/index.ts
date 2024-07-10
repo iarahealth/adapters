@@ -1,16 +1,17 @@
-import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
-import * as EJ2_LOCALE from "@syncfusion/ej2-locale/src/pt-BR.json";
-import { toolBarSettings } from "./config";
-import { IaraSyncfusionConfig } from "..";
 import { createElement } from "@syncfusion/ej2-base";
-import { TabItemModel, SelectingEventArgs } from "@syncfusion/ej2-navigations";
+import type { DocumentEditorContainer } from "@syncfusion/ej2-documenteditor";
+import { SelectingEventArgs, TabItemModel } from "@syncfusion/ej2-navigations";
+import { IaraSyncfusionConfig } from "..";
+import { IaraSyncfusionLanguageManager } from "../language";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { toolBarSettings } from "./config";
 
 export class IaraSyncfusionToolbarManager {
   constructor(
     private _editorContainer: DocumentEditorContainer,
     private _config: IaraSyncfusionConfig,
-    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
+    private _languageManager: IaraSyncfusionLanguageManager
   ) {}
 
   public init(): void {
@@ -32,13 +33,11 @@ export class IaraSyncfusionToolbarManager {
   }
 
   private _addRibbonToolbar(): void {
-    const editorContainerLocale = EJ2_LOCALE["pt-BR"];
-
     const toolbarRibbonItems = toolBarSettings(
       this._editorContainer,
-      editorContainerLocale,
-      this._config,
-      this._navigationFieldManager
+      this._navigationFieldManager,
+      this._languageManager.languages,
+      this._config
     );
     const editorToolbarContainer = <HTMLElement>(
       document.querySelector(".e-de-ctnr-toolbar")
@@ -66,6 +65,13 @@ export class IaraSyncfusionToolbarManager {
     );
 
     this.ribbonItensLayout("Classic");
+
+    if (
+      this._config.ribbon?.displayMode &&
+      this._config.ribbon?.displayMode === "Simplified"
+    ) {
+      this.ribbonItensLayout("Simplified");
+    }
 
     ribbonCollapseBtn.addEventListener("click", () => {
       this.ribbonItensLayout(toolbarRibbonItems.activeLayout);
@@ -98,7 +104,7 @@ export class IaraSyncfusionToolbarManager {
       this._editorContainer.resize();
     }
     if (layout === "Simplified") {
-      editorContainerViewer.style.height = "calc(100% - 82px)";
+      editorContainerViewer.style.height = "calc(100% - 22px)";
       ribbonGroupContent.forEach(ribbon => {
         const ribbons = ribbon as HTMLElement;
         ribbons.style.height = "auto";

@@ -5,8 +5,10 @@ import type {
   Strikethrough,
   Underline,
 } from "@syncfusion/ej2-documenteditor";
+import { IaraSyncfusionConfig } from ".";
 
 interface SelectionData {
+  bookmarkId?: string;
   characterFormat: SelectionCharacterFormatData;
   endOffset: string;
   startOffset: string;
@@ -31,9 +33,16 @@ export class IaraSyncfusionSelectionManager {
   public wordBeforeSelection = "";
   public isAtStartOfLine = false;
 
-  constructor(private _editor: DocumentEditor, getSurrondingWords = true) {
+  constructor(
+    private _editor: DocumentEditor,
+    private _config: IaraSyncfusionConfig,
+    bookmarkId?: string,
+    getSurrondingWords = true
+  ) {
     const characterFormat = this._editor.selection.characterFormat;
+    this._inferencehighlightColor();
     this.initialSelectionData = {
+      bookmarkId: bookmarkId,
       characterFormat: {
         allCaps: characterFormat.allCaps,
         baselineAlignment: characterFormat.baselineAlignment,
@@ -95,29 +104,45 @@ export class IaraSyncfusionSelectionManager {
     return wordBefore;
   }
 
+  private _inferencehighlightColor(): void {
+    if (this._config.highlightInference) {
+      this._config.darkMode
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          (this._editor.selection.characterFormat.highlightColor = "#0e5836")
+        : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
+    }
+  }
+
   public resetSelection(resetStyles = true): void {
     this._editor.selection.select(
       this.initialSelectionData.startOffset,
       this.initialSelectionData.endOffset
     );
     if (resetStyles) {
-      const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
-        "allCaps",
-        "baselineAlignment",
-        "bold",
-        "fontColor",
-        "fontFamily",
-        "fontSize",
-        "highlightColor",
-        "italic",
-        "strikethrough",
-        "underline",
-      ];
-
-      charFormatProps.forEach(prop => {
-        (this._editor.selection.characterFormat as any)[prop] =
-          this.initialSelectionData.characterFormat[prop];
-      });
+      this.resetStyles();
     }
+  }
+
+  public resetStyles(): void {
+    const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
+      "allCaps",
+      "baselineAlignment",
+      "bold",
+      "fontColor",
+      "fontFamily",
+      "fontSize",
+      "highlightColor",
+      "italic",
+      "strikethrough",
+      "underline",
+    ];
+
+    charFormatProps.forEach(prop => {
+      (this._editor.selection.characterFormat as any)[prop] =
+        this.initialSelectionData.characterFormat[prop];
+    });
   }
 }
