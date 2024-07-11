@@ -30,7 +30,10 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
 }
 
-export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
+export class IaraSyncfusionAdapter
+  extends EditorAdapter
+  implements EditorAdapter
+{
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
@@ -101,10 +104,11 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
       this._languageManager
     );
 
-    this._inferenceBookmarksManager = new IaraSyncfusionInferenceBookmarksManager(
-      this._documentEditor,
-      this._recognition
-    );
+    this._inferenceBookmarksManager =
+      new IaraSyncfusionInferenceBookmarksManager(
+        this._documentEditor,
+        this._recognition
+      );
 
     if (this._config.replaceToolbar && this._editorContainer) {
       this._toolbarManager = new IaraSyncfusionToolbarManager(
@@ -340,7 +344,11 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.transcript == "" || (inference.richTranscriptModifiers?.length && !inference.isFinal)) return;
+    if (
+      inference.transcript == "" ||
+      (inference.richTranscriptModifiers?.length && !inference.isFinal)
+    )
+      return;
 
     if (inference.isFirst) {
       this._handleFirstInference(inference);
@@ -349,7 +357,6 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     }
 
     if (!this._selectionManager) return;
-
     if (
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
@@ -485,7 +492,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
         if (event.button === 1) {
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
-            this._config,
+            this._config
           );
         }
       });
@@ -528,8 +535,8 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
       this._config,
-      inference.inferenceId ?? `inferenceId_${inference.inferenceId}`, 
-      true, 
+      inference.inferenceId ?? `inferenceId_${inference.inferenceId}`,
+      true,
       true
     );
 
@@ -541,7 +548,9 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       // Removes trailing space so that the formatter can determine whether the space is required or not.
       // I.e. if the inference starts with a punctuation, there would be an extra space.
-      this._selectionManager.moveSelectionToBeforeBookmarkEdge(this._selectionManager.initialSelectionData.bookmarkId);
+      this._selectionManager.moveSelectionToBeforeBookmarkEdge(
+        this._selectionManager.initialSelectionData.bookmarkId
+      );
       this._documentEditor.selection.extendBackward();
       this._documentEditor.editor.delete();
       this._selectionManager.resetSelection();
@@ -562,7 +571,14 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
         inference.richTranscriptModifiers[0]
       ];
     const metadata = phraseOrTemplate.metadata as { category?: string };
-    if (metadata.category === "Template" || !metadata.category) {
+    let contentType = "";
+    try {
+      contentType = IaraSFDT.detectContentType(phraseOrTemplate.replaceText);
+    } catch (error) {
+      contentType;
+    }
+
+    if (metadata.category === "Template" || contentType) {
       const index: number | undefined =
         inference.richTranscriptWithoutModifiers.match(
           new RegExp(`iara texto ${inference.richTranscriptModifiers[0]}`, "ui")
