@@ -38,7 +38,7 @@ export class IaraSyncfusionSelectionManager {
     bookmarkId?: string,
     getSurrondingWords = false,
     highlightSelection = false
-  ) {    
+  ) {
     if (highlightSelection) this._highlightSelection();
 
     const characterFormat = this._editor.selection.characterFormat;
@@ -55,28 +55,27 @@ export class IaraSyncfusionSelectionManager {
         italic: characterFormat.italic,
         strikethrough: characterFormat.strikethrough,
         underline: characterFormat.underline,
-      }
+      },
     };
 
     const { endOffset, startOffset } = this._editor.selection;
-
     this.isAtStartOfLine = startOffset.endsWith(";0");
+    this._moveSelectionFromBookmarkEdge();    
 
-    if (!bookmarkId) {
-      this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
-    }
+    this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
+
     if (!getSurrondingWords) return;
 
     this._editor.selection.select(startOffset, endOffset);
     this.wordBeforeSelection = this._getWordBeforeSelection();
-    
+
     const isLineStart =
       /[\n\r\v]$/.test(this.wordBeforeSelection) ||
       this.wordBeforeSelection.length === 0;
-    
+
     this._editor.selection.select(startOffset, endOffset);
     this.wordAfterSelection = this._getWordAfterSelection(isLineStart);
-    
+
     this.resetSelection();
   }
 
@@ -121,14 +120,49 @@ export class IaraSyncfusionSelectionManager {
         (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
   }
 
+  private _moveSelectionFromBookmarkEdge(): void {
+    const bookmarksAtCursor = this._editor.selection.getBookmarks();
+    if (bookmarksAtCursor) {
+      const { endOffset, startOffset } = this._editor.selection;
+
+      // If there are any bookmarks at cursor position, check if we are on the edge of any of them.
+      bookmarksAtCursor.forEach(cursorBookmarkID => {
+        // Select bookmark without selecting the edge itself as the cursor will not be at the edge
+        this._editor.selection.selectBookmark(cursorBookmarkID, true);
+        const {
+          endOffset: bookmarkEndOffset,
+          startOffset: bookmarkStartOffset,
+        } = this._editor.selection;
+
+        // If we are at one of the edges, select the bookmark again, this time with the edge. 
+        // This way, we can then select the edge as it is not possible to just move to the next position in this case
+        // due to a Syncfusion API limitation
+        if (bookmarkEndOffset === endOffset) {
+          this._editor.selection.selectBookmark(cursorBookmarkID, false);
+          this._editor.selection.select(
+            this._editor.selection.endOffset,
+            this._editor.selection.endOffset
+          );
+        }
+        if (bookmarkStartOffset === startOffset) {
+          this._editor.selection.selectBookmark(cursorBookmarkID, false);
+          this._editor.selection.select(
+            this._editor.selection.startOffset,
+            this._editor.selection.startOffset
+          );
+        }
+      });
+    }
+  }
+
   public destroy() {
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
   }
 
-  public resetSelection(resetStyles = true): void {
+  public resetSelection(resetStyles = true, excludeBookmarkStartEnd: boolean = true): void {
     this._editor.selection.selectBookmark(
       this.initialSelectionData.bookmarkId,
-      true
+      excludeBookmarkStartEnd
     );
     if (resetStyles) {
       this.resetStyles();

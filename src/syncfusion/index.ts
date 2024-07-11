@@ -77,6 +77,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
       this._documentEditor = _editorInstance.documentEditor;
+      this._editorContainer.documentEditorSettings.showBookmarks = true;
     } else {
       this._documentEditor = _editorInstance;
     }
@@ -339,17 +340,12 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.transcript == "") return;
-
-    if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
+    if (inference.transcript == "" || (inference.richTranscriptModifiers?.length && !inference.isFinal)) return;
 
     if (inference.isFirst) {
       this._handleFirstInference(inference);
-    } else if (this._selectionManager?.initialSelectionData.bookmarkId) {
-      this._documentEditor.selection.selectBookmark(
-        this._selectionManager.initialSelectionData.bookmarkId,
-        true
-      );
+    } else if (this._selectionManager) {
+      this._selectionManager.resetSelection(false);
     }
 
     if (!this._selectionManager) return;
