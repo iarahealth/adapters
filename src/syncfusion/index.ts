@@ -528,7 +528,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
       this._config,
-      inference.inferenceId ?? `inferenceId_${inference.inferenceId}`, 
+      inference.inferenceId ? `inferenceId_${inference.inferenceId}`: undefined, 
       true, 
       true
     );
