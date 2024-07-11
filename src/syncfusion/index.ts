@@ -228,7 +228,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
           body: JSON.stringify({
             evaluation: 5, // editor-made validation as documented
             recording_id: bookmark.recordingId,
-            corrected_text: bookmark.content,
+            corrected_text: bookmark.content.replace("\\r", "\\n"),
           }),
         });
       }
@@ -539,10 +539,10 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
-      // Removes trailing space so that the formatter can determine whether the space is required or not. 
+      // Removes trailing space so that the formatter can determine whether the space is required or not.
       // I.e. if the inference starts with a punctuation, there would be an extra space.
-      this._documentEditor.selection.movePreviousPosition();
-      this._documentEditor.selection.extendForward();
+      this._selectionManager.moveSelectionToBeforeBookmarkEdge(this._selectionManager.initialSelectionData.bookmarkId);
+      this._documentEditor.selection.extendBackward();
       this._documentEditor.editor.delete();
       this._selectionManager.resetSelection();
     }

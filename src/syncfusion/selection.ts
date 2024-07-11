@@ -60,7 +60,7 @@ export class IaraSyncfusionSelectionManager {
 
     const { endOffset, startOffset } = this._editor.selection;
     this.isAtStartOfLine = startOffset.endsWith(";0");
-    this._moveSelectionFromBookmarkEdge();    
+    this._moveSelectionFromBookmarkEdges();
 
     this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
 
@@ -120,7 +120,7 @@ export class IaraSyncfusionSelectionManager {
         (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
   }
 
-  private _moveSelectionFromBookmarkEdge(): void {
+  private _moveSelectionFromBookmarkEdges(): void {
     const bookmarksAtCursor = this._editor.selection.getBookmarks();
     if (bookmarksAtCursor) {
       const { endOffset, startOffset } = this._editor.selection;
@@ -133,23 +133,11 @@ export class IaraSyncfusionSelectionManager {
           endOffset: bookmarkEndOffset,
           startOffset: bookmarkStartOffset,
         } = this._editor.selection;
-
-        // If we are at one of the edges, select the bookmark again, this time with the edge. 
-        // This way, we can then select the edge as it is not possible to just move to the next position in this case
-        // due to a Syncfusion API limitation
-        if (bookmarkEndOffset === endOffset) {
-          this._editor.selection.selectBookmark(cursorBookmarkID, false);
-          this._editor.selection.select(
-            this._editor.selection.endOffset,
-            this._editor.selection.endOffset
-          );
-        }
+        
         if (bookmarkStartOffset === startOffset) {
-          this._editor.selection.selectBookmark(cursorBookmarkID, false);
-          this._editor.selection.select(
-            this._editor.selection.startOffset,
-            this._editor.selection.startOffset
-          );
+          this.moveSelectionToBeforeBookmarkEdge(cursorBookmarkID);
+        } else if (bookmarkEndOffset === endOffset) {
+          this.moveSelectionToAfterBookmarkEdge(cursorBookmarkID);
         }
       });
     }
@@ -159,14 +147,30 @@ export class IaraSyncfusionSelectionManager {
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
   }
 
-  public resetSelection(resetStyles = true, excludeBookmarkStartEnd: boolean = true): void {
+  public resetSelection(resetStyles = true): void {
     this._editor.selection.selectBookmark(
       this.initialSelectionData.bookmarkId,
-      excludeBookmarkStartEnd
+      true
     );
     if (resetStyles) {
       this.resetStyles();
     }
+  }
+
+  public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
+    this._editor.selection.selectBookmark(bookmarkId, false);
+    this._editor.selection.select(
+      this._editor.selection.endOffset,
+      this._editor.selection.endOffset
+    );
+  }
+
+  public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
+    this._editor.selection.selectBookmark(bookmarkId, false);
+    this._editor.selection.select(
+      this._editor.selection.startOffset,
+      this._editor.selection.startOffset
+    );
   }
 
   public resetStyles(): void {
