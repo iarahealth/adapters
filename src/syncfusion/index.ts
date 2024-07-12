@@ -361,7 +361,7 @@ export class IaraSyncfusionAdapter
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
     ) {
-      const insertedTemplate = this._handleTemplateInference(inference);
+      const insertedTemplate = this._handleTemplateOrPhraseInference(inference);
       if (insertedTemplate) return;
     }
     const text = this._inferenceFormatter.format(
@@ -535,7 +535,9 @@ export class IaraSyncfusionAdapter
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
       this._config,
-      inference.inferenceId ?? `inferenceId_${inference.inferenceId}`,
+      inference.inferenceId
+        ? `inferenceId_${inference.inferenceId}`
+        : undefined,
       true,
       true
     );
@@ -557,7 +559,7 @@ export class IaraSyncfusionAdapter
     }
   }
 
-  private _handleTemplateInference(
+  private _handleTemplateOrPhraseInference(
     inference: IaraSpeechRecognitionDetail
   ): boolean {
     if (
@@ -571,14 +573,13 @@ export class IaraSyncfusionAdapter
         inference.richTranscriptModifiers[0]
       ];
     const metadata = phraseOrTemplate.metadata as { category?: string };
-    let contentType = "";
-    try {
-      contentType = IaraSFDT.detectContentType(phraseOrTemplate.replaceText);
-    } catch (error) {
-      contentType;
-    }
 
-    if (metadata.category === "Template" || contentType) {
+    const contentType = IaraSFDT.detectContentType(
+      phraseOrTemplate.replaceText
+    );
+
+    // contentType equal plain_text the content is a phrase
+    if (metadata.category === "Template" || contentType !== "plain_text") {
       const index: number | undefined =
         inference.richTranscriptWithoutModifiers.match(
           new RegExp(`iara texto ${inference.richTranscriptModifiers[0]}`, "ui")
