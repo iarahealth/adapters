@@ -8,10 +8,12 @@ import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
 import { v4 as uuidv4 } from "uuid";
-import { IaraBookmark } from "./bookmark";
+import { IaraNavigationBookmark } from "./navigationBookmark";
+import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
+import { IaraSyncfusionLanguageManager } from "../language";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
-  previousBookmark: IaraBookmark = {
+  previousBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -20,7 +22,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       end: "",
     },
   };
-  nextBookmark: IaraBookmark = {
+  nextBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -36,7 +38,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     start: "",
     end: "",
   };
-  insertedBookmark: IaraBookmark = {
+  insertedBookmark: IaraNavigationBookmark = {
     name: "",
     content: "",
     title: "",
@@ -47,16 +49,21 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
   isFirstNextNavigation = false;
   isFirstPreviousNavigation = false;
-  private _bookmarks: IaraBookmark[] = [];
+  bookmarks: IaraNavigationBookmark[] = [];
 
   private _previousBookmarksTitles: string[] = [];
 
   constructor(
     private _documentEditor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
-    _recognition: IaraSpeechRecognition
+    _recognition: IaraSpeechRecognition,
+    private _languageManager: IaraSyncfusionLanguageManager
   ) {
     super(_recognition);
+  }
+
+  addAdditiveField() {
+    new IaraSyncfusionAdditiveFieldModal(this._languageManager);
   }
 
   insertField(
@@ -94,13 +101,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.updateBookmark(editorBookmarks);
     this.removeEmptyField(editorBookmarks);
     if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
-      this.insertedBookmark = this._bookmarks.filter(
+      this.insertedBookmark = this.bookmarks.filter(
         bookmark =>
           bookmark.name === editorBookmarks[editorBookmarks.length - 1]
       )[0];
     }
     this.sortByPosition();
-    if (this._bookmarks.length > 1)
+    if (this.bookmarks.length >= 1)
       this.getPreviousAndNext(this.currentSelectionOffset);
 
     if (setColor) this.setColor();
@@ -110,7 +117,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   goToField(title: string): void | string {
     this._previousBookmarksTitles = [...this._previousBookmarksTitles, title];
-    const bookmarks = this._bookmarks.filter(
+    const bookmarks = this.bookmarks.filter(
       bookmark =>
         bookmark.title.toLowerCase() === title.toLowerCase() &&
         bookmark.title !== "Nome do campo" &&
@@ -225,7 +232,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   sortByPosition(): void {
-    this._bookmarks.sort(
+    this.bookmarks.sort(
       (
         currentOffset: { offset: { start: string; end: string } },
         nextOffset: { offset: { start: string; end: string } }
@@ -262,14 +269,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   popAndUpdate(bookmarkName: string, content: string, title: string): void {
-    const index = this._bookmarks.findIndex(item => item.name === bookmarkName);
+    const index = this.bookmarks.findIndex(item => item.name === bookmarkName);
     if (
       bookmarkName.includes("Field") ||
       bookmarkName.includes("Mandatory") ||
       bookmarkName.includes("Optional")
     ) {
       if (index !== -1) {
-        this._bookmarks = this._bookmarks.map(item => {
+        this.bookmarks = this.bookmarks.map(item => {
           if (item.name === bookmarkName) {
             return {
               name: bookmarkName,
@@ -284,8 +291,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
           return item;
         });
       } else {
-        this._bookmarks = [
-          ...this._bookmarks,
+        this.bookmarks = [
+          ...this.bookmarks,
           {
             name: bookmarkName,
             content,
@@ -301,7 +308,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   setColor() {
-    this._bookmarks.map(bookmark => {
+    this.bookmarks.map(bookmark => {
       this._documentEditor.selection.select(
         bookmark.offset.start,
         bookmark.offset.end
@@ -412,26 +419,25 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   removeEmptyField(editorBookmarks: string[]): void {
-    this._bookmarks = this._bookmarks.filter(item =>
+    this.bookmarks = this.bookmarks.filter(item =>
       editorBookmarks.includes(item.name)
     );
-    this._bookmarks = this._bookmarks.filter(bookmark => bookmark.title);
+    this.bookmarks = this.bookmarks.filter(bookmark => bookmark.title);
   }
 
   getPreviousAndNext(currentOffset: { start: string; end: string }): void {
-    const index = this._bookmarks.findIndex(
+    const index = this.bookmarks.findIndex(
       bookmark => this.findCurrentIndex(currentOffset, bookmark.offset) < 0
     );
 
-    const previousIndex = index <= 0 ? this._bookmarks.length - 1 : index - 1;
+    const previousIndex = index <= 0 ? this.bookmarks.length - 1 : index - 1;
 
     let previousField =
       index <= 0
-        ? this._bookmarks[previousIndex]
-        : this._bookmarks[previousIndex];
+        ? this.bookmarks[previousIndex]
+        : this.bookmarks[previousIndex];
 
-    const nextField =
-      index === -1 ? this._bookmarks[0] : this._bookmarks[index];
+    const nextField = index === -1 ? this.bookmarks[0] : this.bookmarks[index];
 
     previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
 
@@ -460,8 +466,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return 0;
   }
 
-  checkIsSelectedAndUpdatePrevious(previousIndex: number): IaraBookmark {
-    let selected = this._bookmarks[previousIndex];
+  checkIsSelectedAndUpdatePrevious(
+    previousIndex: number
+  ): IaraNavigationBookmark {
+    let selected = this.bookmarks[previousIndex];
 
     const compareCurrentOffsetWithPreviousOffset =
       this.currentSelectionOffset.start &&
@@ -483,12 +491,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       compareCurrentOffsetWithNextOffset ||
       compareCurrentOffsetWithSelecteOffset
     ) {
-      selected = this._bookmarks[previousIndex - 1];
+      selected = this.bookmarks[previousIndex - 1];
       return previousIndex <= 0
-        ? this._bookmarks[this._bookmarks.length - 1]
-        : this._bookmarks[previousIndex - 1];
+        ? this.bookmarks[this.bookmarks.length - 1]
+        : this.bookmarks[previousIndex - 1];
     }
-    return this._bookmarks[previousIndex];
+    return this.bookmarks[previousIndex];
   }
 
   getOffsetsAndSelect(name: string, excludeBookmarkStartEnd?: boolean): void {
@@ -536,7 +544,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   clearReportToCopyContent(): void {
     this.getBookmarks(false);
-    this._bookmarks.filter(field => {
+    this.bookmarks.filter(field => {
       this.getOffsetsAndSelect(field.name);
       if (field.name.includes("Field")) {
         if (field.content && field.content !== "Escreva uma dica de texto") {
@@ -558,7 +566,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   requiredFields(): boolean {
     this.getBookmarks(false);
-    const mandatoriesFields = this._bookmarks.filter(
+    const mandatoriesFields = this.bookmarks.filter(
       bookmark => bookmark.name.includes("Mandatory") && bookmark.title
     );
     if (mandatoriesFields.length) {

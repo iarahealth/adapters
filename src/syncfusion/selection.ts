@@ -5,11 +5,12 @@ import type {
   Strikethrough,
   Underline,
 } from "@syncfusion/ej2-documenteditor";
+import { v4 as uuidv4 } from "uuid";
+import { IaraSyncfusionConfig } from ".";
 
 interface SelectionData {
+  bookmarkId: string;
   characterFormat: SelectionCharacterFormatData;
-  endOffset: string;
-  startOffset: string;
 }
 
 interface SelectionCharacterFormatData {
@@ -31,9 +32,18 @@ export class IaraSyncfusionSelectionManager {
   public wordBeforeSelection = "";
   public isAtStartOfLine = false;
 
-  constructor(private _editor: DocumentEditor, getSurrondingWords = true) {
+  constructor(
+    private _editor: DocumentEditor,
+    private _config: IaraSyncfusionConfig,
+    bookmarkId?: string,
+    getSurrondingWords = false,
+    highlightSelection = false
+  ) {
+    if (highlightSelection) this._highlightSelection();
+
     const characterFormat = this._editor.selection.characterFormat;
     this.initialSelectionData = {
+      bookmarkId: bookmarkId || uuidv4(),
       characterFormat: {
         allCaps: characterFormat.allCaps,
         baselineAlignment: characterFormat.baselineAlignment,
@@ -46,21 +56,26 @@ export class IaraSyncfusionSelectionManager {
         strikethrough: characterFormat.strikethrough,
         underline: characterFormat.underline,
       },
-      endOffset: this._editor.selection.endOffset,
-      startOffset: this._editor.selection.startOffset,
     };
-    this.isAtStartOfLine = this._editor.selection.startOffset.endsWith(";0");
+
+    const { endOffset, startOffset } = this._editor.selection;
+    this.isAtStartOfLine = startOffset.endsWith(";0");
+    this._moveSelectionFromBookmarkEdges();
+
+    this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
 
     if (!getSurrondingWords) return;
 
+    this._editor.selection.select(startOffset, endOffset);
     this.wordBeforeSelection = this._getWordBeforeSelection();
-    this.resetSelection(false);
 
     const isLineStart =
       /[\n\r\v]$/.test(this.wordBeforeSelection) ||
       this.wordBeforeSelection.length === 0;
 
+    this._editor.selection.select(startOffset, endOffset);
     this.wordAfterSelection = this._getWordAfterSelection(isLineStart);
+
     this.resetSelection();
   }
 
@@ -95,29 +110,86 @@ export class IaraSyncfusionSelectionManager {
     return wordBefore;
   }
 
-  public resetSelection(resetStyles = true): void {
-    this._editor.selection.select(
-      this.initialSelectionData.startOffset,
-      this.initialSelectionData.endOffset
-    );
-    if (resetStyles) {
-      const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
-        "allCaps",
-        "baselineAlignment",
-        "bold",
-        "fontColor",
-        "fontFamily",
-        "fontSize",
-        "highlightColor",
-        "italic",
-        "strikethrough",
-        "underline",
-      ];
+  private _highlightSelection(): void {
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._editor.selection.characterFormat.highlightColor = "#0e5836")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
+  }
 
-      charFormatProps.forEach(prop => {
-        (this._editor.selection.characterFormat as any)[prop] =
-          this.initialSelectionData.characterFormat[prop];
+  private _moveSelectionFromBookmarkEdges(): void {
+    const bookmarksAtCursor = this._editor.selection.getBookmarks();
+    if (bookmarksAtCursor) {
+      const { endOffset, startOffset } = this._editor.selection;
+
+      // If there are any bookmarks at cursor position, check if we are on the edge of any of them.
+      bookmarksAtCursor.forEach(cursorBookmarkID => {
+        // Select bookmark without selecting the edge itself as the cursor will not be at the edge
+        this._editor.selection.selectBookmark(cursorBookmarkID, true);
+        const {
+          endOffset: bookmarkEndOffset,
+          startOffset: bookmarkStartOffset,
+        } = this._editor.selection;
+        
+        if (bookmarkStartOffset === startOffset) {
+          this.moveSelectionToBeforeBookmarkEdge(cursorBookmarkID);
+        } else if (bookmarkEndOffset === endOffset) {
+          this.moveSelectionToAfterBookmarkEdge(cursorBookmarkID);
+        }
       });
     }
+  }
+
+  public destroy() {
+    this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
+  }
+
+  public resetSelection(resetStyles = true): void {
+    this._editor.selection.selectBookmark(
+      this.initialSelectionData.bookmarkId,
+      true
+    );
+    if (resetStyles) {
+      this.resetStyles();
+    }
+  }
+
+  public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
+    this._editor.selection.selectBookmark(bookmarkId, false);
+    this._editor.selection.select(
+      this._editor.selection.endOffset,
+      this._editor.selection.endOffset
+    );
+  }
+
+  public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
+    this._editor.selection.selectBookmark(bookmarkId, false);
+    this._editor.selection.select(
+      this._editor.selection.startOffset,
+      this._editor.selection.startOffset
+    );
+  }
+
+  public resetStyles(): void {
+    const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
+      "allCaps",
+      "baselineAlignment",
+      "bold",
+      "fontColor",
+      "fontFamily",
+      "fontSize",
+      "highlightColor",
+      "italic",
+      "strikethrough",
+      "underline",
+    ];
+
+    charFormatProps.forEach(prop => {
+      (this._editor.selection.characterFormat as any)[prop] =
+        this.initialSelectionData.characterFormat[prop];
+    });
   }
 }

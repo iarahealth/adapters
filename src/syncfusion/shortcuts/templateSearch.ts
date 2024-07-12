@@ -61,7 +61,7 @@ export class IaraSyncfusionTemplateSearch {
 
   filter(
     listObj: ListView,
-    listData: { name: string; category: string; content: string }[],
+    listData: { name: string; category: string; content: string }[]
   ): void {
     if (document.getElementById("textbox")) {
       const value = (document.getElementById("textbox") as HTMLInputElement)
@@ -78,11 +78,10 @@ export class IaraSyncfusionTemplateSearch {
       }
       listObj.dataBind();
 
-      if (data.length > 0)
-      {
-        let atMenuItems = listObj['liCollection'];
+      if (data.length > 0) {
+        let atMenuItems = listObj["liCollection"];
         let firstItem = atMenuItems[0] as HTMLElement;
-        firstItem.classList.add('e-active');
+        firstItem.classList.add("e-active");
       }
     }
     return;

@@ -13,24 +13,25 @@ import {
 } from "@syncfusion/ej2-popups";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSyncfusionEditorContentManager } from "./content";
+import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
+import {
+  IaraInferenceBookmark,
+  IaraSyncfusionInferenceBookmarksManager,
+} from "./inferenceBookmarks";
+import { IaraSyncfusionLanguageManager } from "./language";
 import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionSelectionManager } from "./selection";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
-import { IaraSyncfusionLanguageManager } from "./language";
-import { IaraSyncfusionBookmarkManager } from "./bookmarks";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
 }
 
-export class IaraSyncfusionAdapter
-  extends EditorAdapter
-  implements EditorAdapter
-{
+export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
+  public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
   private _cursorSelection?: IaraSyncfusionSelectionManager;
@@ -38,18 +39,18 @@ export class IaraSyncfusionAdapter
   private _documentEditor: DocumentEditor;
   private _editorContainer?: DocumentEditorContainer;
   private _selectionManager?: IaraSyncfusionSelectionManager;
-  private _inferenceEndOffset = "0;0;0";
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   private _languageManager: IaraSyncfusionLanguageManager;
-  private _bookmarkManager: IaraSyncfusionBookmarkManager;
-  protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
+  private _inferenceBookmarksManager: IaraSyncfusionInferenceBookmarksManager;
 
+  protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
+  public defaultFormat: CharacterFormatProperties = {};
   public savingReportSpan = document.createElement("span");
   public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
@@ -60,8 +61,6 @@ export class IaraSyncfusionAdapter
     return this._documentEditor;
   }
 
-  public defaultFormat: CharacterFormatProperties = {};
-
   constructor(
     _editorInstance: DocumentEditorContainer | DocumentEditor,
     protected _recognition: IaraSpeechRecognition,
@@ -69,9 +68,16 @@ export class IaraSyncfusionAdapter
   ) {
     super(_recognition, _config);
 
+    IaraSyncfusionAdapter.IARA_API_URL =
+      this._recognition.internal.initParams.region === "europe"
+        ? "https://api.iarahealth.eu/"
+        : "https://api.iarahealth.com/";
+    IaraSFDT.IARA_API_URL = IaraSyncfusionAdapter.IARA_API_URL;
+
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
       this._documentEditor = _editorInstance.documentEditor;
+      this._editorContainer.documentEditorSettings.showBookmarks = true;
     } else {
       this._documentEditor = _editorInstance;
     }
@@ -80,7 +86,6 @@ export class IaraSyncfusionAdapter
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
-      this._recognition,
       () => (this._config.saveReport ? this._debouncedSaveReport() : undefined)
     );
 
@@ -92,12 +97,13 @@ export class IaraSyncfusionAdapter
     this._navigationFieldManager = new IaraSyncfusionNavigationFieldManager(
       this._documentEditor,
       this._config,
-      _recognition
+      this._recognition,
+      this._languageManager
     );
 
-    this._bookmarkManager = new IaraSyncfusionBookmarkManager(
+    this._inferenceBookmarksManager = new IaraSyncfusionInferenceBookmarksManager(
       this._documentEditor,
-      this._config
+      this._recognition
     );
 
     if (this._config.replaceToolbar && this._editorContainer) {
@@ -164,7 +170,6 @@ export class IaraSyncfusionAdapter
         '<div class="Section0">',
         '<div class="Section0" id="docs-internal-guid-iara">'
       );
-      console.log("copyReport", content[0], htmlContent, content[2]);
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
@@ -206,6 +211,31 @@ export class IaraSyncfusionAdapter
     }
 
     this._documentEditor.search.searchResults.clear();
+  }
+
+  async finishReport(): Promise<void> {
+    this._inferenceBookmarksManager.updateBookmarks();
+
+    Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
+      async (bookmark: IaraInferenceBookmark) => {
+        if (!bookmark.recordingId) return;
+        await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
+          headers: {
+            ...this._recognition.internal.iaraAPIMandatoryHeaders,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            evaluation: 5, // editor-made validation as documented
+            recording_id: bookmark.recordingId,
+            corrected_text: bookmark.content.replace("\\r", "\\n"),
+          }),
+        });
+      }
+    );
+
+    await super.finishReport();
+    this._inferenceBookmarksManager.clearBookmarks();
   }
 
   formatSectionTitles(): void {
@@ -277,33 +307,29 @@ export class IaraSyncfusionAdapter
     content: string,
     replaceAllContent = false
   ): Promise<void> {
-    console.log("insertTemplate0", content, replaceAllContent);
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
     else {
       this._documentEditor.editor.paste(sfdt.value);
       this._documentEditor.editor.onBackSpace();
     }
-    console.log("insertTemplate1", sfdt.value);
 
     this._documentEditor.selection.moveToDocumentStart();
 
-    console.log(
-      "insertTemplate2",
-      this._documentEditor.selection.characterFormat.fontFamily,
-      this._documentEditor.selection.characterFormat.fontSize
-    );
     // Set the default editor format after inserting the template
-    this._documentEditor?.setDefaultCharacterFormat({
+    this._styleManager.setEditorDefaultFont({
       fontFamily: this._documentEditor.selection.characterFormat.fontFamily,
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
+      fontColor: this._config.darkMode ? "#fff" : "#000",
     });
 
     this._navigationFieldManager.getBookmarks();
     this._documentEditor.selection.moveToDocumentEnd();
+    this._navigationFieldManager.nextField();
   }
 
-  insertText(text: string): void {
+  insertText(text: string, resetSytle = false): void {
+    if (resetSytle) this._selectionManager?.resetStyles();
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
@@ -314,22 +340,14 @@ export class IaraSyncfusionAdapter
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
-    if (inference.transcript == "") return;
-
-    if (inference.richTranscriptModifiers?.length && !inference.isFinal) return;
+    if (inference.transcript == "" || (inference.richTranscriptModifiers?.length && !inference.isFinal)) return;
 
     if (inference.isFirst) {
-      this._handleFirstInference();
+      this._handleFirstInference(inference);
     } else if (this._selectionManager) {
-      const initialStartOffset = this._selectionManager.isAtStartOfLine
-        ? "0;0;1"
-        : this._selectionManager.initialSelectionData.startOffset;
-
-      this._documentEditor.selection.select(
-        initialStartOffset,
-        this._inferenceEndOffset
-      );
+      this._selectionManager.resetSelection(false);
     }
+
     if (!this._selectionManager) return;
 
     if (
@@ -346,15 +364,8 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    this._bookmarkManager.insertInferenceField(
-      inference.isFirst,
-      inference.isFinal
-    );
-
-    if (text.length) this.insertText(text);
+    if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
-
-    this._inferenceEndOffset = this._documentEditor.selection.endOffset;
 
     if (inference.isFinal) this._selectionManager = undefined;
   }
@@ -474,7 +485,7 @@ export class IaraSyncfusionAdapter
         if (event.button === 1) {
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
-            false
+            this._config,
           );
         }
       });
@@ -482,6 +493,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
       if (event.button === 1) {
         this._cursorSelection?.resetSelection();
+        this._cursorSelection?.destroy();
         this._cursorSelection = undefined;
 
         this._recognition.toggleRecording();
@@ -489,20 +501,50 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  private _handleFirstInference(): void {
+  private _updateSelectedNavigationField(field: string): void {
+    if (field.match(/\[(.*)\]/)) {
+      const { title, content } =
+        this._navigationFieldManager.getTitleAndContent(field);
+
+      let type: "Field" | "Mandatory" | "Optional" = "Field";
+      if (content.includes("*")) type = "Mandatory";
+      if (content.includes("?")) type = "Optional";
+
+      this.selectedField = {
+        content,
+        title,
+        type,
+      };
+    } else this.selectedField = { content: "", title: "", type: "Field" };
+  }
+
+  private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
+    this._updateSelectedNavigationField(this._documentEditor.selection.text);
+
     if (this._documentEditor.selection.text.length) {
       this._documentEditor.editor.delete();
     }
+
     this._selectionManager = new IaraSyncfusionSelectionManager(
-      this._documentEditor
+      this._documentEditor,
+      this._config,
+      inference.inferenceId ? `inferenceId_${inference.inferenceId}`: undefined, 
+      true, 
+      true
+    );
+
+    this._inferenceBookmarksManager.addBookmark(
+      inference,
+      this._selectionManager.initialSelectionData.bookmarkId
     );
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
+      // Removes trailing space so that the formatter can determine whether the space is required or not.
+      // I.e. if the inference starts with a punctuation, there would be an extra space.
+      this._selectionManager.moveSelectionToBeforeBookmarkEdge(this._selectionManager.initialSelectionData.bookmarkId);
       this._documentEditor.selection.extendBackward();
       this._documentEditor.editor.delete();
-      this._selectionManager = new IaraSyncfusionSelectionManager(
-        this._documentEditor
-      );
+      this._selectionManager.resetSelection();
     }
   }
 
