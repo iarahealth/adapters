@@ -13,10 +13,11 @@ export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
   HTML = "html",
   RTF = "rtf",
+  PLAIN_TEXT = "plain_text",
 }
 
 export class IaraSFDT {
-  public static IARA_API_URL = "https://api.iarahealth.com"; 
+  public static IARA_API_URL = "https://api.iarahealth.com";
   public html: string | undefined;
   public plainText: string | undefined;
   public rtf: string | undefined;
@@ -28,7 +29,7 @@ export class IaraSFDT {
     else if (content.startsWith('{"sfdt":'))
       return IaraSyncfusionContentTypes.SFDT;
     else if (content.startsWith("<")) return IaraSyncfusionContentTypes.HTML;
-    else throw new Error("Content type not recognized.");
+    else return IaraSyncfusionContentTypes.PLAIN_TEXT;
   }
 
   static async fromContent(content: string, editor: DocumentEditor) {
