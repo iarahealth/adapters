@@ -107,8 +107,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       )[0];
     }
     this.sortByPosition();
-    if (this.bookmarks.length >= 1)
-      this.getPreviousAndNext(this.currentSelectionOffset);
 
     if (setColor) this.setColor();
 
@@ -138,7 +136,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       start: this._documentEditor.selection.startOffset,
       end: this._documentEditor.selection.endOffset,
     };
-    this.getBookmarks(false);
+    this.getPreviousAndNext(this.currentSelectionOffset);
 
     if (isShortcutNavigation && this.isFirstNextNavigation)
       this.selectContent(
@@ -162,7 +160,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       end: this._documentEditor.selection.endOffset,
     };
 
-    this.getBookmarks(false);
+    this.getPreviousAndNext(this.currentSelectionOffset);
 
     if (isShortcutNavigation && this.isFirstPreviousNavigation)
       this.selectTitle(this.insertedBookmark.title, this.insertedBookmark.name);
@@ -426,20 +424,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   getPreviousAndNext(currentOffset: { start: string; end: string }): void {
+    const editorBookmarks = this._documentEditor.getBookmarks();
+    this.removeEmptyField(editorBookmarks);
     const index = this.bookmarks.findIndex(
       bookmark => this.findCurrentIndex(currentOffset, bookmark.offset) < 0
     );
-
     const previousIndex = index <= 0 ? this.bookmarks.length - 1 : index - 1;
 
-    let previousField =
-      index <= 0
-        ? this.bookmarks[previousIndex]
-        : this.bookmarks[previousIndex];
-
     const nextField = index === -1 ? this.bookmarks[0] : this.bookmarks[index];
-
-    previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
+    const previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
 
     this.previousBookmark = previousField;
     this.nextBookmark = nextField;
@@ -482,14 +475,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.currentSelectionOffset.start === this.nextBookmark.offset.start &&
       this.currentSelectionOffset.end === this.nextBookmark.offset.end;
 
-    const compareCurrentOffsetWithSelecteOffset =
+    const compareCurrentOffsetWithSelectedOffset =
       this.previousBookmark.offset.start &&
-      this.previousBookmark.content !== selected.content;
+      this.previousBookmark.name !== selected.name &&
+      previousIndex !== 0;
 
     if (
       compareCurrentOffsetWithPreviousOffset ||
       compareCurrentOffsetWithNextOffset ||
-      compareCurrentOffsetWithSelecteOffset
+      compareCurrentOffsetWithSelectedOffset
     ) {
       selected = this.bookmarks[previousIndex - 1];
       return previousIndex <= 0
