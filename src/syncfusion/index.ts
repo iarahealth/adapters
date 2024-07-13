@@ -28,6 +28,7 @@ import { IaraSyncfusionToolbarManager } from "./toolbar";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
+  showBookmarks: boolean;
 }
 
 export class IaraSyncfusionAdapter
@@ -50,6 +51,7 @@ export class IaraSyncfusionAdapter
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
+    showBookmarks: false
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -80,7 +82,7 @@ export class IaraSyncfusionAdapter
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
       this._documentEditor = _editorInstance.documentEditor;
-      this._editorContainer.documentEditorSettings.showBookmarks = true;
+      this._editorContainer.documentEditorSettings.showBookmarks = this._config.showBookmarks;
     } else {
       this._documentEditor = _editorInstance;
     }
