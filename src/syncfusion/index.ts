@@ -539,7 +539,7 @@ export class IaraSyncfusionAdapter
         ? `inferenceId_${inference.inferenceId}`
         : undefined,
       true,
-      true
+      this._config.highlightInference
     );
 
     this._inferenceBookmarksManager.addBookmark(
