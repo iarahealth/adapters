@@ -112,7 +112,7 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager;
   }
 
-  private _getNavigationFieldDeleted(): void {
+  private _handleRemovedNavigationField(): void {
     const { content, title, type } = this.selectedField;
     if (this.selectedField.content)
       this._navigationFieldManager.insertField(content, title, type);
@@ -122,9 +122,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       "iara copiar laudo",
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
           this._onIaraCommand?.("required fields to copy");
           return;
@@ -137,9 +135,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       "iara finalizar laudo",
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
           this._onIaraCommand?.("required fields to finish");
           return;
@@ -170,32 +166,24 @@ export abstract class EditorAdapter {
       this.print();
     });
     this._recognition.commands.add("iara próximo campo", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+      if (detail.transcript === command) this._handleRemovedNavigationField();
       this._navigationFieldManager.nextField();
       this._onIaraCommand("iara próximo campo");
     });
     this._recognition.commands.add("iara campo anterior", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+      if (detail.transcript === command) this._handleRemovedNavigationField();
       this._onIaraCommand("iara campo anterior");
       this._navigationFieldManager.previousField();
     });
     this._recognition.commands.add("next", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+      if (detail.transcript === command) this._handleRemovedNavigationField();
       this._onIaraCommand("iara next");
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
       `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
