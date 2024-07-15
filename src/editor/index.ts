@@ -22,6 +22,7 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
+  public preprocessTemplate?: () => void;
   public iaraRecognizes = true;
   public selectedField: {
     content: string;

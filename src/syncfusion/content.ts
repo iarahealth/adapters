@@ -16,7 +16,7 @@ export enum IaraSyncfusionContentTypes {
 }
 
 export class IaraSFDT {
-  public static IARA_API_URL = "https://api.iarahealth.com"; 
+  public static IARA_API_URL = "https://api.iarahealth.com";
   public html: string | undefined;
   public plainText: string | undefined;
   public rtf: string | undefined;
