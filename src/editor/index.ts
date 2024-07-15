@@ -1,12 +1,9 @@
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
-
 import { IaraEditorNavigationFieldManager } from "./navigationFields";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
-//braun
 import * as Translations from "./translations.json";
-// import * as Translation_es from "./es.json";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -41,12 +38,7 @@ export abstract class EditorAdapter {
     highlightInference: true,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
-
-  //braun
-  // protected _currentLanguage: object;
   protected _currentLanguage: {[k: string]: any} = {};
-  // protected _language_pt_br: object;
-  // protected _language_es: object;
 
   private _listeners = [
     {
@@ -87,22 +79,7 @@ export abstract class EditorAdapter {
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
-
-        //braun
-    //escolher o idioma aqui
-    // const userProfile: UserProfile = {
-    //   name: "John Doe",
-    //   };
-    //   const propertyName: keyof UserProfile = "age";
-    //   const propertyValue = userProfile[propertyName];
-    // const translations = require('./translations.json');
-    // const currentLanguage = this._config.language;
-
-    // const value = eval(`Translations.${currentLanguage}`);
-    // const value = Translations;
-    // console.log(value);
-    // this._language_pt_br = pt_BR;
-    // this._language_es = Translation_es;
+    // this._config.language = 'es';
     switch (this._config.language)
     {
       case 'es':
@@ -110,9 +87,6 @@ export abstract class EditorAdapter {
       default:
         this._currentLanguage = Translations["pt-BR"];
     }
-
-    console.log('CURRENT', this._currentLanguage.copy_report);
-
 
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
@@ -155,24 +129,7 @@ export abstract class EditorAdapter {
   }
 
   private _initCommands(): void {
-
-    //braun
-    //escolher o idioma aqui
-    // const userProfile: UserProfile = {
-    //   name: "John Doe",
-    //   };
-    //   const propertyName: keyof UserProfile = "age";
-    //   const propertyValue = userProfile[propertyName];
-    // const translations = require('./translations.json');
-
-
-    // const value = eval(`Translations.${currentLanguage}`);
-
-    console.log('CURRENT', this._currentLanguage.copy_report);
-
     this._recognition.commands.add(
-      //braun
-      // "iara copiar laudo",
       this._currentLanguage.copy_report,
       async (detail, command) => {
         if (detail.transcript === command) {
@@ -184,14 +141,10 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.copyReport();
-        //braun
-        // this.onIaraCommand?.("iara copiar laudo");
         this.onIaraCommand?.(this._currentLanguage.copy_report);
       }
     );
     this._recognition.commands.add(
-      //braun
-      // "iara finalizar laudo",
       this._currentLanguage.finish_report,
       async (detail, command) => {
         if (detail.transcript === command) {
@@ -203,46 +156,32 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.finishReport();
-        //braun
-        // this.onIaraCommand?.("iara finalizar laudo");
         this.onIaraCommand?.(this._currentLanguage.finish_report);
       }
     );
-    //braun
-    // this._recognition.commands.add("iara negrito", () => {
     this._recognition.commands.add(this._currentLanguage.toggle_bold, () => {
       this._styleManager.toggleBold();
     });
-    //braun
-    // this._recognition.commands.add("iara itálico", () => {
     this._recognition.commands.add(this._currentLanguage.toggle_italic, () => {
       this._styleManager.toggleItalic();
     });
-    //braun
-    // this._recognition.commands.add("iara sublinhado", () => {
     this._recognition.commands.add(this._currentLanguage.toggle_underline, () => {
       this._styleManager.toggleUnderline();
     });
-    //braun
-    // this._recognition.commands.add("iara maiúsculo", () => {
     this._recognition.commands.add(this._currentLanguage.toggle_uppercase, () => {
       this._styleManager.toggleUppercase();
     });
     //braun
-    // this._recognition.commands.add("iara imprimir", () => {
     this._recognition.commands.add(this._currentLanguage.print, () => {
+    // this._recognition.commands.add("iara capotar", () => {
       this.print();
     });
-    //braun
-    // this._recognition.commands.add("iara próximo campo", (detail, command) => {
     this._recognition.commands.add(this._currentLanguage.next_field, (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.nextField();
     });
-    //braun
-    // this._recognition.commands.add("iara campo anterior", (detail, command) => {
     this._recognition.commands.add(this._currentLanguage.previous_field, (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
@@ -256,8 +195,6 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
-      //braun
-      // `buscar (\\p{Letter}+)`,
       `${this._currentLanguage.search} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         if (detail.transcript === command) {
