@@ -126,12 +126,12 @@ export abstract class EditorAdapter {
           this._getNavigationFieldDeleted();
         }
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to copy");
+          this._onIaraCommand?.("required fields to copy");
           return;
         }
+        this._onIaraCommand?.("iara copiar laudo");
         this._recognition.stop();
         await this.copyReport();
-        this.onIaraCommand?.("iara copiar laudo");
       }
     );
     this._recognition.commands.add(
@@ -141,27 +141,32 @@ export abstract class EditorAdapter {
           this._getNavigationFieldDeleted();
         }
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to finish");
+          this._onIaraCommand?.("required fields to finish");
           return;
         }
+        this._onIaraCommand?.("iara finalizar laudo");
         this._recognition.stop();
         await this.finishReport();
-        this.onIaraCommand?.("iara finalizar laudo");
       }
     );
     this._recognition.commands.add("iara negrito", () => {
+      this._onIaraCommand("iara negrito");
       this._styleManager.toggleBold();
     });
     this._recognition.commands.add("iara itálico", () => {
+      this._onIaraCommand("iara itálico");
       this._styleManager.toggleItalic();
     });
     this._recognition.commands.add("iara sublinhado", () => {
+      this._onIaraCommand("iara sublinhado");
       this._styleManager.toggleUnderline();
     });
     this._recognition.commands.add("iara maiúsculo", () => {
+      this._onIaraCommand("iara maiúsculo");
       this._styleManager.toggleUppercase();
     });
     this._recognition.commands.add("iara imprimir", () => {
+      this._onIaraCommand("iara imprimir");
       this.print();
     });
     this._recognition.commands.add("iara próximo campo", (detail, command) => {
@@ -169,17 +174,20 @@ export abstract class EditorAdapter {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.nextField();
+      this._onIaraCommand("iara próximo campo");
     });
     this._recognition.commands.add("iara campo anterior", (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
+      this._onIaraCommand("iara campo anterior");
       this._navigationFieldManager.previousField();
     });
     this._recognition.commands.add("next", (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
+      this._onIaraCommand("iara next");
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
@@ -191,7 +199,7 @@ export abstract class EditorAdapter {
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("buscar");
+          this._onIaraCommand?.("buscar");
         } finally {
           console.info(detail, command, param);
         }
@@ -213,6 +221,10 @@ export abstract class EditorAdapter {
         listener.callback as EventListenerOrEventListenerObject
       );
     });
+  }
+
+  protected _onIaraCommand(command: string): void {
+    this.onIaraCommand?.(command);
   }
 
   protected _updateReport(
