@@ -1,9 +1,9 @@
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
-
 import { IaraEditorNavigationFieldManager } from "./navigationFields";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
+import * as Translations from "./translations.json";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -38,6 +38,7 @@ export abstract class EditorAdapter {
     highlightInference: true,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
+  protected _currentLanguage: {[k: string]: any} = {};
 
   private _listeners = [
     {
@@ -78,6 +79,15 @@ export abstract class EditorAdapter {
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
+    // this._config.language = 'es';
+    switch (this._config.language)
+    {
+      case 'es':
+        this._currentLanguage = Translations['es'];
+      default:
+        this._currentLanguage = Translations["pt-BR"];
+    }
+
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
@@ -120,7 +130,7 @@ export abstract class EditorAdapter {
 
   private _initCommands(): void {
     this._recognition.commands.add(
-      "iara copiar laudo",
+      this._currentLanguage.copy_report,
       async (detail, command) => {
         if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
@@ -131,11 +141,11 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.copyReport();
-        this.onIaraCommand?.("iara copiar laudo");
+        this.onIaraCommand?.(this._currentLanguage.copy_report);
       }
     );
     this._recognition.commands.add(
-      "iara finalizar laudo",
+      this._currentLanguage.finish_report,
       async (detail, command) => {
         if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
@@ -146,31 +156,33 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.finishReport();
-        this.onIaraCommand?.("iara finalizar laudo");
+        this.onIaraCommand?.(this._currentLanguage.finish_report);
       }
     );
-    this._recognition.commands.add("iara negrito", () => {
+    this._recognition.commands.add(this._currentLanguage.toggle_bold, () => {
       this._styleManager.toggleBold();
     });
-    this._recognition.commands.add("iara itálico", () => {
+    this._recognition.commands.add(this._currentLanguage.toggle_italic, () => {
       this._styleManager.toggleItalic();
     });
-    this._recognition.commands.add("iara sublinhado", () => {
+    this._recognition.commands.add(this._currentLanguage.toggle_underline, () => {
       this._styleManager.toggleUnderline();
     });
-    this._recognition.commands.add("iara maiúsculo", () => {
+    this._recognition.commands.add(this._currentLanguage.toggle_uppercase, () => {
       this._styleManager.toggleUppercase();
     });
-    this._recognition.commands.add("iara imprimir", () => {
+    //braun
+    this._recognition.commands.add(this._currentLanguage.print, () => {
+    // this._recognition.commands.add("iara capotar", () => {
       this.print();
     });
-    this._recognition.commands.add("iara próximo campo", (detail, command) => {
+    this._recognition.commands.add(this._currentLanguage.next_field, (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.nextField();
     });
-    this._recognition.commands.add("iara campo anterior", (detail, command) => {
+    this._recognition.commands.add(this._currentLanguage.previous_field, (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
@@ -183,7 +195,7 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.nextField();
     });
     this._recognition.commands.add(
-      `buscar (\\p{Letter}+)`,
+      `${this._currentLanguage.search} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
@@ -191,7 +203,7 @@ export abstract class EditorAdapter {
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("buscar");
+          this.onIaraCommand?.(this._currentLanguage.search);
         } finally {
           console.info(detail, command, param);
         }
