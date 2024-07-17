@@ -28,6 +28,7 @@ import { IaraSyncfusionToolbarManager } from "./toolbar";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
+  showBookmarks: boolean;
 }
 
 export class IaraSyncfusionAdapter
@@ -50,6 +51,7 @@ export class IaraSyncfusionAdapter
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
+    showBookmarks: false
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -80,7 +82,7 @@ export class IaraSyncfusionAdapter
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
       this._documentEditor = _editorInstance.documentEditor;
-      this._editorContainer.documentEditorSettings.showBookmarks = true;
+      this._editorContainer.documentEditorSettings.showBookmarks = this._config.showBookmarks;
     } else {
       this._documentEditor = _editorInstance;
     }
@@ -329,7 +331,7 @@ export class IaraSyncfusionAdapter
 
     this._navigationFieldManager.getBookmarks();
     this._documentEditor.selection.moveToDocumentEnd();
-    this._navigationFieldManager.nextField();
+    if (!this.preprocessTemplate)  this._navigationFieldManager.nextField();
   }
 
   insertText(text: string, resetSytle = false): void {
@@ -357,12 +359,11 @@ export class IaraSyncfusionAdapter
     }
 
     if (!this._selectionManager) return;
-
     if (
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
     ) {
-      const insertedTemplate = this._handleTemplateInference(inference);
+      const insertedTemplate = this._handleTemplateOrPhraseInference(inference);
       if (insertedTemplate) return;
     }
     const text = this._inferenceFormatter.format(
@@ -540,7 +541,7 @@ export class IaraSyncfusionAdapter
         ? `inferenceId_${inference.inferenceId}`
         : undefined,
       true,
-      true
+      this._config.highlightInference
     );
 
     this._inferenceBookmarksManager.addBookmark(
@@ -560,11 +561,9 @@ export class IaraSyncfusionAdapter
     }
   }
 
-  private _handleTemplateInference(
+  private _handleTemplateOrPhraseInference(
     inference: IaraSpeechRecognitionDetail
   ): boolean {
-    if (this.preprocessTemplate) this.preprocessTemplate();
-
     if (
       !inference.richTranscriptModifiers?.length ||
       !inference.richTranscriptWithoutModifiers
@@ -576,7 +575,13 @@ export class IaraSyncfusionAdapter
         inference.richTranscriptModifiers[0]
       ];
     const metadata = phraseOrTemplate.metadata as { category?: string };
-    if (metadata.category === "Template" || !metadata.category) {
+
+    const contentType = IaraSFDT.detectContentType(
+      phraseOrTemplate.replaceText
+    );
+
+    // contentType equal plain_text the content is a phrase
+    if (metadata.category === "Template" || contentType !== "plain_text") {
       const index: number | undefined =
         inference.richTranscriptWithoutModifiers.match(
           new RegExp(`iara texto ${inference.richTranscriptModifiers[0]}`, "ui")
@@ -593,8 +598,11 @@ export class IaraSyncfusionAdapter
         ...inference,
         ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
       });
-      this.insertTemplate(template);
-
+      console.log(metadata, 'METADATA')
+      if (this.preprocessTemplate)
+        this.preprocessTemplate?.(template, metadata);
+      else
+        this.insertTemplate(template);
       return true;
     }
 

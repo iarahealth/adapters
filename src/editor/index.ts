@@ -1,4 +1,4 @@
-import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail, Template } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 
@@ -22,7 +22,7 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-  public preprocessTemplate?: () => void;
+  public preprocessTemplate?: (template: unknown, metadata: unknown) => Promise<void>;
   public iaraRecognizes = true;
   public selectedField: {
     content: string;
