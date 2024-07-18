@@ -1,9 +1,8 @@
-import { IaraSpeechRecognition, IaraSpeechRecognitionDetail, Template } from "../speech";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
-
-import { IaraEditorNavigationFieldManager } from "./navigationFields";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
