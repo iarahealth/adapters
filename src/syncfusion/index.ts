@@ -331,7 +331,6 @@ export class IaraSyncfusionAdapter
 
     this._navigationFieldManager.getBookmarks();
     this._documentEditor.selection.moveToDocumentEnd();
-    this._navigationFieldManager.nextField();
   }
 
   insertText(text: string, resetSytle = false): void {
@@ -451,10 +450,16 @@ export class IaraSyncfusionAdapter
             name: string;
             category: string;
             content: string;
+            id: number;
           };
           this.undo();
 
-          if (item.category === "Template") this.insertTemplate(item.content);
+          if (item.category === "Template") {
+            if (this.preprocessAndInsertTemplate)
+              this.preprocessAndInsertTemplate?.(item.content, item);
+            else
+              this.insertTemplate(item.content);
+          }
           else this.insertText(item.content);
 
           dialogObj.hide();
@@ -598,9 +603,8 @@ export class IaraSyncfusionAdapter
         ...inference,
         ...{ richTranscript: templatePrefix, richTranscriptModifiers: [] },
       });
-      console.log(metadata, 'METADATA')
-      if (this.preprocessTemplate)
-        this.preprocessTemplate?.(template, metadata);
+      if (this.preprocessAndInsertTemplate)
+        this.preprocessAndInsertTemplate?.(template, metadata);
       else
         this.insertTemplate(template);
       return true;
