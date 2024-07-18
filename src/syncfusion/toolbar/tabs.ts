@@ -536,12 +536,12 @@ export const tabsConfig = (
             text: editorContainerLocale.language.iaraTranslate.customfields
               .optional,
           },
-          {
-            id: "add_additive_field",
-            iconCss: "e-icons e-plus",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .additive,
-          },
+          // {
+          //   id: "add_additive_field",
+          //   iconCss: "e-icons e-plus",
+          //   text: editorContainerLocale.language.iaraTranslate.customfields
+          //     .additive,
+          // },
           {
             id: "next_field",
             iconCss: "e-icons e-arrow-right",
