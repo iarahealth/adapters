@@ -123,7 +123,7 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager;
   }
 
-  private _getNavigationFieldDeleted(): void {
+  private _handleRemovedNavigationField(): void {
     const { content, title, type } = this.selectedField;
     if (this.selectedField.content)
       this._navigationFieldManager.insertField(content, title, type);
@@ -133,69 +133,64 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       this._locale.copyReport,
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to copy");
+          this._onIaraCommand?.("required fields to copy");
           return;
         }
+        this.onIaraCommand?.(this._locale.copyReport);
         this._recognition.stop();
         await this.copyReport();
-        this.onIaraCommand?.(this._locale.copyReport);
       }
     );
     this._recognition.commands.add(
       this._locale.finishReport,
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to finish");
+          this._onIaraCommand?.("required fields to finish");
           return;
         }
+        this._onIaraCommand?.(this._locale.finishReport);
         this._recognition.stop();
         await this.finishReport();
-        this.onIaraCommand?.(this._locale.finishReport);
       }
     );
     this._recognition.commands.add(this._locale.toggleBold, () => {
+      this._onIaraCommand(this._locale.toggleBold);
       this._styleManager.toggleBold();
     });
     this._recognition.commands.add(this._locale.toggleItalic, () => {
+      this._onIaraCommand(this._locale.toggleItalic);
       this._styleManager.toggleItalic();
     });
     this._recognition.commands.add(this._locale.toggleUnderline, () => {
+      this._onIaraCommand(this._locale.toggleUnderline);
       this._styleManager.toggleUnderline();
     });
     this._recognition.commands.add(this._locale.toggleUppercase, () => {
+      this._onIaraCommand(this._locale.toggleUppercase);
       this._styleManager.toggleUppercase();
     });
     this._recognition.commands.add(this._locale.print, () => {
+      this._onIaraCommand(this._locale.print);
       this.print();
     });
-    this._recognition.commands.add(
-      this._locale.nextField,
-      (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
-        this._navigationFieldManager.nextField();
-      }
-    );
+    this._recognition.commands.add(this._locale.nextField, (detail, command) => {
+      if (detail.transcript === command) this._handleRemovedNavigationField();
+      this._navigationFieldManager.nextField();
+      this._onIaraCommand(this._locale.nextField);
+    });
     this._recognition.commands.add(this._locale.previousField, (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+      if (detail.transcript === command) this._handleRemovedNavigationField();
+      this._onIaraCommand(this._locale.previousField);
       this._navigationFieldManager.previousField();
     });
     this._recognition.commands.add(
       this._locale.next,
       (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
+        this._onIaraCommand(this._locale.next);
         this._navigationFieldManager.nextField();
       }
     );
@@ -203,27 +198,12 @@ export abstract class EditorAdapter {
       `${this._locale.search} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         if (detail.transcript === (groups?.length && groups[0])) {
-          this._getNavigationFieldDeleted();
+          this._handleRemovedNavigationField();
         }
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.("buscar");
-        } finally {
-          console.info(detail, command, param);
-        }
-      }
-    );
-    this._recognition.commands.add(
-      `${this._locale.field} (\\p{Letter}+)`,
-      (detail, command, param, groups) => {
-        if (detail.transcript === (groups?.length && groups[0])) {
-          this._getNavigationFieldDeleted();
-        }
-        try {
-          this._navigationFieldManager.goToField(groups ? groups[1] : "");
-        } catch (e) {
-          this.onIaraCommand?.("buscar");
+          this.onIaraCommand?.(this._locale.search);
         } finally {
           console.info(detail, command, param);
         }
@@ -245,6 +225,10 @@ export abstract class EditorAdapter {
         listener.callback as EventListenerOrEventListenerObject
       );
     });
+  }
+
+  protected _onIaraCommand(command: string): void {
+    this.onIaraCommand?.(command);
   }
 
   protected _updateReport(

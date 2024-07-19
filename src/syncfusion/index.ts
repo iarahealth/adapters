@@ -51,7 +51,7 @@ export class IaraSyncfusionAdapter
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
-    showBookmarks: false
+    showBookmarks: false,
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
@@ -82,7 +82,8 @@ export class IaraSyncfusionAdapter
     if ("documentEditor" in _editorInstance) {
       this._editorContainer = _editorInstance;
       this._documentEditor = _editorInstance.documentEditor;
-      this._editorContainer.documentEditorSettings.showBookmarks = this._config.showBookmarks;
+      this._editorContainer.documentEditorSettings.showBookmarks =
+        this._config.showBookmarks;
     } else {
       this._documentEditor = _editorInstance;
     }
@@ -374,8 +375,6 @@ export class IaraSyncfusionAdapter
 
     if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
-
-    if (inference.isFinal) this._selectionManager = undefined;
   }
 
   moveToDocumentEnd() {
@@ -611,5 +610,26 @@ export class IaraSyncfusionAdapter
     }
 
     return false;
+  }
+
+  protected _onIaraCommand(command: string): void {
+    // When using the speech command, we may get an empty bookmark.
+    // If that is the case, remove it before processing the command
+    let selectionBookmarks = this._documentEditor.selection.getBookmarks();
+    const emptyBookmark = selectionBookmarks.find(bookmark => {
+      this._documentEditor.selection.selectBookmark(bookmark);
+      return this._documentEditor.selection.text.length === 0;
+    });
+
+    if (emptyBookmark) {
+      this._documentEditor.editor.delete();
+    } else {
+      this._selectionManager?.resetSelection();
+      this._selectionManager?.moveSelectionToAfterBookmarkEdge(
+        this._selectionManager.initialSelectionData.bookmarkId
+      );
+    }
+
+    super._onIaraCommand(command);
   }
 }

@@ -159,18 +159,12 @@ export class IaraSyncfusionSelectionManager {
 
   public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
     this._editor.selection.selectBookmark(bookmarkId, false);
-    this._editor.selection.select(
-      this._editor.selection.endOffset,
-      this._editor.selection.endOffset
-    );
+    this._editor.selection.moveNextPosition();
   }
 
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
     this._editor.selection.selectBookmark(bookmarkId, false);
-    this._editor.selection.select(
-      this._editor.selection.startOffset,
-      this._editor.selection.startOffset
-    );
+    this._editor.selection.movePreviousPosition();
   }
 
   public resetStyles(): void {
