@@ -103,7 +103,6 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   toggleItalic(): void {
     this._editor.selection.characterFormat.italic =
       !this._editor.selection.characterFormat.italic;
-    this._editor.editor.toggleItalic();
   }
   toggleUnderline(): void {
     if (this._editor.selection.characterFormat.underline === "Single") {
