@@ -31,7 +31,10 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
   showBookmarks: boolean;
 }
 
-export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
+export class IaraSyncfusionAdapter
+  extends EditorAdapter
+  implements EditorAdapter
+{
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
@@ -373,8 +376,6 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
 
     if (text.length) this.insertText(text, true);
     else this._documentEditor.editor.delete();
-
-    if (inference.isFinal) this._selectionManager = undefined;
   }
 
   moveToDocumentEnd() {
@@ -615,6 +616,11 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
 
     if (emptyBookmark) {
       this._documentEditor.editor.delete();
+    } else {
+      this._selectionManager?.resetSelection();
+      this._selectionManager?.moveSelectionToAfterBookmarkEdge(
+        this._selectionManager.initialSelectionData.bookmarkId
+      );
     }
 
     super._onIaraCommand(command);
