@@ -98,13 +98,19 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   }
 
   toggleBold(): void {
-    this._editor.editor.toggleBold();
+    this._editor.selection.characterFormat.bold = !this._editor.selection.characterFormat.bold;
   }
   toggleItalic(): void {
+    this._editor.selection.characterFormat.italic =
+      !this._editor.selection.characterFormat.italic;
     this._editor.editor.toggleItalic();
   }
   toggleUnderline(): void {
-    this._editor.editor.toggleUnderline("Single");
+    if (this._editor.selection.characterFormat.underline === "Single") {
+      this._editor.selection.characterFormat.underline = "None";
+    } else {
+      this._editor.selection.characterFormat.underline = "Single";
+    }
   }
   toggleUppercase(): void {
     this._editor.editor.toggleAllCaps();
