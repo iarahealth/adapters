@@ -197,6 +197,21 @@ export abstract class EditorAdapter {
         }
       }
     );
+    this._recognition.commands.add(
+      `campo (\\p{Letter}+)`,
+      (detail, command, param, groups) => {
+        if (detail.transcript === (groups?.length && groups[0])) {
+          this._getNavigationFieldDeleted();
+        }
+        try {
+          this._navigationFieldManager.goToField(groups ? groups[1] : "");
+        } catch (e) {
+          this.onIaraCommand?.("buscar");
+        } finally {
+          console.info(detail, command, param);
+        }
+      }
+    );
   }
 
   private _initListeners(): void {
