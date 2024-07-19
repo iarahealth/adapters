@@ -44,11 +44,13 @@ export class IaraSyncfusionShortcutsManager {
       const metadata = template.metadata as {
         category: string;
         name: string;
+        id: number;
       };
       return {
         name: metadata.name,
         category: metadata.category ? metadata.category : "",
         content: template.replaceText,
+        id: metadata.id,
       };
     });
 

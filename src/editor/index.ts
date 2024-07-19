@@ -1,9 +1,8 @@
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
-
-import { IaraEditorNavigationFieldManager } from "./navigationFields";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -22,6 +21,7 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
+  public preprocessAndInsertTemplate?: (template: unknown, metadata: unknown) => Promise<void>;
   public iaraRecognizes = true;
   public selectedField: {
     content: string;
