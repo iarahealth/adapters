@@ -185,7 +185,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       `buscar (\\p{Letter}+)`,
       (detail, command, param, groups) => {
-        if (detail.transcript === command) {
+        if (detail.transcript === (groups?.length && groups[0])) {
           this._getNavigationFieldDeleted();
         }
         try {
