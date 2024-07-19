@@ -3,6 +3,7 @@ import { IaraEditorInferenceFormatter } from "./formatter";
 import { IaraEditorStyleManager } from "./style";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
 import { IaraEditorNavigationFieldManager } from "./navigationFields";
+import * as Locales from "./locales.json";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -21,13 +22,17 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-  public preprocessAndInsertTemplate?: (template: unknown, metadata: unknown) => Promise<void>;
+  public preprocessAndInsertTemplate?: (
+    template: unknown,
+    metadata: unknown
+  ) => Promise<void>;
   public iaraRecognizes = true;
   public selectedField: {
     content: string;
     title: string;
     type: "Field" | "Mandatory" | "Optional";
   } = { content: "", title: "", type: "Field" };
+  protected _locale: Record<string, string> = {};
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -78,6 +83,12 @@ export abstract class EditorAdapter {
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
+    switch (this._config.language) {
+      case "es":
+        this._locale = Locales["es"];
+      default:
+        this._locale = Locales["pt-BR"];
+    }
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
@@ -120,7 +131,7 @@ export abstract class EditorAdapter {
 
   private _initCommands(): void {
     this._recognition.commands.add(
-      "iara copiar laudo",
+      this._locale.copyReport,
       async (detail, command) => {
         if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
@@ -131,11 +142,11 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.copyReport();
-        this.onIaraCommand?.("iara copiar laudo");
+        this.onIaraCommand?.(this._locale.copyReport);
       }
     );
     this._recognition.commands.add(
-      "iara finalizar laudo",
+      this._locale.finishReport,
       async (detail, command) => {
         if (detail.transcript === command) {
           this._getNavigationFieldDeleted();
@@ -146,44 +157,50 @@ export abstract class EditorAdapter {
         }
         this._recognition.stop();
         await this.finishReport();
-        this.onIaraCommand?.("iara finalizar laudo");
+        this.onIaraCommand?.(this._locale.finishReport);
       }
     );
-    this._recognition.commands.add("iara negrito", () => {
+    this._recognition.commands.add(this._locale.toggleBold, () => {
       this._styleManager.toggleBold();
     });
-    this._recognition.commands.add("iara itálico", () => {
+    this._recognition.commands.add(this._locale.toggleItalic, () => {
       this._styleManager.toggleItalic();
     });
-    this._recognition.commands.add("iara sublinhado", () => {
+    this._recognition.commands.add(this._locale.toggleUnderline, () => {
       this._styleManager.toggleUnderline();
     });
-    this._recognition.commands.add("iara maiúsculo", () => {
+    this._recognition.commands.add(this._locale.toggleUppercase, () => {
       this._styleManager.toggleUppercase();
     });
-    this._recognition.commands.add("iara imprimir", () => {
+    this._recognition.commands.add(this._locale.print, () => {
       this.print();
     });
-    this._recognition.commands.add("iara próximo campo", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
+    this._recognition.commands.add(
+      this._locale.nextField,
+      (detail, command) => {
+        if (detail.transcript === command) {
+          this._getNavigationFieldDeleted();
+        }
+        this._navigationFieldManager.nextField();
       }
-      this._navigationFieldManager.nextField();
-    });
-    this._recognition.commands.add("iara campo anterior", (detail, command) => {
+    );
+    this._recognition.commands.add(this._locale.previousField, (detail, command) => {
       if (detail.transcript === command) {
         this._getNavigationFieldDeleted();
       }
       this._navigationFieldManager.previousField();
     });
-    this._recognition.commands.add("next", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
-      this._navigationFieldManager.nextField();
-    });
     this._recognition.commands.add(
-      `buscar (\\p{Letter}+)`,
+      this._locale.next,
+      (detail, command) => {
+        if (detail.transcript === command) {
+          this._getNavigationFieldDeleted();
+        }
+        this._navigationFieldManager.nextField();
+      }
+    );
+    this._recognition.commands.add(
+      `${this._locale.search} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         if (detail.transcript === (groups?.length && groups[0])) {
           this._getNavigationFieldDeleted();
@@ -198,7 +215,7 @@ export abstract class EditorAdapter {
       }
     );
     this._recognition.commands.add(
-      `campo (\\p{Letter}+)`,
+      `${this._locale.field} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
         if (detail.transcript === (groups?.length && groups[0])) {
           this._getNavigationFieldDeleted();
