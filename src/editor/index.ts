@@ -1,9 +1,9 @@
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraEditorInferenceFormatter } from "./formatter";
-import { IaraEditorStyleManager } from "./style";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
+import { IaraEditorInferenceFormatter } from "./formatter";
+import Locales from "./locales";
 import { IaraEditorNavigationFieldManager } from "./navigationFields";
-import * as Locales from "./locales.json";
+import { IaraEditorStyleManager } from "./style";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -86,8 +86,10 @@ export abstract class EditorAdapter {
     switch (this._config.language) {
       case "es":
         this._locale = Locales["es"];
+        break;
       default:
         this._locale = Locales["pt-BR"];
+        break;
     }
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();

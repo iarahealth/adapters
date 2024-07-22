@@ -1,4 +1,4 @@
-{
+export default {
   "pt-BR": {
     "copyReport": "iara copiar laudo",
     "field": "campo",
