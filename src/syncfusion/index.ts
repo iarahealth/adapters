@@ -374,7 +374,13 @@ export class IaraSyncfusionAdapter
     );
 
     if (text.length) this.insertText(text, true);
-    else this._documentEditor.editor.delete();
+    else if (inference.isFinal) {
+      this._documentEditor.selection.selectBookmark(
+        this._selectionManager.initialSelectionData.bookmarkId,
+        false
+      );
+      this._documentEditor.editor.delete();
+    }
   }
 
   moveToDocumentEnd() {
