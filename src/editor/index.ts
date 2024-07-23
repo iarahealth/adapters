@@ -181,18 +181,13 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(this._locale.nextField, (detail, command) => {
       if (detail.transcript === command) this._handleRemovedNavigationField();
       this._navigationFieldManager.nextField();
-      this._onIaraCommand(this._locale.nextField);
     });
     this._recognition.commands.add(this._locale.previousField, (detail, command) => {
       if (detail.transcript === command) this._handleRemovedNavigationField();
-      this._onIaraCommand(this._locale.previousField);
       this._navigationFieldManager.previousField();
     });
-    this._recognition.commands.add(
-      this._locale.next,
-      (detail, command) => {
+    this._recognition.commands.add(this._locale.next, (detail, command) => {
         if (detail.transcript === command) this._handleRemovedNavigationField();
-        this._onIaraCommand(this._locale.next);
         this._navigationFieldManager.nextField();
       }
     );
