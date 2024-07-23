@@ -1,9 +1,9 @@
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraEditorInferenceFormatter } from "./formatter";
-import { IaraEditorStyleManager } from "./style";
-import { IaraEditorNavigationFieldManager } from "./navigationFields";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
-import * as Translations from "./translations.json";
+import { IaraEditorInferenceFormatter } from "./formatter";
+import Locales from "./locales";
+import { IaraEditorNavigationFieldManager } from "./navigationFields";
+import { IaraEditorStyleManager } from "./style";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
@@ -22,12 +22,17 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
+  public preprocessAndInsertTemplate?: (
+    template: unknown,
+    metadata: unknown
+  ) => Promise<void>;
   public iaraRecognizes = true;
   public selectedField: {
     content: string;
     title: string;
     type: "Field" | "Mandatory" | "Optional";
   } = { content: "", title: "", type: "Field" };
+  protected _locale: Record<string, string> = {};
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
@@ -79,15 +84,14 @@ export abstract class EditorAdapter {
     protected _recognition: IaraSpeechRecognition,
     protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
-    // this._config.language = 'es';
-    switch (this._config.language)
-    {
-      case 'es':
-        this._currentLanguage = Translations['es'];
+    switch (this._config.language) {
+      case "es":
+        this._locale = Locales["es"];
+        break;
       default:
-        this._currentLanguage = Translations["pt-BR"];
+        this._locale = Locales["pt-BR"];
+        break;
     }
-
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._initCommands();
     this._initListeners();
@@ -122,7 +126,7 @@ export abstract class EditorAdapter {
     return this._navigationFieldManager;
   }
 
-  private _getNavigationFieldDeleted(): void {
+  private _handleRemovedNavigationField(): void {
     const { content, title, type } = this.selectedField;
     if (this.selectedField.content)
       this._navigationFieldManager.insertField(content, title, type);
@@ -130,80 +134,79 @@ export abstract class EditorAdapter {
 
   private _initCommands(): void {
     this._recognition.commands.add(
-      this._currentLanguage.copy_report,
+      this._locale.copyReport,
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to copy");
+          this._onIaraCommand?.("required fields to copy");
           return;
         }
+        this.onIaraCommand?.(this._locale.copyReport);
         this._recognition.stop();
         await this.copyReport();
-        this.onIaraCommand?.(this._currentLanguage.copy_report);
       }
     );
     this._recognition.commands.add(
-      this._currentLanguage.finish_report,
+      this._locale.finishReport,
       async (detail, command) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
-        }
+        if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
-          this.onIaraCommand?.("required fields to finish");
+          this._onIaraCommand?.("required fields to finish");
           return;
         }
+        this._onIaraCommand?.(this._locale.finishReport);
         this._recognition.stop();
         await this.finishReport();
-        this.onIaraCommand?.(this._currentLanguage.finish_report);
       }
     );
-    this._recognition.commands.add(this._currentLanguage.toggle_bold, () => {
+    this._recognition.commands.add(this._locale.toggleBold, () => {
+      this._onIaraCommand(this._locale.toggleBold);
       this._styleManager.toggleBold();
     });
-    this._recognition.commands.add(this._currentLanguage.toggle_italic, () => {
+    this._recognition.commands.add(this._locale.toggleItalic, () => {
+      this._onIaraCommand(this._locale.toggleItalic);
       this._styleManager.toggleItalic();
     });
-    this._recognition.commands.add(this._currentLanguage.toggle_underline, () => {
+    this._recognition.commands.add(this._locale.toggleUnderline, () => {
+      this._onIaraCommand(this._locale.toggleUnderline);
       this._styleManager.toggleUnderline();
     });
-    this._recognition.commands.add(this._currentLanguage.toggle_uppercase, () => {
+    this._recognition.commands.add(this._locale.toggleUppercase, () => {
+      this._onIaraCommand(this._locale.toggleUppercase);
       this._styleManager.toggleUppercase();
     });
-    //braun
-    this._recognition.commands.add(this._currentLanguage.print, () => {
-    // this._recognition.commands.add("iara capotar", () => {
+    this._recognition.commands.add(this._locale.print, () => {
+      this._onIaraCommand(this._locale.print);
       this.print();
     });
-    this._recognition.commands.add(this._currentLanguage.next_field, (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+    this._recognition.commands.add(this._locale.nextField, (detail, command) => {
+      if (detail.transcript === command) this._handleRemovedNavigationField();
       this._navigationFieldManager.nextField();
+      this._onIaraCommand(this._locale.nextField);
     });
-    this._recognition.commands.add(this._currentLanguage.previous_field, (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
+    this._recognition.commands.add(this._locale.previousField, (detail, command) => {
+      if (detail.transcript === command) this._handleRemovedNavigationField();
+      this._onIaraCommand(this._locale.previousField);
       this._navigationFieldManager.previousField();
     });
-    this._recognition.commands.add("next", (detail, command) => {
-      if (detail.transcript === command) {
-        this._getNavigationFieldDeleted();
-      }
-      this._navigationFieldManager.nextField();
-    });
     this._recognition.commands.add(
-      `${this._currentLanguage.search} (\\p{Letter}+)`,
+      this._locale.next,
+      (detail, command) => {
+        if (detail.transcript === command) this._handleRemovedNavigationField();
+        this._onIaraCommand(this._locale.next);
+        this._navigationFieldManager.nextField();
+      }
+    );
+    this._recognition.commands.add(
+      `${this._locale.search} (\\p{Letter}+)`,
       (detail, command, param, groups) => {
-        if (detail.transcript === command) {
-          this._getNavigationFieldDeleted();
+        if (detail.transcript === (groups?.length && groups[0])) {
+          this._handleRemovedNavigationField();
         }
         try {
           this._navigationFieldManager.goToField(groups ? groups[1] : "");
         } catch (e) {
-          this.onIaraCommand?.(this._currentLanguage.search);
+          this.onIaraCommand?.(this._locale.search);
         } finally {
           console.info(detail, command, param);
         }
@@ -225,6 +228,10 @@ export abstract class EditorAdapter {
         listener.callback as EventListenerOrEventListenerObject
       );
     });
+  }
+
+  protected _onIaraCommand(command: string): void {
+    this.onIaraCommand?.(command);
   }
 
   protected _updateReport(

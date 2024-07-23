@@ -13,10 +13,11 @@ export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
   HTML = "html",
   RTF = "rtf",
+  PLAIN_TEXT = "plain_text",
 }
 
 export class IaraSFDT {
-  public static IARA_API_URL = "https://api.iarahealth.com"; 
+  public static IARA_API_URL = "https://api.iarahealth.com";
   public html: string | undefined;
   public plainText: string | undefined;
   public rtf: string | undefined;
@@ -28,7 +29,7 @@ export class IaraSFDT {
     else if (content.startsWith('{"sfdt":'))
       return IaraSyncfusionContentTypes.SFDT;
     else if (content.startsWith("<")) return IaraSyncfusionContentTypes.HTML;
-    else throw new Error("Content type not recognized.");
+    else return IaraSyncfusionContentTypes.PLAIN_TEXT;
   }
 
   static async fromContent(content: string, editor: DocumentEditor) {
@@ -125,7 +126,16 @@ export class IaraSFDT {
       throw new Error(responseText);
     }
 
-    return responseText;
+    let rtf = responseText;
+
+    // Add older RTF unicode encoding as fallback for compatibility with RTF spec 1.4 and older
+    rtf = rtf.replace(
+      /(\\u(\d{1,4}))\?/giu,
+      (_match: string, group1: string, group2: string) => {
+        return `${group1}\\'${parseInt(group2).toString(16).slice(-2)}`;
+      }
+    );
+    return rtf;
   }
 
   static toPdf(content: any, config?: IaraSyncfusionConfig) {
