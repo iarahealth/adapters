@@ -12,25 +12,9 @@ import { IaraNavigationBookmark } from "./navigationBookmark";
 import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
 
-export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
-  previousBookmark: IaraNavigationBookmark = {
-    name: "",
-    content: "",
-    title: "",
-    offset: {
-      start: "",
-      end: "",
-    },
-  };
-  nextBookmark: IaraNavigationBookmark = {
-    name: "",
-    content: "",
-    title: "",
-    offset: {
-      start: "",
-      end: "",
-    },
-  };
+export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager{
+  previousBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
+  nextBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
   currentSelectionOffset: {
     start: string;
     end: string;
@@ -60,6 +44,25 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     private _languageManager: IaraSyncfusionLanguageManager
   ) {
     super(_recognition);
+
+    this.previousBookmark = {
+      name: "",
+      content: "",
+      title: "",
+      offset: {
+        start: "",
+        end: "",
+      },
+    };
+    this.nextBookmark = {
+      name: "",
+      content: "",
+      title: "",
+      offset: {
+        start: "",
+        end: "",
+      },
+    };
   }
 
   addAdditiveField() {
@@ -434,8 +437,24 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const nextField = index === -1 ? this.bookmarks[0] : this.bookmarks[index];
     const previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
 
-    this.previousBookmark = previousField;
-    this.nextBookmark = nextField;
+    this.previousBookmark = previousField ? previousField : {
+      name: "",
+      content: "",
+      title: "",
+      offset: {
+        start: "",
+        end: "",
+      },
+    };
+    this.nextBookmark = nextField ? nextField : {
+      name: "",
+      content: "",
+      title: "",
+      offset: {
+        start: "",
+        end: "",
+      },
+    };
   }
 
   findCurrentIndex(
