@@ -538,9 +538,10 @@ export class IaraSyncfusionAdapter
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
+    const hadSelectedText = this._documentEditor.selection.text.length
 
-    if (this._documentEditor.selection.text.length) {
-      this._documentEditor.editor.delete();
+    if (hadSelectedText) {
+        this._documentEditor.editor.delete();
     }
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
@@ -564,8 +565,10 @@ export class IaraSyncfusionAdapter
       this._selectionManager.moveSelectionToBeforeBookmarkEdge(
         this._selectionManager.initialSelectionData.bookmarkId
       );
-      this._documentEditor.selection.extendBackward();
-      this._documentEditor.editor.delete();
+      if (!hadSelectedText) {
+        this._documentEditor.selection.extendBackward();
+        this._documentEditor.editor.delete();
+      }
       this._selectionManager.resetSelection();
     }
   }
