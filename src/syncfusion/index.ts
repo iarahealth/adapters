@@ -512,7 +512,6 @@ export class IaraSyncfusionAdapter
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
       if (event.button === 1) {
         this._cursorSelection?.resetSelection();
-        this._cursorSelection?.destroy();
         this._cursorSelection = undefined;
 
         this._recognition.toggleRecording();
