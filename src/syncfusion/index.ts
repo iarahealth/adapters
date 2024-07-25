@@ -31,10 +31,7 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
   showBookmarks: boolean;
 }
 
-export class IaraSyncfusionAdapter
-  extends EditorAdapter
-  implements EditorAdapter
-{
+export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
@@ -46,6 +43,7 @@ export class IaraSyncfusionAdapter
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   private _languageManager: IaraSyncfusionLanguageManager;
   private _inferenceBookmarksManager: IaraSyncfusionInferenceBookmarksManager;
+  private _inferenceEndOffset: string = "0;0;0";
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
@@ -87,6 +85,10 @@ export class IaraSyncfusionAdapter
     } else {
       this._documentEditor = _editorInstance;
     }
+
+    setInterval(() => {
+      console.log("aaaaaaaa", this._documentEditor.selection.getBookmarks());
+    }, 1000)
 
     this._languageManager = new IaraSyncfusionLanguageManager(this._config);
 
@@ -355,7 +357,10 @@ export class IaraSyncfusionAdapter
     if (inference.isFirst) {
       this._handleFirstInference(inference);
     } else if (this._selectionManager) {
-      this._selectionManager.resetSelection(false);
+      this._documentEditor.selection.select(
+        this._selectionManager.initialSelectionData.startOffset,
+        this._inferenceEndOffset
+      );
     }
 
     if (!this._selectionManager) return;
@@ -370,17 +375,40 @@ export class IaraSyncfusionAdapter
       inference,
       this._selectionManager.wordBeforeSelection,
       this._selectionManager.wordAfterSelection,
-      this._selectionManager.isAtStartOfLine
+      this._selectionManager.initialSelectionData.isAtStartOfLine
     );
 
     if (text.length) this.insertText(text, true);
-    else if (inference.isFinal) {
-      this._documentEditor.selection.selectBookmark(
-        this._selectionManager.initialSelectionData.bookmarkId,
-        false
-      );
-      this._documentEditor.editor.delete();
+
+    if (inference.isFinal) {
+      if (text.length) {
+        this._selectionManager.moveToNextPosition(
+          this._documentEditor.selection.endOffset
+        );
+      } else {
+        this._documentEditor.editor.delete();
+
+        // After deleting the text, we are left with the empty bookmark,
+        // which we want to remove.
+        this._selectionManager.moveToPreviousPosition(
+          this._documentEditor.selection.startOffset
+        );
+        const startOffset = this._documentEditor.selection.startOffset;
+        
+        // By moving 2 positions from the left edge, we are after the right one
+        this._selectionManager.moveToNextNPositions(
+          this._documentEditor.selection.startOffset, 2
+        );
+
+        this._documentEditor.selection.select(
+          startOffset,
+          this._documentEditor.selection.endOffset
+        );
+        this._documentEditor.editor.delete();
+      }
     }
+
+    this._inferenceEndOffset = this._documentEditor.selection.endOffset;
   }
 
   moveToDocumentEnd() {
@@ -462,10 +490,8 @@ export class IaraSyncfusionAdapter
           if (item.category === "Template") {
             if (this.preprocessAndInsertTemplate)
               this.preprocessAndInsertTemplate?.(item.content, item);
-            else
-              this.insertTemplate(item.content);
-          }
-          else this.insertText(item.content);
+            else this.insertTemplate(item.content);
+          } else this.insertText(item.content);
 
           dialogObj.hide();
         }
@@ -540,9 +566,7 @@ export class IaraSyncfusionAdapter
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
     const hadSelectedText = this._documentEditor.selection.text.length
 
-    if (hadSelectedText) {
-        this._documentEditor.editor.delete();
-    }
+    if (hadSelectedText) this._documentEditor.editor.delete();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
@@ -558,19 +582,6 @@ export class IaraSyncfusionAdapter
       inference,
       this._selectionManager.initialSelectionData.bookmarkId
     );
-
-    if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
-      // Removes trailing space so that the formatter can determine whether the space is required or not.
-      // I.e. if the inference starts with a punctuation, there would be an extra space.
-      this._selectionManager.moveSelectionToBeforeBookmarkEdge(
-        this._selectionManager.initialSelectionData.bookmarkId
-      );
-      if (!hadSelectedText) {
-        this._documentEditor.selection.extendBackward();
-        this._documentEditor.editor.delete();
-      }
-      this._selectionManager.resetSelection();
-    }
   }
 
   private _handleTemplateOrPhraseInference(
@@ -612,32 +623,10 @@ export class IaraSyncfusionAdapter
       });
       if (this.preprocessAndInsertTemplate)
         this.preprocessAndInsertTemplate?.(template, metadata);
-      else
-        this.insertTemplate(template);
+      else this.insertTemplate(template);
       return true;
     }
 
     return false;
-  }
-
-  protected _onIaraCommand(command: string): void {
-    // When using the speech command, we may get an empty bookmark.
-    // If that is the case, remove it before processing the command
-    let selectionBookmarks = this._documentEditor.selection.getBookmarks();
-    const emptyBookmark = selectionBookmarks.find(bookmark => {
-      this._documentEditor.selection.selectBookmark(bookmark);
-      return this._documentEditor.selection.text.length === 0;
-    });
-
-    if (emptyBookmark) {
-      this._documentEditor.editor.delete();
-    } else {
-      this._selectionManager?.resetSelection();
-      this._selectionManager?.moveSelectionToAfterBookmarkEdge(
-        this._selectionManager.initialSelectionData.bookmarkId
-      );
-    }
-
-    super._onIaraCommand(command);
   }
 }
