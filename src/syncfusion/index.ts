@@ -86,10 +86,6 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
       this._documentEditor = _editorInstance;
     }
 
-    setInterval(() => {
-      console.log("aaaaaaaa", this._documentEditor.selection.getBookmarks());
-    }, 1000)
-
     this._languageManager = new IaraSyncfusionLanguageManager(this._config);
 
     this._contentManager = new IaraSyncfusionEditorContentManager(
