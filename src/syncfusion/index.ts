@@ -225,7 +225,7 @@ export class IaraSyncfusionAdapter
 
     Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
       async (bookmark: IaraInferenceBookmark) => {
-        if (!bookmark.recordingId) return;
+        if (!bookmark.recordingId || !bookmark.content.trim()) return;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
             ...this._recognition.internal.iaraAPIMandatoryHeaders,
