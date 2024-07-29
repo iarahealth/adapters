@@ -128,7 +128,7 @@ export class IaraSyncfusionSelectionManager {
       // If there are any bookmarks at cursor position, check if we are on the edge of any of them.
       bookmarksAtCursor.forEach(cursorBookmarkID => {
         // Select bookmark without selecting the edge itself as the cursor will not be at the edge
-        this._editor.selection.selectBookmark(cursorBookmarkID, true);
+        this.selectBookmark(cursorBookmarkID, true);
         const {
           endOffset: bookmarkEndOffset,
           startOffset: bookmarkStartOffset,
@@ -148,22 +148,19 @@ export class IaraSyncfusionSelectionManager {
   }
 
   public resetSelection(resetStyles = true): void {
-    this._editor.selection.selectBookmark(
-      this.initialSelectionData.bookmarkId,
-      true
-    );
+    this.selectBookmark(this.initialSelectionData.bookmarkId, true);
     if (resetStyles) {
       this.resetStyles();
     }
   }
 
   public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
-    this._editor.selection.selectBookmark(bookmarkId, false);
+    this.selectBookmark(bookmarkId, false);
     this._editor.selection.moveNextPosition();
   }
 
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
-    this._editor.selection.selectBookmark(bookmarkId, false);
+    this.selectBookmark(bookmarkId, false);
     this._editor.selection.movePreviousPosition();
   }
 
@@ -185,5 +182,33 @@ export class IaraSyncfusionSelectionManager {
       (this._editor.selection.characterFormat as any)[prop] =
         this.initialSelectionData.characterFormat[prop];
     });
+  }
+
+  public selectBookmark(
+    bookmarkId: string,
+    excludeBookmarkStartEnd?: boolean,
+    scrollToBookmark: boolean = false
+  ): void {
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._editor,
+      bookmarkId,
+      excludeBookmarkStartEnd,
+      scrollToBookmark
+    );
+  }
+
+  // Prevent scrolling to the bookmark when selecting it
+  public static selectBookmark(
+    editor: DocumentEditor,
+    bookmarkId: string,
+    excludeBookmarkStartEnd?: boolean,
+    scrollToBookmark: boolean = false
+  ): void {
+    const { isShiftingEnabled } = editor;
+    if (!scrollToBookmark && !isShiftingEnabled)
+      editor.isShiftingEnabled = true;
+    editor.selection.selectBookmark(bookmarkId, excludeBookmarkStartEnd);
+    if (!scrollToBookmark && !isShiftingEnabled)
+      editor.isShiftingEnabled = false;
   }
 }
