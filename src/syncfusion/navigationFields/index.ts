@@ -1,17 +1,14 @@
 import {
-  BookmarkElementBox,
-  Dictionary,
-  DocumentEditor,
-  TextPosition,
+  DocumentEditor
 } from "@syncfusion/ej2-documenteditor";
+import { v4 as uuidv4 } from "uuid";
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
-import { v4 as uuidv4 } from "uuid";
-import { IaraNavigationBookmark } from "./navigationBookmark";
-import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
 import { IaraSyncfusionSelectionManager } from "../selection";
+import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
+import { IaraNavigationBookmark } from "./navigationBookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
