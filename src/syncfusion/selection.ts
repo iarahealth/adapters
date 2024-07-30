@@ -122,6 +122,7 @@ export class IaraSyncfusionSelectionManager {
 
   private _moveSelectionFromBookmarkEdges(): void {
     const bookmarksAtCursor = this._editor.selection.getBookmarks();
+
     if (bookmarksAtCursor) {
       const { endOffset, startOffset } = this._editor.selection;
 
@@ -133,7 +134,7 @@ export class IaraSyncfusionSelectionManager {
           endOffset: bookmarkEndOffset,
           startOffset: bookmarkStartOffset,
         } = this._editor.selection;
-        
+
         if (bookmarkStartOffset === startOffset) {
           this.moveSelectionToBeforeBookmarkEdge(cursorBookmarkID);
         } else if (bookmarkEndOffset === endOffset) {
@@ -144,7 +145,21 @@ export class IaraSyncfusionSelectionManager {
   }
 
   public destroy() {
+    let { endOffset, startOffset } = this._editor.selection;
+    const isNavigationBookmarkSelected = this.isNavigationBookmarkSelected();
+    console.log(isNavigationBookmarkSelected, "isNavigationBookmarkSelected");
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
+    this._editor.selection.select(startOffset, startOffset);
+    this._editor.selection.movePreviousPosition();
+    startOffset = this._editor.selection.startOffset;
+    if (isNavigationBookmarkSelected) {
+      console.log(this._editor.selection.text, "BOOKMARK TEXT");
+    } else {
+      this._editor.selection.select(endOffset, endOffset);
+      this._editor.selection.movePreviousPosition();
+    }
+    this._editor.selection.select(startOffset, this._editor.selection.endOffset);
+    console.log(this._editor.selection.text, "FINAL");
   }
 
   public resetSelection(resetStyles = true): void {
@@ -165,6 +180,15 @@ export class IaraSyncfusionSelectionManager {
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
     this._editor.selection.selectBookmark(bookmarkId, false);
     this._editor.selection.movePreviousPosition();
+  }
+
+  public isNavigationBookmarkSelected(): boolean {
+    const bookmarks = this._editor.selection.getBookmarks();
+    // getBookmark is greater than 1 would have the idea that 2 or more bookmarks are selected at the same time
+    if (bookmarks.length > 1) {
+      return true;
+    }
+    return false;
   }
 
   public resetStyles(): void {
