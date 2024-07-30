@@ -147,19 +147,19 @@ export class IaraSyncfusionSelectionManager {
   public destroy() {
     let { endOffset, startOffset } = this._editor.selection;
     const isNavigationBookmarkSelected = this.isNavigationBookmarkSelected();
-    console.log(isNavigationBookmarkSelected, "isNavigationBookmarkSelected");
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
     this._editor.selection.select(startOffset, startOffset);
     this._editor.selection.movePreviousPosition();
-    startOffset = this._editor.selection.startOffset;
     if (isNavigationBookmarkSelected) {
-      console.log(this._editor.selection.text, "BOOKMARK TEXT");
+      this._editor.selection.movePreviousPosition();
+      startOffset = this._editor.selection.startOffset;
+      this._editor.selection.select(endOffset, endOffset);
     } else {
+      startOffset = this._editor.selection.startOffset;
       this._editor.selection.select(endOffset, endOffset);
       this._editor.selection.movePreviousPosition();
     }
     this._editor.selection.select(startOffset, this._editor.selection.endOffset);
-    console.log(this._editor.selection.text, "FINAL");
   }
 
   public resetSelection(resetStyles = true): void {
