@@ -374,12 +374,19 @@ export class IaraSyncfusionAdapter
     );
 
     if (text.length) this.insertText(text, true);
-    else if (inference.isFinal) {
-      this._selectionManager.selectBookmark(
-        this._selectionManager.initialSelectionData.bookmarkId,
-        false
-      );
-      this._documentEditor.editor.delete();
+
+    if (inference.isFinal) {
+      if (text.length) {
+        this._selectionManager.moveSelectionToAfterBookmarkEdge(
+          this._selectionManager.initialSelectionData.bookmarkId
+        );
+      } else {
+        this._selectionManager.selectBookmark(
+          this._selectionManager.initialSelectionData.bookmarkId,
+          false
+        );
+        this._documentEditor.editor.delete();
+      }
     }
   }
 
@@ -540,9 +547,7 @@ export class IaraSyncfusionAdapter
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
     const hadSelectedText = this._documentEditor.selection.text.length
 
-    if (hadSelectedText) {
-        this._documentEditor.editor.delete();
-    }
+    if (hadSelectedText) this._documentEditor.editor.delete();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
