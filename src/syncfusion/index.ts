@@ -225,7 +225,14 @@ export class IaraSyncfusionAdapter
 
     Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
       async (bookmark: IaraInferenceBookmark) => {
-        if (!bookmark.recordingId) return;
+        const normalizedContent = bookmark.content
+          .replace(/\r/g, "\n")
+          .trim()
+          .toLocaleLowerCase();
+        const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
+        if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
+        
+        const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
             ...this._recognition.internal.iaraAPIMandatoryHeaders,
@@ -233,7 +240,7 @@ export class IaraSyncfusionAdapter
           },
           method: "POST",
           body: JSON.stringify({
-            evaluation: 5, // editor-made validation as documented
+            evaluation, // editor-made validation as documented
             recording_id: bookmark.recordingId,
             corrected_text: bookmark.content.replace("\\r", "\\n"),
           }),
@@ -359,6 +366,11 @@ export class IaraSyncfusionAdapter
     }
 
     if (!this._selectionManager) return;
+
+    this._inferenceBookmarksManager.updateBookmarkInference(
+      this._selectionManager.initialSelectionData.bookmarkId, inference
+    );
+
     if (
       inference.richTranscriptModifiers?.length &&
       inference.richTranscriptWithoutModifiers
