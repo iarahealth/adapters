@@ -41,6 +41,16 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     styles.forEach(style => {
       this._editor.editor.createStyle(JSON.stringify(style), true);
     });
+
+    this._editor.documentHelper.getAuthorColor = (author: string) => {
+      if (this._editor.documentHelper.authors.containsKey(author)) {
+        return this._editor.documentHelper.authors.get(author);
+      }
+      let color: string;
+      color = this._config.darkMode ? "#f2b8b5" : "#b5082e",
+      this._editor.documentHelper.authors.add(author, color);
+      return color;
+    };
   }
 
   setEditorFontColor(color: string): void {
