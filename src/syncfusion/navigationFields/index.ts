@@ -91,6 +91,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
     }
     this.getBookmarks();
+    this.insertedBookmark = this.bookmarks.filter(bookmark =>
+      bookmark.name === `${type}-${bookmarksCount}`)[0];
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;
     this.selectBookmark(`${type}-${bookmarksCount}`, true);
@@ -101,12 +103,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const editorBookmarks = this._documentEditor.getBookmarks();
     this.updateBookmark(editorBookmarks);
     this.removeEmptyField(editorBookmarks);
-    if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
-      this.insertedBookmark = this.bookmarks.filter(
-        bookmark =>
-          bookmark.name === editorBookmarks[editorBookmarks.length - 1]
-      )[0];
-    }
     this.sortByPosition();
 
     if (setColor) this.setColor();
@@ -483,8 +479,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   checkIsSelectedAndUpdatePrevious(
     previousIndex: number
   ): IaraNavigationBookmark {
-    let selected = this.bookmarks[previousIndex];
-
     const compareCurrentOffsetWithPreviousOffset =
       this.currentSelectionOffset.start &&
       this.currentSelectionOffset.start ===
@@ -495,18 +489,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.currentSelectionOffset.start &&
       this.currentSelectionOffset.start === this.nextBookmark.offset.start &&
       this.currentSelectionOffset.end === this.nextBookmark.offset.end;
-
-    const compareCurrentOffsetWithSelectedOffset =
-      this.previousBookmark.offset.start &&
-      this.previousBookmark.name !== selected.name &&
-      previousIndex !== 0;
-
     if (
       compareCurrentOffsetWithPreviousOffset ||
-      compareCurrentOffsetWithNextOffset ||
-      compareCurrentOffsetWithSelectedOffset
+      compareCurrentOffsetWithNextOffset
     ) {
-      selected = this.bookmarks[previousIndex - 1];
       return previousIndex <= 0
         ? this.bookmarks[this.bookmarks.length - 1]
         : this.bookmarks[previousIndex - 1];
