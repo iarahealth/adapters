@@ -386,12 +386,19 @@ export class IaraSyncfusionAdapter
     );
 
     if (text.length) this.insertText(text, true);
-    else if (inference.isFinal) {
-      this._documentEditor.selection.selectBookmark(
-        this._selectionManager.initialSelectionData.bookmarkId,
-        false
-      );
-      this._documentEditor.editor.delete();
+
+    if (inference.isFinal) {
+      if (text.length) {
+        this._selectionManager.moveSelectionToAfterBookmarkEdge(
+          this._selectionManager.initialSelectionData.bookmarkId
+        );
+      } else {
+        this._selectionManager.selectBookmark(
+          this._selectionManager.initialSelectionData.bookmarkId,
+          false
+        );
+        this._documentEditor.editor.delete();
+      }
     }
   }
 
@@ -552,9 +559,7 @@ export class IaraSyncfusionAdapter
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
     const hadSelectedText = this._documentEditor.selection.text.length
 
-    if (hadSelectedText) {
-        this._documentEditor.editor.delete();
-    }
+    if (hadSelectedText) this._documentEditor.editor.delete();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._documentEditor,
@@ -630,26 +635,5 @@ export class IaraSyncfusionAdapter
     }
 
     return false;
-  }
-
-  protected _onIaraCommand(command: string): void {
-    // When using the speech command, we may get an empty bookmark.
-    // If that is the case, remove it before processing the command
-    let selectionBookmarks = this._documentEditor.selection.getBookmarks();
-    const emptyBookmark = selectionBookmarks.find(bookmark => {
-      this._documentEditor.selection.selectBookmark(bookmark);
-      return this._documentEditor.selection.text.length === 0;
-    });
-
-    if (emptyBookmark) {
-      this._documentEditor.editor.delete();
-    } else {
-      this._selectionManager?.resetSelection();
-      this._selectionManager?.moveSelectionToAfterBookmarkEdge(
-        this._selectionManager.initialSelectionData.bookmarkId
-      );
-    }
-
-    super._onIaraCommand(command);
   }
 }

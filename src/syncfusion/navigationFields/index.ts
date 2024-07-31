@@ -1,18 +1,16 @@
 import {
-  BookmarkElementBox,
-  Dictionary,
-  DocumentEditor,
-  TextPosition,
+  DocumentEditor
 } from "@syncfusion/ej2-documenteditor";
+import { v4 as uuidv4 } from "uuid";
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
-import { v4 as uuidv4 } from "uuid";
-import { IaraNavigationBookmark } from "./navigationBookmark";
-import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraSyncfusionLanguageManager } from "../language";
+import { IaraSyncfusionSelectionManager } from "../selection";
+import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
+import { IaraNavigationBookmark } from "./navigationBookmark";
 
-export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager{
+export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   previousBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
   nextBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
   currentSelectionOffset: {
@@ -92,9 +90,11 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
     }
     this.getBookmarks();
+    this.insertedBookmark = this.bookmarks.filter(bookmark =>
+      bookmark.name === `${type}-${bookmarksCount}`)[0];
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;
-    this.getOffsetsAndSelect(`${type}-${bookmarksCount}`, true);
+    this.selectBookmark(`${type}-${bookmarksCount}`, true);
     this.selectTitle(title, `${type}-${bookmarksCount}`);
   }
 
@@ -102,12 +102,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const editorBookmarks = this._documentEditor.getBookmarks();
     this.updateBookmark(editorBookmarks);
     this.removeEmptyField(editorBookmarks);
-    if (this.isFirstNextNavigation || this.isFirstPreviousNavigation) {
-      this.insertedBookmark = this.bookmarks.filter(
-        bookmark =>
-          bookmark.name === editorBookmarks[editorBookmarks.length - 1]
-      )[0];
-    }
     this.sortByPosition();
 
     if (setColor) this.setColor();
@@ -124,10 +118,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         bookmark.title !== ""
     );
     if (bookmarks.length === 1) {
-      this.getOffsetsAndSelect(bookmarks[0].name);
+      this.selectBookmark(bookmarks[0].name);
       this._previousBookmarksTitles = [];
     } else if (bookmarks.length > 1) {
-      this.getOffsetsAndSelect(
+      this.selectBookmark(
         bookmarks[this._previousBookmarksTitles.length - 1].name
       );
     } else throw new Error("Method not implemented.");
@@ -147,7 +141,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         this.insertedBookmark.name
       );
     else {
-      this.getOffsetsAndSelect(this.nextBookmark.name);
+      this.selectBookmark(this.nextBookmark.name);
     }
     this.isFirstNextNavigation = false;
     this.currentSelectionOffset = {
@@ -167,7 +161,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (isShortcutNavigation && this.isFirstPreviousNavigation)
       this.selectTitle(this.insertedBookmark.title, this.insertedBookmark.name);
     else {
-      this.getOffsetsAndSelect(this.previousBookmark.name);
+      this.selectBookmark(this.previousBookmark.name);
     }
     this.isFirstPreviousNavigation = false;
     this.currentSelectionOffset = {
@@ -177,7 +171,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   selectContent(title: string, content: string, bookmarkName: string): void {
-    this.getOffsetsAndSelect(bookmarkName, true);
+    this.selectBookmark(bookmarkName, true);
     this._documentEditor.selection.select(
       this._documentEditor.selection.startOffset,
       this._documentEditor.selection.startOffset
@@ -204,7 +198,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     bookmarkName: string,
     selectAllTitle?: boolean
   ): void {
-    this.getOffsetsAndSelect(bookmarkName, true);
+    this.selectBookmark(bookmarkName, true);
     this._documentEditor.selection.select(
       this._documentEditor.selection.startOffset,
       this._documentEditor.selection.startOffset
@@ -411,7 +405,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
 
   updateBookmark(editorBookmarks: string[]): void {
     editorBookmarks.map(bookmark => {
-      this.getOffsetsAndSelect(bookmark);
+      this.selectBookmark(bookmark);
       const bookmarkContent = this._documentEditor.selection.text;
       const { title, content } = this.getTitleAndContent(bookmarkContent);
       this.popAndUpdate(bookmark, content, title);
@@ -436,24 +430,28 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     const nextField = index === -1 ? this.bookmarks[0] : this.bookmarks[index];
     const previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
 
-    this.previousBookmark = previousField ? previousField : {
-      name: "",
-      content: "",
-      title: "",
-      offset: {
-        start: "",
-        end: "",
-      },
-    };
-    this.nextBookmark = nextField ? nextField : {
-      name: "",
-      content: "",
-      title: "",
-      offset: {
-        start: "",
-        end: "",
-      },
-    };
+    this.previousBookmark = previousField
+      ? previousField
+      : {
+          name: "",
+          content: "",
+          title: "",
+          offset: {
+            start: "",
+            end: "",
+          },
+        };
+    this.nextBookmark = nextField
+      ? nextField
+      : {
+          name: "",
+          content: "",
+          title: "",
+          offset: {
+            start: "",
+            end: "",
+          },
+        };
   }
 
   findCurrentIndex(
@@ -480,8 +478,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   checkIsSelectedAndUpdatePrevious(
     previousIndex: number
   ): IaraNavigationBookmark {
-    let selected = this.bookmarks[previousIndex];
-
     const compareCurrentOffsetWithPreviousOffset =
       this.currentSelectionOffset.start &&
       this.currentSelectionOffset.start ===
@@ -492,18 +488,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.currentSelectionOffset.start &&
       this.currentSelectionOffset.start === this.nextBookmark.offset.start &&
       this.currentSelectionOffset.end === this.nextBookmark.offset.end;
-
-    const compareCurrentOffsetWithSelectedOffset =
-      this.previousBookmark.offset.start &&
-      this.previousBookmark.name !== selected.name &&
-      previousIndex !== 0;
-
     if (
       compareCurrentOffsetWithPreviousOffset ||
-      compareCurrentOffsetWithNextOffset ||
-      compareCurrentOffsetWithSelectedOffset
+      compareCurrentOffsetWithNextOffset
     ) {
-      selected = this.bookmarks[previousIndex - 1];
       return previousIndex <= 0
         ? this.bookmarks[this.bookmarks.length - 1]
         : this.bookmarks[previousIndex - 1];
@@ -511,53 +499,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return this.bookmarks[previousIndex];
   }
 
-  getOffsetsAndSelect(name: string, excludeBookmarkStartEnd?: boolean): void {
-    const bookmarks: Dictionary<string, BookmarkElementBox> =
-      this._documentEditor.documentHelper.bookmarks;
-
-    if (bookmarks.containsKey(name)) {
-      //bookmark start element
-      const bookmrkElmnt: BookmarkElementBox = bookmarks.get(name);
-
-      let offset: number = bookmrkElmnt.line.getOffset(bookmrkElmnt, 0);
-
-      if (excludeBookmarkStartEnd) {
-        offset++;
-      }
-
-      const startPosition: TextPosition = new TextPosition(
-        this._documentEditor
-      );
-      startPosition.setPositionParagraph(bookmrkElmnt.line, offset);
-
-      //bookmark end element
-      let bookmrkEnd: BookmarkElementBox = bookmrkElmnt.reference;
-      if (
-        bookmrkElmnt.reference &&
-        bookmrkElmnt.reference.line.paragraph.bodyWidget == null
-      ) {
-        bookmrkEnd = bookmrkElmnt;
-      }
-
-      let endoffset: number = bookmrkEnd.line.getOffset(bookmrkEnd, 1);
-
-      if (excludeBookmarkStartEnd) {
-        endoffset--;
-      }
-      const endPosition: TextPosition = new TextPosition(this._documentEditor);
-      endPosition.setPositionParagraph(bookmrkEnd.line, endoffset);
-      //selects the bookmark range
-      this._documentEditor.documentHelper.selection.selectRange(
-        startPosition,
-        endPosition
-      );
-    }
-  }
-
   clearReportToCopyContent(): void {
     this.getBookmarks(false);
     this.bookmarks.filter(field => {
-      this.getOffsetsAndSelect(field.name);
+      this.selectBookmark(field.name);
       if (field.name.includes("Field")) {
         if (field.content && field.content !== "Escreva uma dica de texto") {
           this._documentEditor.editor.insertText(field.content);
@@ -583,7 +528,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     );
     if (mandatoriesFields.length) {
       if (mandatoriesFields[0].title) {
-        this.getOffsetsAndSelect(mandatoriesFields[0].name);
+        this.selectBookmark(mandatoriesFields[0].name);
       }
       return true;
     }
@@ -595,5 +540,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.clearReportToCopyContent();
     }
     return this.requiredFields();
+  }
+
+  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._documentEditor,
+      bookmarkId,
+      excludeBookmarkStartEnd
+    );
   }
 }

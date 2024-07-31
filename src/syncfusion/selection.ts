@@ -1,8 +1,11 @@
-import type {
+import {
   BaselineAlignment,
+  BookmarkElementBox,
+  Dictionary,
   DocumentEditor,
   HighlightColor,
   Strikethrough,
+  TextPosition,
   Underline,
 } from "@syncfusion/ej2-documenteditor";
 import { v4 as uuidv4 } from "uuid";
@@ -60,7 +63,6 @@ export class IaraSyncfusionSelectionManager {
 
     const { endOffset, startOffset } = this._editor.selection;
     this.isAtStartOfLine = startOffset.endsWith(";0");
-    this._moveSelectionFromBookmarkEdges();
 
     this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
 
@@ -120,50 +122,26 @@ export class IaraSyncfusionSelectionManager {
         (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
   }
 
-  private _moveSelectionFromBookmarkEdges(): void {
-    const bookmarksAtCursor = this._editor.selection.getBookmarks();
-    if (bookmarksAtCursor) {
-      const { endOffset, startOffset } = this._editor.selection;
-
-      // If there are any bookmarks at cursor position, check if we are on the edge of any of them.
-      bookmarksAtCursor.forEach(cursorBookmarkID => {
-        // Select bookmark without selecting the edge itself as the cursor will not be at the edge
-        this._editor.selection.selectBookmark(cursorBookmarkID, true);
-        const {
-          endOffset: bookmarkEndOffset,
-          startOffset: bookmarkStartOffset,
-        } = this._editor.selection;
-        
-        if (bookmarkStartOffset === startOffset) {
-          this.moveSelectionToBeforeBookmarkEdge(cursorBookmarkID);
-        } else if (bookmarkEndOffset === endOffset) {
-          this.moveSelectionToAfterBookmarkEdge(cursorBookmarkID);
-        }
-      });
-    }
-  }
-
   public destroy() {
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
   }
 
   public resetSelection(resetStyles = true): void {
-    this._editor.selection.selectBookmark(
-      this.initialSelectionData.bookmarkId,
-      true
-    );
+    this.selectBookmark(this.initialSelectionData.bookmarkId, true);
     if (resetStyles) {
       this.resetStyles();
     }
   }
 
   public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
-    this._editor.selection.selectBookmark(bookmarkId, false);
+    this.selectBookmark(bookmarkId, false);
+    this._editor.selection.moveNextPosition();
     this._editor.selection.moveNextPosition();
   }
 
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
-    this._editor.selection.selectBookmark(bookmarkId, false);
+    this.selectBookmark(bookmarkId, false);
+    this._editor.selection.movePreviousPosition();
     this._editor.selection.movePreviousPosition();
   }
 
@@ -185,5 +163,64 @@ export class IaraSyncfusionSelectionManager {
       (this._editor.selection.characterFormat as any)[prop] =
         this.initialSelectionData.characterFormat[prop];
     });
+  }
+
+  public selectBookmark(
+    bookmarkId: string,
+    excludeBookmarkStartEnd?: boolean,
+  ): void {
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._editor,
+      bookmarkId,
+      excludeBookmarkStartEnd,
+    );
+  }
+
+  // Prevent scrolling to the bookmark when selecting it
+  public static selectBookmark(
+    documentEditor: DocumentEditor,
+    bookmarkId: string,
+    excludeBookmarkStartEnd?: boolean,
+  ): void {
+    const bookmarks: Dictionary<string, BookmarkElementBox> =
+      documentEditor.documentHelper.bookmarks;
+
+    if (bookmarks.containsKey(bookmarkId)) {
+      //bookmark start element
+      const bookmrkElmnt: BookmarkElementBox = bookmarks.get(bookmarkId);
+
+      let offset: number = bookmrkElmnt.line.getOffset(bookmrkElmnt, 0);
+
+      if (excludeBookmarkStartEnd) {
+        offset++;
+      }
+
+      const startPosition: TextPosition = new TextPosition(
+        documentEditor
+      );
+      startPosition.setPositionParagraph(bookmrkElmnt.line, offset);
+
+      //bookmark end element
+      let bookmrkEnd: BookmarkElementBox = bookmrkElmnt.reference;
+      if (
+        bookmrkElmnt.reference &&
+        bookmrkElmnt.reference.line.paragraph.bodyWidget == null
+      ) {
+        bookmrkEnd = bookmrkElmnt;
+      }
+
+      let endoffset: number = bookmrkEnd.line.getOffset(bookmrkEnd, 1);
+
+      if (excludeBookmarkStartEnd) {
+        endoffset--;
+      }
+      const endPosition: TextPosition = new TextPosition(documentEditor);
+      endPosition.setPositionParagraph(bookmrkEnd.line, endoffset);
+      //selects the bookmark range
+      documentEditor.documentHelper.selection.selectRange(
+        startPosition,
+        endPosition
+      );
+    }
   }
 }
