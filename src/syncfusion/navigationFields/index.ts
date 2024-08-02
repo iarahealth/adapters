@@ -73,7 +73,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     type: "Field" | "Mandatory" | "Optional" = "Field"
   ): void {
     const bookmarksCount = uuidv4();
-    this._documentEditor.selection.movePreviousPosition();
+    this._documentEditor.editor.insertText(' ');
+    this._documentEditor.editor.onBackSpace();
     this._documentEditor.editor.insertBookmark(`${type}-${bookmarksCount}`);
     this._documentEditor.editor.insertText("[]");
     this._documentEditor.selection.movePreviousPosition();
