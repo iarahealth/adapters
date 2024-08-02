@@ -4,6 +4,7 @@ import type {
   IaraSpeechRecognition,
   IaraSpeechRecognitionDetail,
 } from "../../speech";
+import { IaraSyncfusionSelectionManager } from "../selection";
 
 export interface IaraInferenceBookmark {
   content: string;
@@ -34,7 +35,7 @@ export class IaraSyncfusionInferenceBookmarksManager {
 
   private _updateBookmarkContent(bookmarkName: string): void {
     if (!(bookmarkName in this._bookmarks)) return;
-    this._documentEditor.selection.selectBookmark(bookmarkName, true);
+    IaraSyncfusionSelectionManager.selectBookmark(this._documentEditor, bookmarkName, true);
     this._bookmarks[bookmarkName]["content"] =
       this._documentEditor.selection.text;
   }
