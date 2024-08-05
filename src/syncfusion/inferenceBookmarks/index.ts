@@ -4,11 +4,13 @@ import type {
   IaraSpeechRecognition,
   IaraSpeechRecognitionDetail,
 } from "../../speech";
+import { IaraSyncfusionSelectionManager } from "../selection";
 
 export interface IaraInferenceBookmark {
   content: string;
-  name: string;
   inferenceId?: string;
+  inferenceText?: string;
+  name: string;
   recordingId?: string;
 }
 
@@ -31,9 +33,9 @@ export class IaraSyncfusionInferenceBookmarksManager {
     });
   }
 
-  private _updateBookmark(bookmarkName: string): void {
+  private _updateBookmarkContent(bookmarkName: string): void {
     if (!(bookmarkName in this._bookmarks)) return;
-    this._documentEditor.selection.selectBookmark(bookmarkName, true);
+    IaraSyncfusionSelectionManager.selectBookmark(this._documentEditor, bookmarkName, true);
     this._bookmarks[bookmarkName]["content"] =
       this._documentEditor.selection.text;
   }
@@ -42,7 +44,10 @@ export class IaraSyncfusionInferenceBookmarksManager {
     this._bookmarks = {};
   }
 
-  addBookmark(inference: IaraSpeechRecognitionDetail, bookmarkId?: string): string {
+  addBookmark(
+    inference: IaraSpeechRecognitionDetail,
+    bookmarkId?: string
+  ): string {
     if (!bookmarkId) {
       bookmarkId = `inferenceId_${inference.inferenceId || uuidv4()}`;
       this._documentEditor.editor.insertBookmark(bookmarkId);
@@ -50,8 +55,9 @@ export class IaraSyncfusionInferenceBookmarksManager {
 
     this._bookmarks[bookmarkId] = {
       content: "",
-      name: bookmarkId,
       inferenceId: inference.inferenceId,
+      inferenceText: inference.richTranscript,
+      name: bookmarkId,
     };
     return bookmarkId;
   }
@@ -59,7 +65,17 @@ export class IaraSyncfusionInferenceBookmarksManager {
   updateBookmarks(): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
     editorBookmarks.forEach(bookmarkName => {
-      this._updateBookmark(bookmarkName);
+      this._updateBookmarkContent(bookmarkName);
     });
+  }
+
+  updateBookmarkInference(bookmarkName: string, inference: IaraSpeechRecognitionDetail): void {
+    if (!(bookmarkName in this._bookmarks)) return;
+
+    const richTranscript = inference.richTranscript
+      .replace(/^<div>[ ]*/, "")
+      .replace(/[ ]*<\/div>$/, "")
+      .replace(/[ ]*<\/div><div>[ ]*/g, "\n");
+    this._bookmarks[bookmarkName]["inferenceText"] = richTranscript;
   }
 }

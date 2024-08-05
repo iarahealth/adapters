@@ -16,9 +16,9 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   constructor(
     protected _editor: Editor,
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraEditorConfig
+    public config: IaraEditorConfig
   ) {
-    super(_recognition, _config);
+    super(_recognition, config);
     this._inferenceFormatter = new IaraEditorInferenceFormatter();
     this._styleManager = new IaraTinyMceStyleManager();
     this._navigationFieldManager = new IaraTinyMceNavigationFieldManager(

@@ -7,6 +7,7 @@ import { IaraEditorStyleManager } from "./style";
 
 export interface IaraEditorConfig {
   darkMode: boolean;
+  enableSpeechRecognition: boolean;
   font?: {
     availableFamilies: string[];
     availableSizes: number[];
@@ -26,7 +27,6 @@ export abstract class EditorAdapter {
     template: unknown,
     metadata: unknown
   ) => Promise<void>;
-  public iaraRecognizes = true;
   public selectedField: {
     content: string;
     title: string;
@@ -37,6 +37,7 @@ export abstract class EditorAdapter {
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
   protected static DefaultConfig: IaraEditorConfig = {
     darkMode: false,
+    enableSpeechRecognition: true,
     saveReport: true,
     zoomFactor: "100%",
     language: "pt-BR",
@@ -49,13 +50,14 @@ export abstract class EditorAdapter {
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
-        if (event?.detail && this.iaraRecognizes)
-          this.insertInference(event.detail);
+        if (!event?.detail || !this.config.enableSpeechRecognition) return;
+        this.insertInference(event.detail);
       },
     },
     {
       key: "iaraSpeechRecognitionStart",
       callback: () => {
+        if (!this.config.enableSpeechRecognition) return;
         this.blockEditorWhileSpeaking(true);
       },
     },
@@ -63,18 +65,21 @@ export abstract class EditorAdapter {
     {
       key: "iaraSpeechRecognitionStop",
       callback: () => {
+        if (!this.config.enableSpeechRecognition) return;
         this.blockEditorWhileSpeaking(false);
       },
     },
     {
       key: "iaraSpeechRecognitionVADVoiceStart",
       callback: () => {
+        if (!this.config.enableSpeechRecognition) return;
         this.blockEditorWhileSpeaking(true);
       },
     },
     {
       key: "iaraSpeechRecognitionVADVoiceStop",
       callback: () => {
+        if (!this.config.enableSpeechRecognition) return;
         this.blockEditorWhileSpeaking(false);
       },
     },
@@ -82,9 +87,9 @@ export abstract class EditorAdapter {
 
   constructor(
     protected _recognition: IaraSpeechRecognition,
-    protected _config: IaraEditorConfig = EditorAdapter.DefaultConfig
+    public config: IaraEditorConfig = EditorAdapter.DefaultConfig
   ) {
-    switch (this._config.language) {
+    switch (this.config.language) {
       case "es":
         this._locale = Locales["es"];
         break;
@@ -107,12 +112,12 @@ export abstract class EditorAdapter {
   abstract print(): void;
 
   async beginReport(): Promise<string | void> {
-    if (!this._config.saveReport) return;
+    if (!this.config.saveReport) return;
     return this._recognition.report.begin("", "");
   }
 
   async finishReport(): Promise<void> {
-    if (!this._config.saveReport) return;
+    if (!this.config.saveReport) return;
     const content = await this.copyReport();
     this.clearReport();
     await this._recognition.report.finish(content[0], content[1]);
@@ -182,18 +187,13 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(this._locale.nextField, (detail, command) => {
       if (detail.transcript === command) this._handleRemovedNavigationField();
       this._navigationFieldManager.nextField();
-      this._onIaraCommand(this._locale.nextField);
     });
     this._recognition.commands.add(this._locale.previousField, (detail, command) => {
       if (detail.transcript === command) this._handleRemovedNavigationField();
-      this._onIaraCommand(this._locale.previousField);
       this._navigationFieldManager.previousField();
     });
-    this._recognition.commands.add(
-      this._locale.next,
-      (detail, command) => {
+    this._recognition.commands.add(this._locale.next, (detail, command) => {
         if (detail.transcript === command) this._handleRemovedNavigationField();
-        this._onIaraCommand(this._locale.next);
         this._navigationFieldManager.nextField();
       }
     );
@@ -245,7 +245,7 @@ export abstract class EditorAdapter {
   }
 
   protected async _beginReport(): Promise<void> {
-    if (this._config.saveReport && !this._recognition.report["_key"]) {
+    if (this.config.saveReport && !this._recognition.report["_key"]) {
       if (this._recognition.ready) {
         this._recognition.report["_key"] = await this.beginReport();
       } else {
