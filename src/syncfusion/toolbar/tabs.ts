@@ -464,7 +464,6 @@ export const tabsConfig = (
         items: [
           {
             iconCss: "e-icons e-align-left",
-            // selected: true,
             click: function () {
               toolbarButtonClick("AlignLeft", editor);
             },
@@ -474,7 +473,6 @@ export const tabsConfig = (
                   .documenteditorcontainer["Align left Tooltip"],
             },
           },
-
           {
             iconCss: "e-icons e-align-center",
             click: function () {
