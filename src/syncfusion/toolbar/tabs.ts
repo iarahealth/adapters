@@ -736,7 +736,7 @@ export const tabsConfig = (
           header:
             editorContainerLocale.language.syncfusionTranslate
               .documenteditorcontainer["Paragraph"],
-          groupIconCss: "e-icons e-align-center",
+          groupIconCss: "e-icons e-paragraph",
           collections: collection(paragraphItems, "paragraph"),
         },
         {
@@ -749,7 +749,7 @@ export const tabsConfig = (
           id: "export_group",
           header:
             editorContainerLocale.language.syncfusionTranslate.grid["Export"],
-          groupIconCss: "e-icons e-align-center",
+          groupIconCss: "e-icons e-export",
           collections: collection(exportItem, "export"),
         },
         {
