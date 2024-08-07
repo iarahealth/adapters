@@ -341,8 +341,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.selection.moveToDocumentEnd();
   }
 
-  insertText(text: string, resetSytle = false): void {
-    if (resetSytle) this._selectionManager?.resetStyles();
+  insertText(text: string): void {
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
@@ -385,7 +384,13 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text, true);
+    if (text.length) this.insertText(text);
+
+    if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
+      // Insert text is not respecting the allCaps property, work around that
+      this._selectionManager.selectBookmark(this._selectionManager.initialSelectionData.bookmarkId);
+      this._documentEditor.selection.characterFormat.allCaps = true;
+    }
 
     if (inference.isFinal) {
       if (text.length) {

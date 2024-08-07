@@ -122,6 +122,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     }
   }
   toggleUppercase(): void {
-    this._editor.editor.toggleAllCaps();
+    this._editor.selection.characterFormat.allCaps =
+      !this._editor.selection.characterFormat.allCaps;
   }
 }
