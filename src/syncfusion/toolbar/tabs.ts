@@ -439,9 +439,7 @@ export const tabsConfig = (
 
     paragraphMark: {
       type: "Button",
-      activeSize: RibbonItemSize.Large,
-      // allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
-      allowedSizes: RibbonItemSize.Large,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paragraph",
         content:
