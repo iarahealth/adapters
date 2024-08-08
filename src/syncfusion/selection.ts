@@ -124,19 +124,12 @@ export class IaraSyncfusionSelectionManager {
 
   public destroy() {
     let { endOffset, startOffset } = this._editor.selection;
-    const isNavigationBookmarkSelected = this.isNavigationBookmarkSelected();
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
     this._editor.selection.select(startOffset, startOffset);
     this._editor.selection.movePreviousPosition();
-    if (isNavigationBookmarkSelected) {
-      this._editor.selection.movePreviousPosition();
-      startOffset = this._editor.selection.startOffset;
-      this._editor.selection.select(endOffset, endOffset);
-    } else {
-      startOffset = this._editor.selection.startOffset;
-      this._editor.selection.select(endOffset, endOffset);
-      this._editor.selection.movePreviousPosition();
-    }
+    startOffset = this._editor.selection.startOffset;
+    this._editor.selection.select(endOffset, endOffset);
+    this._editor.selection.movePreviousPosition();
     this._editor.selection.select(startOffset, this._editor.selection.endOffset);
   }
 
@@ -157,15 +150,6 @@ export class IaraSyncfusionSelectionManager {
     this.selectBookmark(bookmarkId, false);
     this._editor.selection.movePreviousPosition();
     this._editor.selection.movePreviousPosition();
-  }
-
-  public isNavigationBookmarkSelected(): boolean {
-    const bookmarks = this._editor.selection.getBookmarks();
-    // getBookmark is greater than 1 would have the idea that 2 or more bookmarks are selected at the same time
-    if (bookmarks.length > 1) {
-      return true;
-    }
-    return false;
   }
 
   public resetStyles(): void {

@@ -231,7 +231,7 @@ export class IaraSyncfusionAdapter
           .toLocaleLowerCase();
         const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
         if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
-        
+
         const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
