@@ -231,7 +231,7 @@ export class IaraSyncfusionAdapter
           .toLocaleLowerCase();
         const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
         if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
-        
+
         const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
@@ -536,8 +536,8 @@ export class IaraSyncfusionAdapter
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
       if (event.button === 1) {
         this._cursorSelection?.resetSelection();
+        this._cursorSelection?.destroy();
         this._cursorSelection = undefined;
-
         this._recognition.toggleRecording();
       }
     });
