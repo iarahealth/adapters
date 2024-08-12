@@ -143,7 +143,7 @@ export class IaraSyncfusionSelectionManager {
   public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
     this.selectBookmark(bookmarkId, false);
     this._editor.selection.moveNextPosition();
-    this._editor.selection.moveNextPosition();
+    if (this.wordAfterSelection.trim().length === 0) this._editor.selection.moveNextPosition();
   }
 
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
