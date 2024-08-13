@@ -123,14 +123,8 @@ export class IaraSyncfusionSelectionManager {
   }
 
   public destroy() {
-    let { endOffset, startOffset } = this._editor.selection;
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
-    this._editor.selection.select(startOffset, startOffset);
     this._editor.selection.movePreviousPosition();
-    startOffset = this._editor.selection.startOffset;
-    this._editor.selection.select(endOffset, endOffset);
-    this._editor.selection.movePreviousPosition();
-    this._editor.selection.select(startOffset, this._editor.selection.endOffset);
   }
 
   public resetSelection(resetStyles = true): void {
