@@ -161,7 +161,10 @@ export class IaraSyncfusionAdapter
   }
 
   async copyReport(): Promise<string[]> {
-    this._documentEditor.revisions.acceptAll();
+    const changes = [
+      ...this._documentEditor.revisions.changes,
+    ];
+    changes.forEach(change => change.accept());
     this._documentEditor.enableTrackChanges = false;
 
     this._documentEditor.focusIn();

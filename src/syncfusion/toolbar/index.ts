@@ -136,25 +136,25 @@ export class IaraSyncfusionToolbarManager {
 
     this._editorContainer.documentEditor.trackChangesPane[
       "commentReviewPane"
-    ].reviewTab.addEventListener("selecting", (event: SelectingEventArgs) => {
+    ].reviewTab.addEventListener("selecting", async (event: SelectingEventArgs) => {
       const selectedTabText = (
         event.selectingItem.getElementsByClassName("e-tab-text")[0]
           .childNodes[0] as HTMLElement
       ).innerText;
       if (selectedTabText == "ACEITAR TUDO") {
         event.cancel = true;
-        const changes = this._editorContainer.documentEditor.revisions.changes;
-        changes.forEach(async (change) => {
-          change.accept();
-          await new Promise(resolve => setTimeout(resolve, 50));
-        });
+        this._editorContainer.documentEditor.enableTrackChanges = false;
+        const changes = [
+          ...this._editorContainer.documentEditor.revisions.changes,
+        ];
+        changes.forEach(change => change.accept());
       } else if (selectedTabText == "REJEITAR TUDO") {
         event.cancel = true;
-        const changes = this._editorContainer.documentEditor.revisions.changes;
-        changes.forEach(async change => {
-          change.reject();
-          await new Promise(resolve => setTimeout(resolve, 50));
-        });
+        this._editorContainer.documentEditor.enableTrackChanges = false;
+        const changes = [
+          ...this._editorContainer.documentEditor.revisions.changes,
+        ];
+        changes.forEach(change => change.reject());
       }
     });
   }
