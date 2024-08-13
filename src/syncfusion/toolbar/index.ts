@@ -143,10 +143,18 @@ export class IaraSyncfusionToolbarManager {
       ).innerText;
       if (selectedTabText == "ACEITAR TUDO") {
         event.cancel = true;
-        this._editorContainer.documentEditor.revisions.acceptAll();
+        const changes = this._editorContainer.documentEditor.revisions.changes;
+        changes.forEach(async (change) => {
+          change.accept();
+          await new Promise(resolve => setTimeout(resolve, 50));
+        });
       } else if (selectedTabText == "REJEITAR TUDO") {
         event.cancel = true;
-        this._editorContainer.documentEditor.revisions.rejectAll();
+        const changes = this._editorContainer.documentEditor.revisions.changes;
+        changes.forEach(async change => {
+          change.reject();
+          await new Promise(resolve => setTimeout(resolve, 50));
+        });
       }
     });
   }
