@@ -253,10 +253,15 @@ export class IaraSyncfusionAdapter
   }
 
   formatSectionTitles(): void {
-    this._formatSectionTitle(["Técnica:", "Técnica de Exame:"]);
+    this._formatSectionTitle([
+      "Técnica:",
+      "Técnica de Exame:",
+      "Técnica do Exame:",
+    ]);
     this._formatSectionTitle(["Contraste:"]);
     this._formatSectionTitle([
       "Histórico Clínico:",
+      "Indicação:",
       "Indicação Clínica:",
       "Informações Clínicas:",
     ]);
