@@ -531,6 +531,7 @@ export class IaraSyncfusionAdapter
       .getRootElement()
       .addEventListener("mousedown", event => {
         if (event.button === 1) {
+          if (this._documentEditor.selection.text.length > 0) this._documentEditor.editor.delete();
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
             this.config
@@ -595,6 +596,7 @@ export class IaraSyncfusionAdapter
       if (!hadSelectedText) {
         this._documentEditor.selection.extendBackward();
         this._documentEditor.editor.delete();
+        this._selectionManager.wordBeforeSelection = this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
       this._selectionManager.resetSelection();
     }

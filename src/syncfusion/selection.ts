@@ -62,8 +62,6 @@ export class IaraSyncfusionSelectionManager {
     };
 
     const { endOffset, startOffset } = this._editor.selection;
-    this.isAtStartOfLine = startOffset.endsWith(";0");
-
     this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
 
     if (!getSurrondingWords) return;
@@ -71,44 +69,28 @@ export class IaraSyncfusionSelectionManager {
     this._editor.selection.select(startOffset, endOffset);
     this.wordBeforeSelection = this._getWordBeforeSelection();
 
-    const isLineStart =
-      /[\n\r\v]$/.test(this.wordBeforeSelection) ||
-      this.wordBeforeSelection.length === 0;
-
     this._editor.selection.select(startOffset, endOffset);
-    this.wordAfterSelection = this._getWordAfterSelection(isLineStart);
+    this.wordAfterSelection = this._getWordAfterSelection();
+
+    this._editor.selection.extendToLineStart();
+    this.isAtStartOfLine = this._editor.selection.text.length === 0;
 
     this.resetSelection();
   }
 
-  private _getWordAfterSelection(isLineStart = false): string {
-    this._editor.selection.extendToWordEnd();
-    //nbsp is a non-breaking space \u00A0.
-    //zwnj is a zero-width non-joiner \u200c.
-    const isNbspOrZwnj =
-      /^\u00A0/.test(this._editor.selection.text) ||
-      /^\u200c/.test(this._editor.selection.text);
-
-    if (isLineStart || isNbspOrZwnj) {
-      //at line start extendsToWordEnd may return /r instead of the word
-      this._editor.selection.extendToWordEnd();
-    }
-    const wordAfter = this._editor.selection.text;
+  private _getWordAfterSelection(): string {
+    this._editor.selection.extendToLineEnd();
+    const startsWithSpace = this._editor.selection.text.startsWith(" ");
+    const words = this._editor.selection.text.split(" ").slice(0, 2).filter(word => word.trim());
+    const wordAfter = `${startsWithSpace ? " " : ""}${words[0] || ""}`;
     return wordAfter;
   }
 
   private _getWordBeforeSelection(): string {
-    this._editor.selection.extendToWordStart();
-    //nbsp is a non-breaking space \u00A0.
-    //zwnj is a zero-width non-joiner \u200c.
-    const isNbspOrZwnj =
-      /^\u00A0/.test(this._editor.selection.text) ||
-      /^\u200c/.test(this._editor.selection.text);
-
-    //we want to ignore nbsp or zwnj as they are not rendered
-    if (isNbspOrZwnj) this._editor.selection.extendToWordStart();
-
-    const wordBefore = this._editor.selection.text;
+    this._editor.selection.extendToLineStart();
+    const endsWithSpace = this._editor.selection.text.endsWith(" ");
+    const words = this._editor.selection.text.split(" ").slice(-2).filter(word => word.trim());
+    const wordBefore = `${words.pop() || ""}${endsWithSpace ? " " : ""}`;
     return wordBefore;
   }
 
@@ -123,14 +105,8 @@ export class IaraSyncfusionSelectionManager {
   }
 
   public destroy() {
-    let { endOffset, startOffset } = this._editor.selection;
     this._editor.editor.deleteBookmark(this.initialSelectionData.bookmarkId);
-    this._editor.selection.select(startOffset, startOffset);
     this._editor.selection.movePreviousPosition();
-    startOffset = this._editor.selection.startOffset;
-    this._editor.selection.select(endOffset, endOffset);
-    this._editor.selection.movePreviousPosition();
-    this._editor.selection.select(startOffset, this._editor.selection.endOffset);
   }
 
   public resetSelection(resetStyles = true): void {
@@ -143,12 +119,10 @@ export class IaraSyncfusionSelectionManager {
   public moveSelectionToAfterBookmarkEdge(bookmarkId: string): void {
     this.selectBookmark(bookmarkId, false);
     this._editor.selection.moveNextPosition();
-    if (this.wordAfterSelection.trim().length === 0) this._editor.selection.moveNextPosition();
   }
 
   public moveSelectionToBeforeBookmarkEdge(bookmarkId: string): void {
     this.selectBookmark(bookmarkId, false);
-    this._editor.selection.movePreviousPosition();
     this._editor.selection.movePreviousPosition();
   }
 
