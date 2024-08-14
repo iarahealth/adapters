@@ -44,6 +44,11 @@ export abstract class EditorAdapter {
     highlightInference: true,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
+  protected _defaultCommandArgs: [undefined, undefined, Config | Config[]] = [
+    undefined,
+    undefined,
+    { searchRichTranscript: true } as Config,
+  ];
 
   private _listeners = [
     {
@@ -136,12 +141,7 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.insertField(content, title, type);
   }
 
-  private _initCommands(): void {
-    const defaultCommandArgs: [undefined, undefined, Config | Config[]] = [
-      undefined,
-      undefined,
-      { searchRichTranscript: true } as Config,
-    ];
+  protected _initCommands(): void {
     this._recognition.commands.add(
       this._locale.copyReport,
       async (detail, command) => {
@@ -154,7 +154,7 @@ export abstract class EditorAdapter {
         this._recognition.stop();
         await this.copyReport();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.finishReport,
@@ -168,7 +168,7 @@ export abstract class EditorAdapter {
         this._recognition.stop();
         await this.finishReport();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.toggleBold,
@@ -176,7 +176,7 @@ export abstract class EditorAdapter {
         this._onIaraCommand(this._locale.toggleBold);
         this._styleManager.toggleBold();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.toggleItalic,
@@ -184,7 +184,7 @@ export abstract class EditorAdapter {
         this._onIaraCommand(this._locale.toggleItalic);
         this._styleManager.toggleItalic();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.toggleUnderline,
@@ -192,7 +192,7 @@ export abstract class EditorAdapter {
         this._onIaraCommand(this._locale.toggleUnderline);
         this._styleManager.toggleUnderline();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.toggleUppercase,
@@ -200,7 +200,7 @@ export abstract class EditorAdapter {
         this._onIaraCommand(this._locale.toggleUppercase);
         this._styleManager.toggleUppercase();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.print,
@@ -208,7 +208,7 @@ export abstract class EditorAdapter {
         this._onIaraCommand(this._locale.print);
         this.print();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.nextField,
@@ -216,7 +216,7 @@ export abstract class EditorAdapter {
         if (detail.transcript === command) this._handleRemovedNavigationField();
         this._navigationFieldManager.nextField();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.previousField,
@@ -224,7 +224,7 @@ export abstract class EditorAdapter {
         if (detail.transcript === command) this._handleRemovedNavigationField();
         this._navigationFieldManager.previousField();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.next,
@@ -232,7 +232,7 @@ export abstract class EditorAdapter {
         if (detail.transcript === command) this._handleRemovedNavigationField();
         this._navigationFieldManager.nextField();
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       `${this._locale.search} (\\p{Letter}+)`,
@@ -248,7 +248,7 @@ export abstract class EditorAdapter {
           console.info(detail, command, param);
         }
       },
-      ...defaultCommandArgs
+      ...this._defaultCommandArgs
     );
   }
 

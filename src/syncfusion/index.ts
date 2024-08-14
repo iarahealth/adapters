@@ -549,6 +549,18 @@ export class IaraSyncfusionAdapter
     });
   }
 
+  protected _initCommands(): void {    
+    super._initCommands();
+    this._recognition.commands.add(
+      this._locale.acceptAll,
+      () => {
+        this._onIaraCommand(this._locale.acceptAll);
+        this._documentEditor.revisions.acceptAll();
+      },
+      ...this._defaultCommandArgs
+    );
+  }  
+
   private _updateSelectedNavigationField(field: string): void {
     if (field.match(/\[(.*)\]/)) {
       const { title, content } =
