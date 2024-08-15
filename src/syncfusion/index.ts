@@ -606,7 +606,8 @@ export class IaraSyncfusionAdapter
         this._selectionManager.initialSelectionData.bookmarkId
       );
       if (!hadSelectedText) {
-        this._documentEditor.selection.extendBackward();
+        this._documentEditor.selection.moveToPreviousCharacter();
+        this._documentEditor.selection.extendForward();
         this._documentEditor.editor.delete();
         this._selectionManager.wordBeforeSelection = this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
