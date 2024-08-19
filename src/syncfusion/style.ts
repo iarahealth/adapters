@@ -41,6 +41,16 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     styles.forEach(style => {
       this._editor.editor.createStyle(JSON.stringify(style), true);
     });
+
+    this._editor.documentHelper.getAuthorColor = (author: string) => {
+      if (this._editor.documentHelper.authors.containsKey(author)) {
+        return this._editor.documentHelper.authors.get(author);
+      }
+      let color: string;
+      color = this._config.darkMode ? "#f2b8b5" : "#b5082e",
+      this._editor.documentHelper.authors.add(author, color);
+      return color;
+    };
   }
 
   setEditorFontColor(color: string): void {
@@ -98,13 +108,18 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   }
 
   toggleBold(): void {
-    this._editor.editor.toggleBold();
+    this._editor.selection.characterFormat.bold = !this._editor.selection.characterFormat.bold;
   }
   toggleItalic(): void {
-    this._editor.editor.toggleItalic();
+    this._editor.selection.characterFormat.italic =
+      !this._editor.selection.characterFormat.italic;
   }
   toggleUnderline(): void {
-    this._editor.editor.toggleUnderline("Single");
+    if (this._editor.selection.characterFormat.underline === "Single") {
+      this._editor.selection.characterFormat.underline = "None";
+    } else {
+      this._editor.selection.characterFormat.underline = "Single";
+    }
   }
   toggleUppercase(): void {
     this._editor.editor.toggleAllCaps();

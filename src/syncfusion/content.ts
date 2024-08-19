@@ -8,19 +8,19 @@ import {
   SizeF,
 } from "@syncfusion/ej2-pdf-export";
 import { IaraSyncfusionConfig } from ".";
-import { IaraSpeechRecognition } from "../speech";
 
 export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
   HTML = "html",
   RTF = "rtf",
+  PLAIN_TEXT = "plain_text",
 }
 
 export class IaraSFDT {
+  public static IARA_API_URL = "https://api.iarahealth.com";
   public html: string | undefined;
   public plainText: string | undefined;
   public rtf: string | undefined;
-  public static API_URL = "https://api.iarahealth.com/";
 
   constructor(public value: string, private _editor: DocumentEditor) {}
 
@@ -29,7 +29,7 @@ export class IaraSFDT {
     else if (content.startsWith('{"sfdt":'))
       return IaraSyncfusionContentTypes.SFDT;
     else if (content.startsWith("<")) return IaraSyncfusionContentTypes.HTML;
-    else throw new Error("Content type not recognized.");
+    else return IaraSyncfusionContentTypes.PLAIN_TEXT;
   }
 
   static async fromContent(content: string, editor: DocumentEditor) {
@@ -66,7 +66,7 @@ export class IaraSFDT {
     );
 
     const response = await fetch(
-      `${this.API_URL}speech/syncfusion/api/documenteditor/Import`,
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/Import`,
       {
         method: "POST",
         body: formData,
@@ -82,7 +82,7 @@ export class IaraSFDT {
 
   static async toHtml(content: string): Promise<string> {
     const response = await fetch(
-      `${this.API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
       {
         method: "POST",
         headers: {
@@ -109,7 +109,7 @@ export class IaraSFDT {
 
   static async toRtf(content: string): Promise<string> {
     const response = await fetch(
-      `${this.API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
+      `${this.IARA_API_URL}speech/syncfusion/api/documenteditor/ExportSFDT/`,
       {
         method: "POST",
         headers: {
@@ -126,7 +126,16 @@ export class IaraSFDT {
       throw new Error(responseText);
     }
 
-    return responseText;
+    let rtf = responseText;
+
+    // Add older RTF unicode encoding as fallback for compatibility with RTF spec 1.4 and older
+    rtf = rtf.replace(
+      /(\\u(\d{1,4}))\?/giu,
+      (_match: string, group1: string, group2: string) => {
+        return `${group1}\\'${parseInt(group2).toString(16).slice(-2)}`;
+      }
+    );
+    return rtf;
   }
 
   static toPdf(content: any, config?: IaraSyncfusionConfig) {
@@ -225,14 +234,7 @@ export class IaraSyncfusionEditorContentManager {
   private _isDirty = true;
   private _sfdt: IaraSFDT | undefined;
 
-  constructor(
-    private _editor: DocumentEditor,
-    _recognition: IaraSpeechRecognition,
-    onContentChange: () => void
-  ) {
-    if (_recognition.internal.initParams.region === "europe")
-      IaraSFDT.API_URL = "https://api.iarahealth.eu/";
-
+  constructor(private _editor: DocumentEditor, onContentChange: () => void) {
     this._editor.contentChange = () => {
       this._onContentChange();
       onContentChange();

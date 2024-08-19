@@ -1,4 +1,4 @@
-export interface IaraBookmark {
+export interface IaraNavigationBookmark {
   name: string;
   content: string;
   title: string;

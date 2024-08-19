@@ -1,0 +1,26 @@
+{
+  "pt-BR": {
+    "copy_report": "iara copiar laudo",
+    "finish_report": "iara finalizar laudo",
+    "toggle_bold": "iara negrito",
+    "toggle_italic": "iara itálico",
+    "toggle_underline": "iara sublinhado",
+    "toggle_uppercase": "iara maiúsculo",
+    "print": "iara imprimir",
+    "next_field": "iara próximo campo",
+    "previous_field": "iara campo anterior",
+    "search": "buscar"
+  },
+  "es": {
+    "copy_report": "iara copiar informe",
+    "finish_report": "iara finalizar informe",
+    "toggle_bold": "iara negrilla",
+    "toggle_italic": "iara cursiva",
+    "toggle_underline": "iara subrayado",
+    "toggle_uppercase": "iara mayúscula",
+    "print": "iara imprimir",
+    "next_field": "iara próximo campo",
+    "previous_field": "iara campo anterior",
+    "search": "buscar"
+  }
+}

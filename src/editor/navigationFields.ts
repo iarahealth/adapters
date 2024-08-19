@@ -1,5 +1,6 @@
 import type { IaraSpeechRecognition } from "../speech";
-import { IaraAditiveBookmark } from "../syncfusion/navigationFields/bookmark";
+import { IaraAditiveBookmark } from "../syncfusion/navigationFields/navigationBookmark";
+
 
 export abstract class IaraEditorNavigationFieldManager {
   abstract nextField(): void;
