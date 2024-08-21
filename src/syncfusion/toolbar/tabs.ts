@@ -746,7 +746,7 @@ export const tabsConfig = (
           id: "export_group",
           header:
             editorContainerLocale.language.syncfusionTranslate.grid["Export"],
-          groupIconCss: "e-icons e-align-center",
+          groupIconCss: "e-icons e-export",
           collections: collection(exportItem, "export"),
         },
         {
