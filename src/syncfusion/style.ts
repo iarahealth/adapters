@@ -88,7 +88,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
   static loadThemeCss(theme: "light" | "dark") {
     if (theme === "dark") {
-      const FILE = "https://cdn.syncfusion.com/ej2/24.2.9/material3-dark.css";
+      const FILE = "https://cdn.syncfusion.com/ej2/26.2.11/material3-dark.css";
       const css = document.createElement("link");
       css.setAttribute("rel", "stylesheet");
       css.setAttribute("type", "text/css");
