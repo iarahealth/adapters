@@ -6,6 +6,7 @@ export interface IaraNavigationBookmark {
     start: string;
     end: string;
   };
+  additive?: IaraAdditiveBookmark;
 }
 
 export type SortableList = {
@@ -14,11 +15,11 @@ export type SortableList = {
   };
 };
 
-export interface IaraAditiveBookmark {
+export interface IaraAdditiveBookmark {
   title: string;
   delimiterStart: string;
   delimiterEnd: string;
-  aditiveTexts: {
+  additiveTexts: {
     identifier: string;
     phrase: string;
   }[];

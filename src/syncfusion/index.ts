@@ -229,10 +229,18 @@ export class IaraSyncfusionAdapter
           .replace(/\r/g, "\n")
           .trim()
           .toLocaleLowerCase();
-        const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
-        if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
-        
-        const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
+        const normalizedInferenceText = bookmark.inferenceText
+          ?.trim()
+          .toLocaleLowerCase();
+        if (
+          !bookmark.recordingId ||
+          !normalizedContent.length ||
+          !normalizedInferenceText?.length
+        )
+          return;
+
+        const evaluation =
+          normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
             ...this._recognition.internal.iaraAPIMandatoryHeaders,
@@ -337,7 +345,7 @@ export class IaraSyncfusionAdapter
       fontColor: this.config.darkMode ? "#fff" : "#000",
     });
 
-    this._navigationFieldManager.getBookmarks();
+    this._navigationFieldManager.createBookmarks();
     this._documentEditor.selection.moveToDocumentEnd();
   }
 
@@ -368,7 +376,8 @@ export class IaraSyncfusionAdapter
     if (!this._selectionManager) return;
 
     this._inferenceBookmarksManager.updateBookmarkInference(
-      this._selectionManager.initialSelectionData.bookmarkId, inference
+      this._selectionManager.initialSelectionData.bookmarkId,
+      inference
     );
 
     if (
@@ -481,10 +490,8 @@ export class IaraSyncfusionAdapter
           if (item.category === "Template") {
             if (this.preprocessAndInsertTemplate)
               this.preprocessAndInsertTemplate?.(item.content, item);
-            else
-              this.insertTemplate(item.content);
-          }
-          else this.insertText(item.content);
+            else this.insertTemplate(item.content);
+          } else this.insertText(item.content);
 
           dialogObj.hide();
         }
@@ -557,7 +564,7 @@ export class IaraSyncfusionAdapter
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
-    const hadSelectedText = this._documentEditor.selection.text.length
+    const hadSelectedText = this._documentEditor.selection.text.length;
 
     if (hadSelectedText) this._documentEditor.editor.delete();
 
@@ -629,8 +636,7 @@ export class IaraSyncfusionAdapter
       });
       if (this.preprocessAndInsertTemplate)
         this.preprocessAndInsertTemplate?.(template, metadata);
-      else
-        this.insertTemplate(template);
+      else this.insertTemplate(template);
       return true;
     }
 
