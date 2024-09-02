@@ -93,6 +93,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
           this._documentEditor.isReadOnly = true;
         }
       }
+      this.currentSelectionOffset = {
+        start: this._documentEditor.selection.startOffset,
+        end: this._documentEditor.selection.endOffset,
+      };
     };
   }
 
@@ -181,46 +185,23 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   nextField(isShortcutNavigation?: boolean): void {
-    this.currentSelectionOffset = {
-      start: this._documentEditor.selection.startOffset,
-      end: this._documentEditor.selection.endOffset,
-    };
     this.getPreviousAndNext(this.currentSelectionOffset);
-
     if (isShortcutNavigation && this.isFirstNextNavigation)
       this.selectContent(
         this.insertedBookmark.title,
         this.insertedBookmark.content,
         this.insertedBookmark.name
       );
-    else {
-      this.selectBookmark(this.nextBookmark.name);
-    }
+    else this.selectBookmark(this.nextBookmark.name);
     this.isFirstNextNavigation = false;
-    this.currentSelectionOffset = {
-      start: this.nextBookmark.offset.start,
-      end: this.nextBookmark.offset.end,
-    };
   }
 
   previousField(isShortcutNavigation?: boolean): void {
-    this.currentSelectionOffset = {
-      start: this._documentEditor.selection.startOffset,
-      end: this._documentEditor.selection.endOffset,
-    };
-
     this.getPreviousAndNext(this.currentSelectionOffset);
-
     if (isShortcutNavigation && this.isFirstPreviousNavigation)
       this.selectTitle(this.insertedBookmark.title, this.insertedBookmark.name);
-    else {
-      this.selectBookmark(this.previousBookmark.name);
-    }
+    else this.selectBookmark(this.previousBookmark.name);
     this.isFirstPreviousNavigation = false;
-    this.currentSelectionOffset = {
-      start: this.previousBookmark.offset.start,
-      end: this.previousBookmark.offset.end,
-    };
   }
 
   selectContent(title: string, content: string, bookmarkName: string): void {
@@ -491,7 +472,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       bookmark => this.findCurrentIndex(currentOffset, bookmark.offset) < 0
     );
     const previousIndex = index <= 0 ? this.bookmarks.length - 1 : index - 1;
-
     const nextField = index === -1 ? this.bookmarks[0] : this.bookmarks[index];
     const previousField = this.checkIsSelectedAndUpdatePrevious(previousIndex);
 
@@ -614,11 +594,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       additive,
       id
     );
-  }
-
-  convertOffsetToNumber(offset: string) {
-    const value = offset.split(";").map(Number);
-    return value;
   }
 
   selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
