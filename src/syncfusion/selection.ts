@@ -10,6 +10,7 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { v4 as uuidv4 } from "uuid";
 import { IaraSyncfusionConfig } from ".";
+import { IaraEditorInferenceFormatter } from "../editor/formatter";
 
 interface SelectionData {
   bookmarkId: string;
@@ -81,7 +82,10 @@ export class IaraSyncfusionSelectionManager {
   private _getWordAfterSelection(): string {
     this._editor.selection.extendToLineEnd();
     const startsWithSpace = this._editor.selection.text.startsWith(" ");
-    const words = this._editor.selection.text.split(" ").slice(0, 2).filter(word => word.trim());
+    const words = this._editor.selection.text
+      .split(" ")
+      .slice(0, 2)
+      .filter(word => word.trim());
     const wordAfter = `${startsWithSpace ? " " : ""}${words[0] || ""}`;
     return wordAfter;
   }
@@ -89,7 +93,10 @@ export class IaraSyncfusionSelectionManager {
   private _getWordBeforeSelection(): string {
     this._editor.selection.extendToLineStart();
     const endsWithSpace = this._editor.selection.text.endsWith(" ");
-    const words = this._editor.selection.text.split(" ").slice(-2).filter(word => word.trim());
+    const words = this._editor.selection.text
+      .split(" ")
+      .slice(-2)
+      .filter(word => word.trim());
     const wordBefore = `${words.pop() || ""}${endsWithSpace ? " " : ""}`;
     return wordBefore;
   }
@@ -102,6 +109,23 @@ export class IaraSyncfusionSelectionManager {
       : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
+  }
+
+  public changeSelectionPosition(
+    inferenceFormatter: IaraEditorInferenceFormatter
+  ): void {
+    const parsedText = inferenceFormatter.parseMeasurements(
+      this._editor.selection.text
+    );
+    if (parsedText !== this._editor.selection.text) {
+      const currentBookmark = this._editor.selection.getBookmarks();
+      currentBookmark.map(current => {
+        this.selectBookmark(current);
+        console.log(this._editor.selection.text, "BOOKMARK TEXT");
+        console.log(parsedText, "PARSED");
+        this._editor.editor.insertText(` ${parsedText}`);
+      });
+    }
   }
 
   public destroy() {
@@ -148,12 +172,12 @@ export class IaraSyncfusionSelectionManager {
 
   public selectBookmark(
     bookmarkId: string,
-    excludeBookmarkStartEnd?: boolean,
+    excludeBookmarkStartEnd?: boolean
   ): void {
     IaraSyncfusionSelectionManager.selectBookmark(
       this._editor,
       bookmarkId,
-      excludeBookmarkStartEnd,
+      excludeBookmarkStartEnd
     );
   }
 
@@ -161,7 +185,7 @@ export class IaraSyncfusionSelectionManager {
   public static selectBookmark(
     documentEditor: DocumentEditor,
     bookmarkId: string,
-    excludeBookmarkStartEnd?: boolean,
+    excludeBookmarkStartEnd?: boolean
   ): void {
     const bookmarks: Dictionary<string, BookmarkElementBox> =
       documentEditor.documentHelper.bookmarks;
@@ -176,9 +200,7 @@ export class IaraSyncfusionSelectionManager {
         offset++;
       }
 
-      const startPosition: TextPosition = new TextPosition(
-        documentEditor
-      );
+      const startPosition: TextPosition = new TextPosition(documentEditor);
       startPosition.setPositionParagraph(bookmrkElmnt.line, offset);
 
       //bookmark end element

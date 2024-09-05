@@ -229,10 +229,18 @@ export class IaraSyncfusionAdapter
           .replace(/\r/g, "\n")
           .trim()
           .toLocaleLowerCase();
-        const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
-        if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
+        const normalizedInferenceText = bookmark.inferenceText
+          ?.trim()
+          .toLocaleLowerCase();
+        if (
+          !bookmark.recordingId ||
+          !normalizedContent.length ||
+          !normalizedInferenceText?.length
+        )
+          return;
 
-        const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
+        const evaluation =
+          normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
             ...this._recognition.internal.iaraAPIMandatoryHeaders,
@@ -372,7 +380,8 @@ export class IaraSyncfusionAdapter
     if (!this._selectionManager) return;
 
     this._inferenceBookmarksManager.updateBookmarkInference(
-      this._selectionManager.initialSelectionData.bookmarkId, inference
+      this._selectionManager.initialSelectionData.bookmarkId,
+      inference
     );
 
     if (
@@ -382,6 +391,7 @@ export class IaraSyncfusionAdapter
       const insertedTemplate = this._handleTemplateOrPhraseInference(inference);
       if (insertedTemplate) return;
     }
+
     const text = this._inferenceFormatter.format(
       inference,
       this._selectionManager.wordBeforeSelection,
@@ -393,11 +403,15 @@ export class IaraSyncfusionAdapter
 
     if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
       // Insert text is not respecting the allCaps property, work around that
-      this._selectionManager.selectBookmark(this._selectionManager.initialSelectionData.bookmarkId);
+      this._selectionManager.selectBookmark(
+        this._selectionManager.initialSelectionData.bookmarkId
+      );
       this._documentEditor.selection.characterFormat.allCaps = true;
     }
 
     if (inference.isFinal) {
+      this._documentEditor.selection.selectLine();
+      this._selectionManager.changeSelectionPosition(this._inferenceFormatter);
       if (text.length) {
         this._selectionManager.moveSelectionToAfterBookmarkEdge(
           this._selectionManager.initialSelectionData.bookmarkId
@@ -491,10 +505,8 @@ export class IaraSyncfusionAdapter
           if (item.category === "Template") {
             if (this.preprocessAndInsertTemplate)
               this.preprocessAndInsertTemplate?.(item.content, item);
-            else
-              this.insertTemplate(item.content);
-          }
-          else this.insertText(item.content);
+            else this.insertTemplate(item.content);
+          } else this.insertText(item.content);
 
           dialogObj.hide();
         }
@@ -531,7 +543,8 @@ export class IaraSyncfusionAdapter
       .getRootElement()
       .addEventListener("mousedown", event => {
         if (event.button === 1) {
-          if (this._documentEditor.selection.text.length > 0) this._documentEditor.editor.delete();
+          if (this._documentEditor.selection.text.length > 0)
+            this._documentEditor.editor.delete();
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
             this.config
@@ -549,7 +562,7 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  protected _initCommands(): void {    
+  protected _initCommands(): void {
     super._initCommands();
     this._recognition.commands.add(
       this._locale.acceptAll,
@@ -559,7 +572,7 @@ export class IaraSyncfusionAdapter
       },
       ...this._defaultCommandArgs
     );
-  }  
+  }
 
   private _updateSelectedNavigationField(field: string): void {
     if (field.match(/\[(.*)\]/)) {
@@ -580,7 +593,7 @@ export class IaraSyncfusionAdapter
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
-    const hadSelectedText = this._documentEditor.selection.text.length
+    const hadSelectedText = this._documentEditor.selection.text.length;
 
     if (hadSelectedText) this._documentEditor.editor.delete();
 
@@ -609,7 +622,8 @@ export class IaraSyncfusionAdapter
         this._documentEditor.selection.moveToPreviousCharacter();
         this._documentEditor.selection.extendForward();
         this._documentEditor.editor.delete();
-        this._selectionManager.wordBeforeSelection = this._selectionManager.wordBeforeSelection.slice(0, -1);
+        this._selectionManager.wordBeforeSelection =
+          this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
       this._selectionManager.resetSelection();
     }
@@ -654,8 +668,7 @@ export class IaraSyncfusionAdapter
       });
       if (this.preprocessAndInsertTemplate)
         this.preprocessAndInsertTemplate?.(template, metadata);
-      else
-        this.insertTemplate(template);
+      else this.insertTemplate(template);
       return true;
     }
 

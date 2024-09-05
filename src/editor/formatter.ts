@@ -83,7 +83,7 @@ export class IaraEditorInferenceFormatter {
     return text;
   }
 
-  protected _parseMeasurements(text: string): string {
+  parseMeasurements(text: string): string {
     const numberMap = [
       { um: "1" },
       { dois: "2" },
@@ -123,7 +123,7 @@ export class IaraEditorInferenceFormatter {
 
     if (text.length === 0) return text;
 
-    text = this._parseMeasurements(text);
+    text = this.parseMeasurements(text);
 
     // expression to estimate volume
     text = this._estimateVolume(
