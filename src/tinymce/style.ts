@@ -16,6 +16,12 @@ export class IaraTinyMceStyleManager extends IaraEditorStyleManager {
   toggleItalic(): void {
     throw new Error("Method not implemented.");
   }
+  toggleList(): void {
+    throw new Error("Method not implemented.");
+  }
+  toggleNumberedList(): void {
+    throw new Error("Method not implemented.");
+  }
   toggleUnderline(): void {
     throw new Error("Method not implemented.");
   }

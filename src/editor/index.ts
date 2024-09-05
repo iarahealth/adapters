@@ -187,6 +187,22 @@ export abstract class EditorAdapter {
       ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
+      this._locale.toggleList,
+      () => {
+        this._onIaraCommand(this._locale.toggleList);
+        this._styleManager.toggleList();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleNumberedList,
+      () => {
+        this._onIaraCommand(this._locale.toggleNumberedList);
+        this._styleManager.toggleNumberedList();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
       this._locale.toggleUnderline,
       () => {
         this._onIaraCommand(this._locale.toggleUnderline);
