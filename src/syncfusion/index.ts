@@ -177,21 +177,29 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
       this._documentEditor.selection
     );
     this._documentEditor.selection.onCopy = async (event: ClipboardEvent) => {
-      const htmlContent = this._documentEditor.selection["htmlContent"];
-
+      this._documentEditor.selection["htmlContent"] =
+        this._preprocessClipboardHtml(
+          this._documentEditor.selection["htmlContent"]
+        );
+      
       defaultOnCopy(event);
-
-      // Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
-      event.clipboardData?.setData(
-        "text/html",
-        `<!-- x-tinymce/html -->${htmlContent}`
-      );
     };
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
     const wrapper = document.getElementById("iara-syncfusion-editor-container");
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
+  }
+
+  private _preprocessClipboardHtml(html: string): string {
+    // Some needed processing for the clipboard html:
+    // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
+    // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
+    //    target editor. These tags are added by our bookmarks, and can be safely removed.
+    // 3. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
+    html = html.replace(/<(meta|a) [^>]+>/, "").replace("</a>", "");
+    html = `<!-- x-tinymce/html -->${html}`;
+    return html;
   }
 
   async copyReport(): Promise<string[]> {
@@ -213,18 +221,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
         );
 
       const blob = await clipboardItem.getType("text/html");
-      let htmlContent = (await blob.text()) || "";
-
-      // Some needed processing for the clipboard html:
-      // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
-      // 2. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
-      htmlContent = htmlContent
-        .replace(/<meta [^>]+>/, "")
-        .replace(
-          /(<\w+ )/,
-          '<!-- x-tinymce/html -->$1'
-        );
-
+      const htmlContent = (await blob.text()) || "";
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
