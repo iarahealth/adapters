@@ -26,6 +26,28 @@ import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
 
+interface ClipboardItem {
+  readonly types: ReadonlyArray<string>;
+  getType(type: string): Promise<Blob>;
+}
+
+declare var ClipboardItem: {
+  prototype: ClipboardItem;
+  new (
+    items: Record<string, string | Blob | PromiseLike<string | Blob>>,
+    options?: any
+  ): ClipboardItem;
+};
+
+declare global {
+  interface Clipboard extends EventTarget {
+    read(): Promise<ClipboardItem[]>;
+    readText(): Promise<string>;
+    write(data: ClipboardItem[]): Promise<void>;
+    writeText(data: string): Promise<void>;
+  }
+}
+
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
   showBookmarks: boolean;
