@@ -192,14 +192,6 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
   }
 
   private _preprocessClipboardHtml(html: string): string {
-    // Some needed processing for the clipboard html:
-    // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
-    // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
-    //    target editor. These tags are added by our bookmarks, and can be safely removed.
-    // 3. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
-    html = html.replace(/<(meta|a) [^>]+>/, "").replace("</a>", "");
-    html = `<!-- x-tinymce/html -->${html}`;
-
     // Wrap paragraph tags in strong tags if font-weight is bold to support older editors (tiny v3)
     const document = new DOMParser().parseFromString(html, "text/html");
     const paragraphs = [...document.getElementsByTagName("p")];
@@ -209,7 +201,15 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
       }
     });
     html = document.body.innerHTML;
-    
+
+    // Some needed processing for the clipboard html:
+    // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
+    // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
+    //    target editor. These tags are added by our bookmarks, and can be safely removed.
+    // 3. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
+    html = html.replace(/<(meta|a) [^>]+>/, "").replace("</a>", "");
+    html = `<!-- x-tinymce/html -->${html}`;
+
     return html;
   }
 
