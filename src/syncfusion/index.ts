@@ -206,8 +206,12 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
     // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
     //    target editor. These tags are added by our bookmarks, and can be safely removed.
-    // 3. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
-    html = html.replace(/<(meta|a) [^>]+>/, "").replace("</a>", "");
+    // 3. Replace empty paragraphs for a simpler paragraph with a line break
+    // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
+    html = html
+      .replace(/<(meta|a) [^>]+>/, "")
+      .replace("</a>", "")
+      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/, "<p><br /></p>");
     html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
