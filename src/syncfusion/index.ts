@@ -199,6 +199,17 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     // 3. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
     html = html.replace(/<(meta|a) [^>]+>/, "").replace("</a>", "");
     html = `<!-- x-tinymce/html -->${html}`;
+
+    // Wrap paragraph tags in strong tags if font-weight is bold to support older editors (tiny v3)
+    const document = new DOMParser().parseFromString(html, "text/html");
+    const paragraphs = [...document.getElementsByTagName("p")];
+    paragraphs.forEach(paragraph => {
+      if (paragraph.style.fontWeight === "bold") {
+        paragraph.innerHTML = `<strong>${paragraph.innerHTML}</strong>`;
+      }
+    });
+    html = document.body.innerHTML;
+    
     return html;
   }
 
