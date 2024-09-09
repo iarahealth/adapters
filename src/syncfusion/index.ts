@@ -209,9 +209,9 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     // 3. Replace empty paragraphs for a simpler paragraph with a line break
     // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
     html = html
-      .replace(/<(meta|a) [^>]+>/, "")
-      .replace("</a>", "")
-      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/, "<p><br /></p>");
+      .replace(/<(meta|a) [^>]+>/gui, "")
+      .replace(/<\/a>/gui, "")
+      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/gui, "<p><br /></p>");
     html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
