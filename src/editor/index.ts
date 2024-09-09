@@ -1,4 +1,8 @@
-import { Config, IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import {
+  Config,
+  IaraSpeechRecognition,
+  IaraSpeechRecognitionDetail,
+} from "../speech";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import Locales from "./locales";
@@ -49,6 +53,7 @@ export abstract class EditorAdapter {
     undefined,
     { searchRichTranscript: true } as Config,
   ];
+  protected _currentLanguage: { [k: string]: any } = {};
 
   private _listeners = [
     {

@@ -40,7 +40,7 @@ export const tabsConfig = (
   const allItems = {
     open: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -259,7 +259,7 @@ export const tabsConfig = (
     bold: {
       type: "Button",
       id: "bold",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -279,7 +279,7 @@ export const tabsConfig = (
 
     italic: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "italic",
       buttonSettings: {
         isToggle: true,
@@ -300,7 +300,7 @@ export const tabsConfig = (
 
     underline: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       id: "underline",
       buttonSettings: {
         isToggle: true,
@@ -320,7 +320,7 @@ export const tabsConfig = (
     },
 
     strikeThrough: {
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       type: "Button",
       id: "strikethrough",
       buttonSettings: {
@@ -342,7 +342,7 @@ export const tabsConfig = (
 
     decreaseIdent: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-decrease-indent",
         content:
@@ -361,7 +361,7 @@ export const tabsConfig = (
 
     increaseIdent: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-increase-indent",
         content:
@@ -401,7 +401,7 @@ export const tabsConfig = (
 
     bullets: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-list-unordered-3",
         content:
@@ -420,7 +420,7 @@ export const tabsConfig = (
 
     numbering: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-list-ordered",
         content:
@@ -439,7 +439,7 @@ export const tabsConfig = (
 
     paragraphMark: {
       type: "Button",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paragraph",
         content:
@@ -458,13 +458,12 @@ export const tabsConfig = (
 
     alignment: {
       type: "GroupButton",
-      allowedSizes: RibbonItemSize.Small,
+      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
       groupButtonSettings: {
         selection: RibbonGroupButtonSelection.Single,
         items: [
           {
             iconCss: "e-icons e-align-left",
-            selected: true,
             click: function () {
               toolbarButtonClick("AlignLeft", editor);
             },
@@ -474,7 +473,6 @@ export const tabsConfig = (
                   .documenteditorcontainer["Align left Tooltip"],
             },
           },
-
           {
             iconCss: "e-icons e-align-center",
             click: function () {
@@ -646,7 +644,10 @@ export const tabsConfig = (
     return [];
   };
 
-  const fileItems = [{ items: [allItems.open, allItems.undo, allItems.redo] }];
+  const fileItems = [
+    { items: [allItems.open] },
+    { items: [allItems.undo, allItems.redo] }
+  ];
 
   const insertItems = [
     { items: [allItems.image] },
@@ -659,31 +660,28 @@ export const tabsConfig = (
   ];
 
   const fontItems = [
-    { items: [allItems.fontFamily, allItems.fontSize] },
-    {
-      items: [
-        allItems.fontColor,
-        allItems.bold,
-        allItems.italic,
-        allItems.underline,
-        allItems.strikeThrough,
-      ],
-    },
+    { items: [allItems.fontFamily, allItems.fontSize, allItems.fontColor] },
+    { items: [allItems.bold, allItems.italic] },
+    { items: [allItems.underline, allItems.strikeThrough] },
   ];
 
   const paragraphItems = [
     {
       items: [
-        allItems.decreaseIdent,
-        allItems.increaseIdent,
-        allItems.lineSpacing,
-        allItems.bullets,
-        allItems.numbering,
         allItems.paragraphMark,
-      ],
+        allItems.decreaseIdent,
+        allItems.increaseIdent
+      ]
     },
     {
-      items: [allItems.alignment],
+      items: [
+        allItems.lineSpacing,
+        allItems.bullets,
+        allItems.numbering
+      ]
+    },
+    {
+      items: [allItems.alignment]
     },
   ];
 
@@ -697,6 +695,7 @@ export const tabsConfig = (
     {
       groups: [
         {
+          id: "file",
           collections: collection(fileItems, "file"),
         },
         {
@@ -733,7 +732,7 @@ export const tabsConfig = (
           header:
             editorContainerLocale.language.syncfusionTranslate
               .documenteditorcontainer["Paragraph"],
-          groupIconCss: "e-icons e-align-center",
+          groupIconCss: "e-icons e-paragraph",
           collections: collection(paragraphItems, "paragraph"),
         },
         {
