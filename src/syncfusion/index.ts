@@ -231,7 +231,7 @@ export class IaraSyncfusionAdapter
           .toLocaleLowerCase();
         const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
         if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
-        
+
         const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
@@ -253,10 +253,15 @@ export class IaraSyncfusionAdapter
   }
 
   formatSectionTitles(): void {
-    this._formatSectionTitle(["Técnica:", "Técnica de Exame:"]);
+    this._formatSectionTitle([
+      "Técnica:",
+      "Técnica de Exame:",
+      "Técnica do Exame:",
+    ]);
     this._formatSectionTitle(["Contraste:"]);
     this._formatSectionTitle([
       "Histórico Clínico:",
+      "Indicação:",
       "Indicação Clínica:",
       "Informações Clínicas:",
     ]);
@@ -341,8 +346,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.selection.moveToDocumentEnd();
   }
 
-  insertText(text: string, resetSytle = false): void {
-    if (resetSytle) this._selectionManager?.resetStyles();
+  insertText(text: string): void {
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._documentEditor.editor.insertText(firstLine);
     lines.forEach(line => {
@@ -385,7 +389,13 @@ export class IaraSyncfusionAdapter
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text, true);
+    if (text.length) this.insertText(text);
+
+    if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
+      // Insert text is not respecting the allCaps property, work around that
+      this._selectionManager.selectBookmark(this._selectionManager.initialSelectionData.bookmarkId);
+      this._documentEditor.selection.characterFormat.allCaps = true;
+    }
 
     if (inference.isFinal) {
       if (text.length) {
@@ -521,6 +531,7 @@ export class IaraSyncfusionAdapter
       .getRootElement()
       .addEventListener("mousedown", event => {
         if (event.button === 1) {
+          if (this._documentEditor.selection.text.length > 0) this._documentEditor.editor.delete();
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
             this.config
@@ -531,12 +542,24 @@ export class IaraSyncfusionAdapter
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
       if (event.button === 1) {
         this._cursorSelection?.resetSelection();
+        this._cursorSelection?.destroy();
         this._cursorSelection = undefined;
-
         this._recognition.toggleRecording();
       }
     });
   }
+
+  protected _initCommands(): void {    
+    super._initCommands();
+    this._recognition.commands.add(
+      this._locale.acceptAll,
+      () => {
+        this._onIaraCommand(this._locale.acceptAll);
+        this._documentEditor.revisions.acceptAll();
+      },
+      ...this._defaultCommandArgs
+    );
+  }  
 
   private _updateSelectedNavigationField(field: string): void {
     if (field.match(/\[(.*)\]/)) {
@@ -583,8 +606,10 @@ export class IaraSyncfusionAdapter
         this._selectionManager.initialSelectionData.bookmarkId
       );
       if (!hadSelectedText) {
-        this._documentEditor.selection.extendBackward();
+        this._documentEditor.selection.moveToPreviousCharacter();
+        this._documentEditor.selection.extendForward();
         this._documentEditor.editor.delete();
+        this._selectionManager.wordBeforeSelection = this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
       this._selectionManager.resetSelection();
     }

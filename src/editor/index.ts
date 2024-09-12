@@ -1,4 +1,8 @@
-import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import {
+  Config,
+  IaraSpeechRecognition,
+  IaraSpeechRecognitionDetail,
+} from "../speech";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import Locales from "./locales";
@@ -44,7 +48,12 @@ export abstract class EditorAdapter {
     highlightInference: true,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
-  protected _currentLanguage: {[k: string]: any} = {};
+  protected _currentLanguage: { [k: string]: any } = {};
+  protected _defaultCommandArgs: [undefined, undefined, Config | Config[]] = [
+    undefined,
+    undefined,
+    { searchRichTranscript: true } as Config,
+  ];
 
   private _listeners = [
     {
@@ -137,7 +146,7 @@ export abstract class EditorAdapter {
       this._navigationFieldManager.insertField(content, title, type);
   }
 
-  private _initCommands(): void {
+  protected _initCommands(): void {
     this._recognition.commands.add(
       this._locale.copyReport,
       async (detail, command) => {
@@ -149,7 +158,8 @@ export abstract class EditorAdapter {
         this.onIaraCommand?.(this._locale.copyReport);
         this._recognition.stop();
         await this.copyReport();
-      }
+      },
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       this._locale.finishReport,
@@ -162,40 +172,88 @@ export abstract class EditorAdapter {
         this._onIaraCommand?.(this._locale.finishReport);
         this._recognition.stop();
         await this.finishReport();
-      }
+      },
+      ...this._defaultCommandArgs
     );
-    this._recognition.commands.add(this._locale.toggleBold, () => {
-      this._onIaraCommand(this._locale.toggleBold);
-      this._styleManager.toggleBold();
-    });
-    this._recognition.commands.add(this._locale.toggleItalic, () => {
-      this._onIaraCommand(this._locale.toggleItalic);
-      this._styleManager.toggleItalic();
-    });
-    this._recognition.commands.add(this._locale.toggleUnderline, () => {
-      this._onIaraCommand(this._locale.toggleUnderline);
-      this._styleManager.toggleUnderline();
-    });
-    this._recognition.commands.add(this._locale.toggleUppercase, () => {
-      this._onIaraCommand(this._locale.toggleUppercase);
-      this._styleManager.toggleUppercase();
-    });
-    this._recognition.commands.add(this._locale.print, () => {
-      this._onIaraCommand(this._locale.print);
-      this.print();
-    });
-    this._recognition.commands.add(this._locale.nextField, (detail, command) => {
-      if (detail.transcript === command) this._handleRemovedNavigationField();
-      this._navigationFieldManager.nextField();
-    });
-    this._recognition.commands.add(this._locale.previousField, (detail, command) => {
-      if (detail.transcript === command) this._handleRemovedNavigationField();
-      this._navigationFieldManager.previousField();
-    });
-    this._recognition.commands.add(this._locale.next, (detail, command) => {
+    this._recognition.commands.add(
+      this._locale.toggleBold,
+      () => {
+        this._onIaraCommand(this._locale.toggleBold);
+        this._styleManager.toggleBold();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleItalic,
+      () => {
+        this._onIaraCommand(this._locale.toggleItalic);
+        this._styleManager.toggleItalic();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleList,
+      () => {
+        this._onIaraCommand(this._locale.toggleList);
+        this._styleManager.toggleList();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleNumberedList,
+      () => {
+        this._onIaraCommand(this._locale.toggleNumberedList);
+        this._styleManager.toggleNumberedList();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleUnderline,
+      () => {
+        this._onIaraCommand(this._locale.toggleUnderline);
+        this._styleManager.toggleUnderline();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.toggleUppercase,
+      () => {
+        this._onIaraCommand(this._locale.toggleUppercase);
+        this._styleManager.toggleUppercase();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.print,
+      () => {
+        this._onIaraCommand(this._locale.print);
+        this.print();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.nextField,
+      (detail, command) => {
         if (detail.transcript === command) this._handleRemovedNavigationField();
         this._navigationFieldManager.nextField();
-      }
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.previousField,
+      (detail, command) => {
+        if (detail.transcript === command) this._handleRemovedNavigationField();
+        this._navigationFieldManager.previousField();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.next,
+      (detail, command) => {
+        if (detail.transcript === command) this._handleRemovedNavigationField();
+        this._navigationFieldManager.nextField();
+      },
+      ...this._defaultCommandArgs
     );
     this._recognition.commands.add(
       `${this._locale.search} (\\p{Letter}+)`,
@@ -210,7 +268,8 @@ export abstract class EditorAdapter {
         } finally {
           console.info(detail, command, param);
         }
-      }
+      },
+      ...this._defaultCommandArgs
     );
   }
 
