@@ -22,11 +22,13 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this.setZoomFactor(this._config.zoomFactor ?? "100%");
   }
 
-  setEditorDefaultFont(font: Font = {
-    fontFamily: this._config.font?.family,
-    fontSize: this._config.font?.size,
-    fontColor: this._config.darkMode ? "#fff" : "#000",
-  }): void {
+  setEditorDefaultFont(
+    font: Font = {
+      fontFamily: this._config.font?.family,
+      fontSize: this._config.font?.size,
+      fontColor: this._config.darkMode ? "#fff" : "#000",
+    }
+  ): void {
     this._editor.setDefaultCharacterFormat(font);
 
     // For each of the syncfusion pre-defined styles, set the font family and size
@@ -47,8 +49,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
         return this._editor.documentHelper.authors.get(author);
       }
       let color: string;
-      color = this._config.darkMode ? "#f2b8b5" : "#b5082e",
-      this._editor.documentHelper.authors.add(author, color);
+      (color = this._config.darkMode ? "#f2b8b5" : "#b5082e"),
+        this._editor.documentHelper.authors.add(author, color);
       return color;
     };
   }
@@ -88,7 +90,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
   static loadThemeCss(theme: "light" | "dark") {
     if (theme === "dark") {
-      const FILE = "https://cdn.syncfusion.com/ej2/24.2.9/material3-dark.css";
+      const FILE = "https://cdn.syncfusion.com/ej2/26.2.11/material3-dark.css";
       const css = document.createElement("link");
       css.setAttribute("rel", "stylesheet");
       css.setAttribute("type", "text/css");
@@ -108,11 +110,32 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   }
 
   toggleBold(): void {
-    this._editor.selection.characterFormat.bold = !this._editor.selection.characterFormat.bold;
+    this._editor.selection.characterFormat.bold =
+      !this._editor.selection.characterFormat.bold;
   }
   toggleItalic(): void {
     this._editor.selection.characterFormat.italic =
       !this._editor.selection.characterFormat.italic;
+  }
+  toggleList(): void {
+    if (this._editor.selection.paragraphFormat.listText === undefined) {
+      this._editor.editor.applyBullet("\uf0b7", "Symbol");
+    } else {
+      if (this._editor.selection.paragraphFormat.listText.length) {
+        this._editor.editor.insertText("\n");
+      }
+      this._editor.editor.clearList();
+    } 
+  }
+  toggleNumberedList(): void {
+    if (this._editor.selection.paragraphFormat.listText === undefined) {
+      this._editor.editor.applyNumbering("%1)");
+    } else {
+      if (this._editor.selection.paragraphFormat.listText.length) {
+        this._editor.editor.insertText("\n");
+      }
+      this._editor.editor.clearList();
+    } 
   }
   toggleUnderline(): void {
     if (this._editor.selection.characterFormat.underline === "Single") {
@@ -122,6 +145,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     }
   }
   toggleUppercase(): void {
-    this._editor.editor.toggleAllCaps();
+    this._editor.selection.characterFormat.allCaps =
+      !this._editor.selection.characterFormat.allCaps;
   }
 }
