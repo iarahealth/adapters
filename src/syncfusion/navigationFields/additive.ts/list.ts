@@ -93,7 +93,7 @@ export class IaraSyncfusionAdditiveList {
     const yPos = rulerOffset.top + textPosition.y;
     const xPos =
       rulerOffset.left + textPosition.x - documentEditorContainer.left;
-    listObj.element.style.position = "relative";
+    listObj.element.style.position = "absolute";
     listObj.element.style.top = `${yPos}px`;
     listObj.element.style.left = `${xPos}px`;
   };
