@@ -76,7 +76,7 @@ export class IaraSyncfusionAdditiveList {
   customStyle = (listObj: ListView) => {
     listObj.element.style.margin = "0";
     listObj.element.style.padding = "0";
-    listObj.element.style.zIndex = "5";
+    listObj.element.style.zIndex = "999";
     listObj.element.style.borderColor = "#BAE1FE";
     listObj.element.style.borderRadius = "5px";
     listObj.element.style.borderStyle = "dotted";
