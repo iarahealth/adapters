@@ -53,7 +53,10 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
   showBookmarks: boolean;
 }
 
-export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapter {
+export class IaraSyncfusionAdapter
+  extends EditorAdapter
+  implements EditorAdapter
+{
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
@@ -181,7 +184,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
         this._preprocessClipboardHtml(
           this._documentEditor.selection["htmlContent"]
         );
-      
+
       defaultOnCopy(event);
     };
   }
@@ -191,15 +194,33 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
+  private _wrapElementWithLegacyStyles(element: HTMLElement): void {
+    if (element.style.fontWeight === "bold") {
+      element.innerHTML = `<strong>${element.innerHTML}</strong>`;
+    }
+    if (element.style.fontStyle === "italic") {
+      element.innerHTML = `<em>${element.innerHTML}</em>`;
+    }
+    if (element.style.textDecoration === "underline") {
+      element.innerHTML = `<u>${element.innerHTML}</u>`;
+    }
+    if (element.style.textDecoration === "line-through") {
+      element.innerHTML = `<s>${element.innerHTML}</s>`;
+    }
+  }
+
   private _preprocessClipboardHtml(html: string): string {
-    // Wrap paragraph tags in strong tags if font-weight is bold to support older editors (tiny v3)
+    // Wrap paragraph and span tags in strong tags if font-weight is bold to support older editors (tiny v3)
     const document = new DOMParser().parseFromString(html, "text/html");
+
     const paragraphs = [...document.getElementsByTagName("p")];
-    paragraphs.forEach(paragraph => {
-      if (paragraph.style.fontWeight === "bold") {
-        paragraph.innerHTML = `<strong>${paragraph.innerHTML}</strong>`;
-      }
-    });
+    paragraphs.forEach(paragraph =>
+      this._wrapElementWithLegacyStyles(paragraph)
+    );
+
+    const spans = [...document.getElementsByTagName("span")];
+    spans.forEach(span => this._wrapElementWithLegacyStyles(span));
+
     html = document.body.innerHTML;
 
     // Some needed processing for the clipboard html:
@@ -209,9 +230,9 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
     // 3. Replace empty paragraphs for a simpler paragraph with a line break
     // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
     html = html
-      .replace(/<(meta|a) [^>]+>/gui, "")
-      .replace(/<\/a>/gui, "")
-      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/gui, "<p><br /></p>");
+      .replace(/<(meta|a) [^>]+>/giu, "")
+      .replace(/<\/a>/giu, "")
+      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/giu, "<p><br /></p>");
     html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
@@ -219,7 +240,7 @@ export class IaraSyncfusionAdapter extends EditorAdapter implements EditorAdapte
 
   async copyReport(): Promise<string[]> {
     this.showSpinner();
-    
+
     this._documentEditor.revisions.acceptAll();
     this._documentEditor.enableTrackChanges = false;
     this._documentEditor.focusIn();
