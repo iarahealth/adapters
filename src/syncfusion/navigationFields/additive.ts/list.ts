@@ -14,7 +14,13 @@ export class IaraSyncfusionAdditiveList {
   create = () => {
     const contextMenuElement = document.createElement("ul");
     contextMenuElement.id = "contextmenu-iara";
-    this._instance._documentEditor.element.appendChild(contextMenuElement);
+    console.log(
+      this._instance._documentEditor.documentHelper.viewerContainer,
+      "VIERWR"
+    );
+    this._instance._documentEditor.documentHelper.viewerContainer.appendChild(
+      contextMenuElement
+    );
     const menuItems = this._additiveField.additiveTexts.map(text => {
       return {
         text: text.identifier,
@@ -78,17 +84,16 @@ export class IaraSyncfusionAdditiveList {
   };
 
   customPosition = (listObj: ListView) => {
-    this._instance._documentEditor.element.style.position = "relative";
+    const documentEditorContainer =
+      this._instance._documentEditor.element.getBoundingClientRect();
     const textPosition =
       this._instance._documentEditor.selection.start.location;
-    // console.log(this._instance._documentEditor.element, "RULER");
-    // console.log(this._instance._documentEditor.hRuler.element, "HRULER");
-    const offset =
+    const rulerOffset =
       this._instance._documentEditor.hRuler.element.getBoundingClientRect();
-    console.log(offset, "textPosition");
-    const yPos = 55 + offset.top - textPosition.y;
-    const xPos = offset.left + textPosition.x;
-    listObj.element.style.position = "absolute";
+    const yPos = rulerOffset.top + textPosition.y;
+    const xPos =
+      rulerOffset.left + textPosition.x - documentEditorContainer.left;
+    listObj.element.style.position = "relative";
     listObj.element.style.top = `${yPos}px`;
     listObj.element.style.left = `${xPos}px`;
   };
