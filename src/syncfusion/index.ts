@@ -26,6 +26,28 @@ import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
 
+interface ClipboardItem {
+  readonly types: ReadonlyArray<string>;
+  getType(type: string): Promise<Blob>;
+}
+
+declare var ClipboardItem: {
+  prototype: ClipboardItem;
+  new (
+    items: Record<string, string | Blob | PromiseLike<string | Blob>>,
+    options?: any
+  ): ClipboardItem;
+};
+
+declare global {
+  interface Clipboard extends EventTarget {
+    read(): Promise<ClipboardItem[]>;
+    readText(): Promise<string>;
+    write(data: ClipboardItem[]): Promise<void>;
+    writeText(data: string): Promise<void>;
+  }
+}
+
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
   showBookmarks: boolean;
@@ -153,6 +175,18 @@ export class IaraSyncfusionAdapter
     });
 
     this._setScrollClickHandler();
+
+    const defaultOnCopy = this._documentEditor.selection.onCopy.bind(
+      this._documentEditor.selection
+    );
+    this._documentEditor.selection.onCopy = async (event: ClipboardEvent) => {
+      this._documentEditor.selection["htmlContent"] =
+        this._preprocessClipboardHtml(
+          this._documentEditor.selection["htmlContent"]
+        );
+
+      defaultOnCopy(event);
+    };
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -160,23 +194,70 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
+  private _wrapElementWithLegacyStyles(element: HTMLElement): void {
+    if (element.style.fontWeight === "bold") {
+      element.innerHTML = `<strong>${element.innerHTML}</strong>`;
+    }
+    if (element.style.fontStyle === "italic") {
+      element.innerHTML = `<em>${element.innerHTML}</em>`;
+    }
+    if (element.style.textDecoration === "underline") {
+      element.innerHTML = `<u>${element.innerHTML}</u>`;
+    }
+    if (element.style.textDecoration === "line-through") {
+      element.innerHTML = `<s>${element.innerHTML}</s>`;
+    }
+  }
+
+  private _preprocessClipboardHtml(html: string): string {
+    // Wrap paragraph and span tags in strong tags if font-weight is bold to support older editors (tiny v3)
+    const document = new DOMParser().parseFromString(html, "text/html");
+
+    const paragraphs = [...document.getElementsByTagName("p")];
+    paragraphs.forEach(paragraph =>
+      this._wrapElementWithLegacyStyles(paragraph)
+    );
+
+    const spans = [...document.getElementsByTagName("span")];
+    spans.forEach(span => this._wrapElementWithLegacyStyles(span));
+
+    html = document.body.innerHTML;
+
+    // Some needed processing for the clipboard html:
+    // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
+    // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
+    //    target editor. These tags are added by our bookmarks, and can be safely removed.
+    // 3. Replace empty paragraphs for a simpler paragraph with a line break
+    // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
+    html = html
+      .replace(/<(meta|a) [^>]+>/giu, "")
+      .replace(/<\/a>/giu, "")
+      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/giu, "<p><br /></p>");
+    html = `<!-- x-tinymce/html -->${html}`;
+
+    return html;
+  }
+
   async copyReport(): Promise<string[]> {
+    this.showSpinner();
+
     this._documentEditor.revisions.acceptAll();
     this._documentEditor.enableTrackChanges = false;
-
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
+    this._documentEditor.selection.copy();
 
-    this.showSpinner();
     try {
       const content = await this._contentManager.getContent();
 
-      // By pretending our html comes from google docs, we can paste it into
-      // tinymce without losing the formatting for some reason.
-      const htmlContent = content[1].replace(
-        '<div class="Section0">',
-        '<div class="Section0" id="docs-internal-guid-iara">'
-      );
+      const clipboardItem = (await window.navigator.clipboard.read()).pop();
+      if (!clipboardItem)
+        throw new Error(
+          "Failed to read clipboard contents: Read permission denied"
+        );
+
+      const blob = await clipboardItem.getType("text/html");
+      const htmlContent = (await blob.text()) || "";
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
@@ -187,6 +268,7 @@ export class IaraSyncfusionAdapter
 
       return content.slice(0, 3);
     } catch (error) {
+      console.error(error);
       this.hideSpinner();
       this._documentEditor.selection.moveToDocumentStart();
       throw error;
@@ -229,10 +311,18 @@ export class IaraSyncfusionAdapter
           .replace(/\r/g, "\n")
           .trim()
           .toLocaleLowerCase();
-        const normalizedInferenceText = bookmark.inferenceText?.trim().toLocaleLowerCase();
-        if (!bookmark.recordingId || !normalizedContent.length || !normalizedInferenceText?.length) return;
+        const normalizedInferenceText = bookmark.inferenceText
+          ?.trim()
+          .toLocaleLowerCase();
+        if (
+          !bookmark.recordingId ||
+          !normalizedContent.length ||
+          !normalizedInferenceText?.length
+        )
+          return;
 
-        const evaluation = normalizedContent === normalizedInferenceText ? 6 : 5;
+        const evaluation =
+          normalizedContent === normalizedInferenceText ? 6 : 5;
         await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
           headers: {
             ...this._recognition.internal.iaraAPIMandatoryHeaders,
@@ -372,7 +462,8 @@ export class IaraSyncfusionAdapter
     if (!this._selectionManager) return;
 
     this._inferenceBookmarksManager.updateBookmarkInference(
-      this._selectionManager.initialSelectionData.bookmarkId, inference
+      this._selectionManager.initialSelectionData.bookmarkId,
+      inference
     );
 
     if (
@@ -393,7 +484,9 @@ export class IaraSyncfusionAdapter
 
     if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
       // Insert text is not respecting the allCaps property, work around that
-      this._selectionManager.selectBookmark(this._selectionManager.initialSelectionData.bookmarkId);
+      this._selectionManager.selectBookmark(
+        this._selectionManager.initialSelectionData.bookmarkId
+      );
       this._documentEditor.selection.characterFormat.allCaps = true;
     }
 
@@ -491,10 +584,8 @@ export class IaraSyncfusionAdapter
           if (item.category === "Template") {
             if (this.preprocessAndInsertTemplate)
               this.preprocessAndInsertTemplate?.(item.content, item);
-            else
-              this.insertTemplate(item.content);
-          }
-          else this.insertText(item.content);
+            else this.insertTemplate(item.content);
+          } else this.insertText(item.content);
 
           dialogObj.hide();
         }
@@ -531,7 +622,8 @@ export class IaraSyncfusionAdapter
       .getRootElement()
       .addEventListener("mousedown", event => {
         if (event.button === 1) {
-          if (this._documentEditor.selection.text.length > 0) this._documentEditor.editor.delete();
+          if (this._documentEditor.selection.text.length > 0)
+            this._documentEditor.editor.delete();
           this._cursorSelection = new IaraSyncfusionSelectionManager(
             this._documentEditor,
             this.config
@@ -549,7 +641,7 @@ export class IaraSyncfusionAdapter
     });
   }
 
-  protected _initCommands(): void {    
+  protected _initCommands(): void {
     super._initCommands();
     this._recognition.commands.add(
       this._locale.acceptAll,
@@ -559,7 +651,7 @@ export class IaraSyncfusionAdapter
       },
       ...this._defaultCommandArgs
     );
-  }  
+  }
 
   private _updateSelectedNavigationField(field: string): void {
     if (field.match(/\[(.*)\]/)) {
@@ -580,7 +672,7 @@ export class IaraSyncfusionAdapter
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._documentEditor.selection.text);
-    const hadSelectedText = this._documentEditor.selection.text.length
+    const hadSelectedText = this._documentEditor.selection.text.length;
 
     if (hadSelectedText) this._documentEditor.editor.delete();
 
@@ -609,7 +701,8 @@ export class IaraSyncfusionAdapter
         this._documentEditor.selection.moveToPreviousCharacter();
         this._documentEditor.selection.extendForward();
         this._documentEditor.editor.delete();
-        this._selectionManager.wordBeforeSelection = this._selectionManager.wordBeforeSelection.slice(0, -1);
+        this._selectionManager.wordBeforeSelection =
+          this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
       this._selectionManager.resetSelection();
     }
@@ -654,8 +747,7 @@ export class IaraSyncfusionAdapter
       });
       if (this.preprocessAndInsertTemplate)
         this.preprocessAndInsertTemplate?.(template, metadata);
-      else
-        this.insertTemplate(template);
+      else this.insertTemplate(template);
       return true;
     }
 
