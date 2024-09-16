@@ -214,9 +214,11 @@ export class IaraSyncfusionAdapter
     const document = new DOMParser().parseFromString(html, "text/html");
 
     const paragraphs = [...document.getElementsByTagName("p")];
-    paragraphs.forEach(paragraph =>
+    paragraphs.forEach(paragraph => {
+      // Allow breaking long lines
+      paragraph.style.whiteSpace = "normal";
       this._wrapElementWithLegacyStyles(paragraph)
-    );
+    });
 
     const spans = [...document.getElementsByTagName("span")];
     spans.forEach(span => this._wrapElementWithLegacyStyles(span));
