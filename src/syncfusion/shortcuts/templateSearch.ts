@@ -6,7 +6,12 @@ export class IaraSyncfusionTemplateSearch {
   private _template: (data: { name: string }) => string;
   private _listviewInstance: ListView;
   constructor(
-    private _dataSource: { name: string; category: string; content: string; id:number }[],
+    private _dataSource: {
+      name: string;
+      category: string;
+      content: string;
+      id: number;
+    }[],
     private _onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
@@ -21,7 +26,7 @@ export class IaraSyncfusionTemplateSearch {
     </div>`;
 
     const customGroupTemplate = (data: {
-      items: { name: string; category: string; content: string; id: number; }[];
+      items: { name: string; category: string; content: string; id: number }[];
     }) => {
       return `<div>
         <span class="category">${
@@ -79,8 +84,8 @@ export class IaraSyncfusionTemplateSearch {
       listObj.dataBind();
 
       if (data.length > 0) {
-        let atMenuItems = listObj["liCollection"];
-        let firstItem = atMenuItems[0] as HTMLElement;
+        const atMenuItems = listObj["liCollection"];
+        const firstItem = atMenuItems[0] as HTMLElement;
         firstItem.classList.add("e-active");
       }
     }
