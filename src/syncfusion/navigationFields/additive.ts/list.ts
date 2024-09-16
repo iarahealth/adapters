@@ -14,10 +14,6 @@ export class IaraSyncfusionAdditiveList {
   create = () => {
     const contextMenuElement = document.createElement("ul");
     contextMenuElement.id = "contextmenu-iara";
-    console.log(
-      this._instance._documentEditor.documentHelper.viewerContainer,
-      "VIERWR"
-    );
     this._instance._documentEditor.documentHelper.viewerContainer.appendChild(
       contextMenuElement
     );
