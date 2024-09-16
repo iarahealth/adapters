@@ -196,6 +196,7 @@ export class IaraSyncfusionAdapter
 
   private _wrapElementWithLegacyStyles(element: HTMLElement): void {
     if (element.style.fontWeight === "bold") {
+      element.innerHTML = element.innerHTML.replace(/^( )+$/giu, "&nbsp;");
       element.innerHTML = `<strong>${element.innerHTML}</strong>`;
     }
     if (element.style.fontStyle === "italic") {
@@ -234,7 +235,10 @@ export class IaraSyncfusionAdapter
     html = html
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
-      .replace(/(<p [^>]+>)<span><\/span>(<\/p>)/giu, "<p><br /></p>");
+      .replace(
+        /(<p [^>]+>)<span>(<strong><\/strong>)?<\/span>(<\/p>)/giu,
+        "$1&nbsp;</p>"
+    );
     html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
