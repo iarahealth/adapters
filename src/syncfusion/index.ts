@@ -236,7 +236,7 @@ export class IaraSyncfusionAdapter
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
       .replace(
-        /(<p [^>]+>)<span>(<strong><\/strong>)?<\/span>(<\/p>)/giu,
+        /(<p [^>]+>)<span( [^>]+)?>(<strong><\/strong>)?\s+<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
     );
     html = `<!-- x-tinymce/html -->${html}`;
