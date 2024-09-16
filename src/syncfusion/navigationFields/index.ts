@@ -75,29 +75,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         end: "",
       },
     };
-    this._documentEditor.selectionChange = () => {
-      if (
-        this.blockSelectionInBookmarkCreate &&
-        !this._documentEditor.isReadOnly
-      ) {
-        const selectionBookmark = this._documentEditor.selection.getBookmarks();
-        selectionBookmark.find(bookmark => bookmark.startsWith("Additive"));
-        const currentAdditiveField = this.bookmarks.filter(
-          bookmark => bookmark.name === selectionBookmark[0]
-        );
-        if (currentAdditiveField.length && currentAdditiveField[0].additive) {
-          this.showAdditiveList(
-            currentAdditiveField[0].additive,
-            currentAdditiveField[0].name
-          );
-          this._documentEditor.isReadOnly = true;
-        }
-      }
-      this.currentSelectionOffset = {
-        start: this._documentEditor.selection.startOffset,
-        end: this._documentEditor.selection.endOffset,
-      };
-    };
+    this._documentEditor.selectionChange = this.selectionChange.bind(this);
   }
 
   addAdditiveField() {
@@ -603,4 +581,28 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       excludeBookmarkStartEnd
     );
   }
+
+  selectionChange = () => {
+    if (
+      this.blockSelectionInBookmarkCreate &&
+      !this._documentEditor.isReadOnly
+    ) {
+      const selectionBookmark = this._documentEditor.selection.getBookmarks();
+      selectionBookmark.find(bookmark => bookmark.startsWith("Additive"));
+      const currentAdditiveField = this.bookmarks.filter(
+        bookmark => bookmark.name === selectionBookmark[0]
+      );
+      if (currentAdditiveField.length && currentAdditiveField[0].additive) {
+        this.showAdditiveList(
+          currentAdditiveField[0].additive,
+          currentAdditiveField[0].name
+        );
+        this._documentEditor.isReadOnly = true;
+      }
+    }
+    this.currentSelectionOffset = {
+      start: this._documentEditor.selection.startOffset,
+      end: this._documentEditor.selection.endOffset,
+    };
+  };
 }
