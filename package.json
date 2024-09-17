@@ -10,6 +10,12 @@
       "import": "./dist/adapters.mjs"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE*",
+    "*.md",
+    "*.json"
+  ],
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
