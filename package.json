@@ -28,6 +28,8 @@
     "format": "npm run format:scripts && npm run format:styles"
   },
   "devDependencies": {
+    "@laynezh/vite-plugin-lib-assets": "^0.5.24",
+    "@rollup/plugin-json": "^6.1.0",
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
     "@types/sortablejs": "^1.15.8",
