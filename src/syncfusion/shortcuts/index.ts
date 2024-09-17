@@ -70,8 +70,10 @@ export class IaraSyncfusionShortcutsManager {
   shortcutByTabAndShiftTab(args: DocumentEditorKeyDownEventArgs): void {
     if (args.event.shiftKey && args.event.key == "Tab") {
       this._navigationFieldManager.previousField(true);
+      args.event.preventDefault();
     } else if (args.event.key == "Tab") {
       this._navigationFieldManager.nextField(true);
+      args.event.preventDefault();
     }
   }
 }
