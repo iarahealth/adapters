@@ -1,6 +1,6 @@
 {
   "name": "@iarahealth/adapters",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "./dist/adapters.umd.js",
   "module": "./dist/adapters.mjs",
   "types": "./dist/adapters.d.ts",
