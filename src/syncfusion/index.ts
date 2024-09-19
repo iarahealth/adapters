@@ -60,7 +60,7 @@ export class IaraSyncfusionAdapter
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
-  private _cursorSelection?: IaraSyncfusionSelectionManager;
+  private _cursorSelection?: { startOffset: string; endOffset: string };
   private _debouncedSaveReport: () => void;
   private _documentEditor: DocumentEditor;
   private _editorContainer?: DocumentEditorContainer;
@@ -628,17 +628,19 @@ export class IaraSyncfusionAdapter
         if (event.button === 1) {
           if (this._documentEditor.selection.text.length > 0)
             this._documentEditor.editor.delete();
-          this._cursorSelection = new IaraSyncfusionSelectionManager(
-            this._documentEditor,
-            this.config
-          );
+          this._cursorSelection = {
+            startOffset: this._documentEditor.selection.startOffset,
+            endOffset: this._documentEditor.selection.endOffset,
+          };
         }
       });
 
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
-      if (event.button === 1) {
-        this._cursorSelection?.resetSelection();
-        this._cursorSelection?.destroy();
+      if (event.button === 1 && this._cursorSelection) {
+        this._documentEditor.selection.select(
+          this._cursorSelection.startOffset,
+          this._cursorSelection.endOffset
+        );
         this._cursorSelection = undefined;
         this._recognition.toggleRecording();
       }
