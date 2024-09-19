@@ -1,5 +1,5 @@
-import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json" assert { type: "json" };
-import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json" assert { type: "json" };
+import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 import { IaraLanguages } from "./language";
 
 export class IaraSyncfusionLanguages {

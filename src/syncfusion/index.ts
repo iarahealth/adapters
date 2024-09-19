@@ -31,7 +31,7 @@ interface ClipboardItem {
   getType(type: string): Promise<Blob>;
 }
 
-declare var ClipboardItem: {
+declare let ClipboardItem: {
   prototype: ClipboardItem;
   new (
     items: Record<string, string | Blob | PromiseLike<string | Blob>>,
@@ -218,7 +218,7 @@ export class IaraSyncfusionAdapter
     paragraphs.forEach(paragraph => {
       // Allow breaking long lines
       paragraph.style.whiteSpace = "normal";
-      this._wrapElementWithLegacyStyles(paragraph)
+      this._wrapElementWithLegacyStyles(paragraph);
     });
 
     const spans = [...document.getElementsByTagName("span")];
@@ -238,7 +238,7 @@ export class IaraSyncfusionAdapter
       .replace(
         /(<p [^>]+>)<span( [^>]+)?>(<strong><\/strong>)?\s+<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
-    );
+      );
     html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
@@ -256,14 +256,12 @@ export class IaraSyncfusionAdapter
     try {
       const content = await this._contentManager.getContent();
 
-      const clipboardItem = (await window.navigator.clipboard.read()).pop();
-      if (!clipboardItem)
-        throw new Error(
-          "Failed to read clipboard contents: Read permission denied"
-        );
-
-      const blob = await clipboardItem.getType("text/html");
-      const htmlContent = (await blob.text()) || "";
+      // By pretending our html comes from google docs, we can paste it into
+      // tinymce without losing the formatting for some reason.
+      const htmlContent = content[1].replace(
+        '<div class="Section0">',
+        '<div class="Section0" id="docs-internal-guid-iara">'
+      );
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
