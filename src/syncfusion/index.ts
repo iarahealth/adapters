@@ -197,6 +197,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.enableTrackChanges = false;
     this._documentEditor.selection?.selectAll();
     this._documentEditor.editor?.delete();
+    this._navigationFieldManager.additiveListIntance?.hide();
     if (this._documentEditor.editor) this._styleManager?.setEditorDefaultFont();
   }
 
