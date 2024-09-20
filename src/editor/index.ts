@@ -1,4 +1,8 @@
-import { Config, IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import {
+  Config,
+  IaraSpeechRecognition,
+  IaraSpeechRecognitionDetail,
+} from "../speech";
 import { Ribbon } from "../syncfusion/toolbar/ribbon";
 import { IaraEditorInferenceFormatter } from "./formatter";
 import Locales from "./locales";
@@ -120,11 +124,12 @@ export abstract class EditorAdapter {
     return this._recognition.report.begin("", "");
   }
 
-  async finishReport(): Promise<void> {
-    if (!this.config.saveReport) return;
+  async finishReport(): Promise<string[]> {
+    if (!this.config.saveReport) return [];
     const content = await this.copyReport();
     this.clearReport();
     await this._recognition.report.finish(content[0], content[1]);
+    return content;
   }
 
   hasEmptyRequiredFields(): boolean {
