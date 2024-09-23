@@ -15,6 +15,7 @@ import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
+import { IaraSyncfusionFooterBarManager } from "./footerBar";
 import {
   IaraInferenceBookmark,
   IaraSyncfusionInferenceBookmarksManager,
@@ -51,6 +52,7 @@ declare global {
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
   showBookmarks: boolean;
+  showFinishReportButton: boolean;
 }
 
 export class IaraSyncfusionAdapter
@@ -68,17 +70,18 @@ export class IaraSyncfusionAdapter
   private _toolbarManager?: IaraSyncfusionToolbarManager;
   private _languageManager: IaraSyncfusionLanguageManager;
   private _inferenceBookmarksManager: IaraSyncfusionInferenceBookmarksManager;
+  private _footerBarManager: IaraSyncfusionFooterBarManager;
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     replaceToolbar: false,
     showBookmarks: false,
+    showFinishReportButton: true,
   };
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public defaultFormat: CharacterFormatProperties = {};
-  public savingReportSpan = document.createElement("span");
   public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
 
   public get contentManager(): IaraSyncfusionEditorContentManager {
@@ -144,6 +147,12 @@ export class IaraSyncfusionAdapter
       );
       this._toolbarManager.init();
     }
+
+    this._footerBarManager = new IaraSyncfusionFooterBarManager(
+      this._languageManager,
+      this.config,
+      this.finishReport.bind(this)
+    );
 
     DocumentEditor.Inject(Print);
 
@@ -306,7 +315,7 @@ export class IaraSyncfusionAdapter
     this._documentEditor.search.searchResults.clear();
   }
 
-  async finishReport(): Promise<void> {
+  async finishReport(): Promise<string[]> {
     this._inferenceBookmarksManager.updateBookmarks();
 
     Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
@@ -342,8 +351,10 @@ export class IaraSyncfusionAdapter
       }
     );
 
-    await super.finishReport();
+    const content = await super.finishReport();
     this._inferenceBookmarksManager.clearBookmarks();
+    dispatchEvent(new CustomEvent("IaraOnFinishReport", { detail: content }));
+    return content;
   }
 
   formatSectionTitles(): void {
@@ -529,40 +540,21 @@ export class IaraSyncfusionAdapter
 
   private async _saveReport(): Promise<void> {
     if (this._documentEditor.isDocumentEmpty) return;
+    this._footerBarManager.updateSavingReportStatus("loading");
     if (!this._recognition.report["_key"]) await this._beginReport();
 
-    let spanContent = "";
     try {
       const contentDate = new Date();
       this._contentDate = contentDate;
 
       const content: string[] = await this._contentManager.getContent();
-      const element = document.querySelector(".e-de-status-bar");
-
-      if (element) {
-        this.savingReportSpan.style.width = "120px";
-        this.savingReportSpan.style.margin = "10px";
-        this.savingReportSpan.style.fontSize = "12px";
-        this.savingReportSpan.style.color = "black";
-        spanContent =
-          this._languageManager.languages.language.iaraTranslate.saveMessage
-            .loading;
-        this.savingReportSpan.innerHTML = `<span class="e-icons e-refresh-2" style="margin-right: 4px"></span>${spanContent}`;
-        element.insertBefore(this.savingReportSpan, element.firstChild);
-      }
 
       if (contentDate !== this._contentDate) return;
 
       await this._updateReport(content[0], content[1]);
-      spanContent =
-        this._languageManager.languages.language.iaraTranslate.saveMessage
-          .success;
-      this.savingReportSpan.innerHTML = `<span class="e-icons e-check" style="margin-right: 4px; color: #b71c1c"></span>${spanContent}`;
+      this._footerBarManager.updateSavingReportStatus("success");
     } catch {
-      spanContent =
-        this._languageManager.languages.language.iaraTranslate.saveMessage
-          .error;
-      this.savingReportSpan.innerHTML = `<span class="e-icons e-warning" style="margin-right: 4px; color: #ffb300"></span>${spanContent}`;
+      this._footerBarManager.updateSavingReportStatus("error");
     }
   }
 
