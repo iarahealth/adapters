@@ -688,7 +688,6 @@ export class IaraSyncfusionAdapter
       inference.inferenceId
         ? `inferenceId_${inference.inferenceId}`
         : undefined,
-      true,
       this.config.highlightInference
     );
 
