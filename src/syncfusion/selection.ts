@@ -39,7 +39,6 @@ export class IaraSyncfusionSelectionManager {
     private _editor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
     bookmarkId?: string,
-    getSurrondingWords = false,
     highlightSelection = false
   ) {
     if (highlightSelection) this._highlightSelection();
@@ -62,42 +61,51 @@ export class IaraSyncfusionSelectionManager {
     };
 
     const { endOffset, startOffset } = this._editor.selection;
+
+    const [wordBefore, lineBefore] = this._getWordBeforeSelection();
+    this.wordBeforeSelection = wordBefore;
+
+    this._editor.selection.select(startOffset, endOffset);
+    const [wordAfter, lineAfter] = this._getWordAfterSelection();
+    this.wordAfterSelection = wordAfter;
+
+    if (lineAfter.trim() === lineBefore.trim()) {
+      // Handle a syncfusion bug where the previous text is returned as the entire previous line.
+      // This only happens on the start of a line
+      this.wordBeforeSelection = "";
+    }
+
+    this.isAtStartOfLine =
+      this.wordBeforeSelection.length === 0 || startOffset.endsWith(";0");
+
+    this._editor.selection.select(startOffset, endOffset);
     this._editor.editor.insertBookmark(this.initialSelectionData.bookmarkId);
-
-    if (!getSurrondingWords) return;
-
-    this._editor.selection.select(startOffset, endOffset);
-    this.wordBeforeSelection = this._getWordBeforeSelection();
-
-    this._editor.selection.select(startOffset, endOffset);
-    this.wordAfterSelection = this._getWordAfterSelection();
-
-    this._editor.selection.extendToLineStart();
-    this.isAtStartOfLine = this._editor.selection.text.length === 0;
 
     this.resetSelection();
   }
 
-  private _getWordAfterSelection(): string {
+  private _getWordAfterSelection(): string[] {
     this._editor.selection.extendToLineEnd();
-    const startsWithSpace = this._editor.selection.text.startsWith(" ");
-    const words = this._editor.selection.text
+    const lineAfter = this._editor.selection.text;
+    const startsWithSpace = lineAfter.startsWith(" ");
+    const words = lineAfter
       .split(" ")
       .slice(0, 2)
       .filter(word => word.trim());
     const wordAfter = `${startsWithSpace ? " " : ""}${words[0] || ""}`;
-    return wordAfter;
+    return [wordAfter, lineAfter];
   }
 
-  private _getWordBeforeSelection(): string {
+  private _getWordBeforeSelection(): string[] {
     this._editor.selection.extendToLineStart();
-    const endsWithSpace = this._editor.selection.text.endsWith(" ");
-    const words = this._editor.selection.text
+    const lineBefore = this._editor.selection.text;
+    const endsWithSpace = lineBefore.endsWith(" ");
+    const words = lineBefore
       .split(" ")
       .slice(-2)
       .filter(word => word.trim());
     const wordBefore = `${words.pop() || ""}${endsWithSpace ? " " : ""}`;
-    return wordBefore;
+    return [wordBefore, lineBefore];
   }
 
   private _highlightSelection(): void {
