@@ -11,6 +11,7 @@ import {
   hideSpinner,
   showSpinner,
 } from "@syncfusion/ej2-popups";
+import debounce from "debounce";
 import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSFDT, IaraSyncfusionEditorContentManager } from "./content";
@@ -112,9 +113,10 @@ export class IaraSyncfusionAdapter
 
     this._languageManager = new IaraSyncfusionLanguageManager(this.config);
 
+    this._debouncedSaveReport = debounce(this._saveReport.bind(this), 1000);
     this._contentManager = new IaraSyncfusionEditorContentManager(
       this._documentEditor,
-      () => (this.config.saveReport ? this._debouncedSaveReport() : undefined)
+      this._debouncedSaveReport.bind(this)
     );
 
     this._styleManager = new IaraSyncfusionStyleManager(
@@ -149,8 +151,6 @@ export class IaraSyncfusionAdapter
 
     this._documentEditor.enablePrint = true;
     this._documentEditor.enableImageResizer = true;
-
-    this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
     this._documentEditor.addEventListener(
       "destroyed",
@@ -515,16 +515,6 @@ export class IaraSyncfusionAdapter
 
   undo(): void {
     this._documentEditor.editorHistory.undo();
-  }
-
-  private _debounce(func: () => unknown) {
-    let timer: ReturnType<typeof setTimeout>;
-    return () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func();
-      }, 1000);
-    };
   }
 
   private async _saveReport(): Promise<void> {
