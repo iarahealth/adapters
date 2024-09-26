@@ -551,7 +551,7 @@ export class IaraSyncfusionAdapter
       });
 
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
-      if (event.button === 1) {
+      if (event.button === 1 && this.config.mouseButton) {
         this._cursorSelection?.resetSelection();
         this._cursorSelection?.destroy();
         this._cursorSelection = undefined;
