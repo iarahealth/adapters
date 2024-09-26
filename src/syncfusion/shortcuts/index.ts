@@ -5,18 +5,20 @@ import {
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
 import { IaraSpeechRecognition } from "../../speech";
-import { IaraSyncfusionTemplateSearch } from "./templateSearch";
+import { IaraSyncfusionEditorContentManager } from "../content";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { IaraSyncfusionTemplateSearch } from "./templateSearch";
 
 export class IaraSyncfusionShortcutsManager {
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
+    private _contentManager: IaraSyncfusionEditorContentManager,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
-    ) => void,
-    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
+    ) => void
   ) {
     this._editor.keyDown = this.onKeyDown.bind(this);
   }
@@ -24,18 +26,21 @@ export class IaraSyncfusionShortcutsManager {
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     switch (args.event.key) {
       case "@":
-        this.shortcutByAt();
+        this.onAtShortcut();
         break;
       case "Tab":
         args.isHandled = true;
-        this.shortcutByTabAndShiftTab(args);
+        this.onTabAndShiftTabShortcut(args);
+        break;
+      case "/":
+        this.onSlashShortcut();
         break;
       default:
         break;
     }
   }
 
-  shortcutByAt(): void {
+  onAtShortcut(): void {
     const templates = [
       ...Object.values(this._recognition.richTranscriptTemplates.templates),
     ];
@@ -67,11 +72,29 @@ export class IaraSyncfusionShortcutsManager {
     new IaraSyncfusionTemplateSearch(sortOrder, this.onTemplateSelected);
   }
 
-  shortcutByTabAndShiftTab(args: DocumentEditorKeyDownEventArgs): void {
+  onTabAndShiftTabShortcut(args: DocumentEditorKeyDownEventArgs): void {
     if (args.event.shiftKey && args.event.key == "Tab") {
       this._navigationFieldManager.previousField(true);
     } else if (args.event.key == "Tab") {
       this._navigationFieldManager.nextField(true);
     }
+  }
+
+  async onSlashShortcut(): Promise<void> {
+    const container = document.createElement("div");
+    container.style.position = "absolute";
+    container.style.top = "100px";
+    container.style.left = "100px";
+    container.style.zIndex = "1000";
+
+    const assistant = document.createElement(
+      "iara-ai-assistant"
+    ) as HTMLElement & { recognition: IaraSpeechRecognition; report: string };
+    assistant.report = await this._contentManager.getPlainTextContent();
+    assistant.recognition = this._recognition;
+    assistant.style.zIndex = "1000";
+
+    container.appendChild(assistant);
+    this._editor.documentHelper.viewerContainer.appendChild(container);
   }
 }
