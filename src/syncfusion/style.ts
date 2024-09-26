@@ -3,8 +3,8 @@ import { IaraSyncfusionConfig } from ".";
 import { IaraEditorStyleManager } from "../editor/style";
 
 interface Font {
-  fontFamily?: string;
-  fontSize?: number;
+  fontFamily: string;
+  fontSize: number;
   fontColor: string;
 }
 
@@ -24,8 +24,8 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
 
   setEditorDefaultFont(
     font: Font = {
-      fontFamily: this._config.font?.family,
-      fontSize: this._config.font?.size,
+      fontFamily: this._config.font?.family || "Times New Roman",
+      fontSize: this._config.font?.size || 12,
       fontColor: this._config.darkMode ? "#fff" : "#000",
     }
   ): void {
@@ -53,6 +53,13 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
         this._editor.documentHelper.authors.add(author, color);
       return color;
     };
+
+    const { startOffset, endOffset } = this._editor.selection;
+    this._editor.selection.selectAll();
+    this._editor.selection.characterFormat.fontFamily = font.fontFamily;
+    this._editor.selection.characterFormat.fontSize = font.fontSize;
+    this._editor.selection.characterFormat.fontColor = font.fontColor;
+    this._editor.selection.select(startOffset, endOffset);
   }
 
   setEditorFontColor(color: string): void {
@@ -125,7 +132,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
         this._editor.editor.insertText("\n");
       }
       this._editor.editor.clearList();
-    } 
+    }
   }
   toggleNumberedList(): void {
     if (this._editor.selection.paragraphFormat.listText === undefined) {
@@ -135,7 +142,7 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
         this._editor.editor.insertText("\n");
       }
       this._editor.editor.clearList();
-    } 
+    }
   }
   toggleUnderline(): void {
     if (this._editor.selection.characterFormat.underline === "Single") {
