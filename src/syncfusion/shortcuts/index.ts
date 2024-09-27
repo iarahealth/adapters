@@ -26,21 +26,23 @@ export class IaraSyncfusionShortcutsManager {
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     switch (args.event.key) {
       case "@":
-        this.onAtShortcut();
+        this.onAtShortcut(args);
         break;
       case "Tab":
-        args.isHandled = true;
         this.onTabAndShiftTabShortcut(args);
         break;
       case "/":
-        this.onSlashShortcut();
+        this.onSlashShortcut(args);
         break;
       default:
         break;
     }
   }
 
-  onAtShortcut(): void {
+  onAtShortcut(args: DocumentEditorKeyDownEventArgs): void {
+    args.isHandled = true;
+    args.event.preventDefault();
+
     const templates = [
       ...Object.values(this._recognition.richTranscriptTemplates.templates),
     ];
@@ -73,6 +75,9 @@ export class IaraSyncfusionShortcutsManager {
   }
 
   onTabAndShiftTabShortcut(args: DocumentEditorKeyDownEventArgs): void {
+    args.isHandled = true;
+    args.event.preventDefault();
+
     if (args.event.shiftKey && args.event.key == "Tab") {
       this._navigationFieldManager.previousField(true);
     } else if (args.event.key == "Tab") {
@@ -80,11 +85,19 @@ export class IaraSyncfusionShortcutsManager {
     }
   }
 
-  async onSlashShortcut(): Promise<void> {
+  async onSlashShortcut(args: DocumentEditorKeyDownEventArgs): Promise<void> {
+    args.isHandled = true;
+    args.event.preventDefault();
+
+    const hRulerBounds = this._editor.hRuler.element.getBoundingClientRect();
+    const textPosition = this._editor.selection.start.location;
+
     const container = document.createElement("div");
     container.style.position = "absolute";
-    container.style.top = "100px";
-    container.style.left = "100px";
+    container.style.top = `${Math.ceil(
+      textPosition.y + this._editor.selection.characterFormat.fontSize * 3.5
+    )}px`;
+    container.style.left = `${hRulerBounds.left}px`;
     container.style.zIndex = "1000";
 
     const assistant = document.createElement(
