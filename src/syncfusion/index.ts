@@ -29,6 +29,7 @@ import { IaraSyncfusionToolbarManager } from "./toolbar";
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
   showBookmarks: boolean;
+  mouseButton: boolean;
 }
 
 export class IaraSyncfusionAdapter
