@@ -551,7 +551,7 @@ export class IaraSyncfusionAdapter
 
       await this._updateReport(content[0], content[1]);
       this._footerBarManager.updateSavingReportStatus("success");
-      dispatchEvent(new CustomEvent("IaraOnSaveReport"));
+      dispatchEvent(new CustomEvent("IaraOnSaveReport", { detail: content }));
     } catch {
       this._footerBarManager.updateSavingReportStatus("error");
     }
