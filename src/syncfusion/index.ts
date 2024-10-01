@@ -82,8 +82,6 @@ export class IaraSyncfusionAdapter
   protected _styleManager: IaraSyncfusionStyleManager;
 
   public defaultFormat: CharacterFormatProperties = {};
-  public timeoutToSave: ReturnType<typeof setTimeout> | undefined;
-
   public get contentManager(): IaraSyncfusionEditorContentManager {
     return this._contentManager;
   }
@@ -553,6 +551,7 @@ export class IaraSyncfusionAdapter
 
       await this._updateReport(content[0], content[1]);
       this._footerBarManager.updateSavingReportStatus("success");
+      dispatchEvent(new CustomEvent("IaraOnSaveReport"));
     } catch {
       this._footerBarManager.updateSavingReportStatus("error");
     }
