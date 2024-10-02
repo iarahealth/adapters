@@ -27,15 +27,6 @@ export interface IaraEditorConfig {
 
 export abstract class EditorAdapter {
   public onIaraCommand?: (command: string) => void;
-  public preprocessAndInsertTemplate?: (
-    template: unknown,
-    metadata: unknown
-  ) => Promise<void>;
-  public selectedField: {
-    content: string;
-    title: string;
-    type: "Field" | "Mandatory" | "Optional";
-  } = { content: "", title: "", type: "Field" };
   protected _locale: Record<string, string> = {};
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
@@ -112,6 +103,7 @@ export abstract class EditorAdapter {
       true;
   }
 
+  protected abstract _handleRemovedNavigationField(): void;
   abstract blockEditorWhileSpeaking(status: boolean): void;
   abstract clearReport(): void;
   abstract copyReport(): Promise<string[]>;
@@ -138,12 +130,6 @@ export abstract class EditorAdapter {
 
   navigationManagerFields(): IaraEditorNavigationFieldManager {
     return this._navigationFieldManager;
-  }
-
-  private _handleRemovedNavigationField(): void {
-    const { content, title, type } = this.selectedField;
-    if (this.selectedField.content)
-      this._navigationFieldManager.insertField(content, title, type);
   }
 
   protected _initCommands(): void {
