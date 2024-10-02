@@ -4,19 +4,22 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
+import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
-import { IaraSyncfusionTemplateSearch } from "./templateSearch";
+import { IaraSyncfusionAIAssistant } from "../assistant";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { IaraSyncfusionTemplateSearch } from "./templateSearch";
 
 export class IaraSyncfusionShortcutsManager {
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
+    private _config: IaraEditorConfig,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
-    ) => void,
-    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
+    ) => void
   ) {
     this._editor.keyDown = this.onKeyDown.bind(this);
   }
@@ -25,6 +28,9 @@ export class IaraSyncfusionShortcutsManager {
     switch (args.event.key) {
       case "@":
         this.shortcutByAt();
+        break;
+      case "/":
+        this.onSlashShortcut(args);
         break;
       case "Tab":
         args.isHandled = true;
@@ -73,5 +79,15 @@ export class IaraSyncfusionShortcutsManager {
     } else if (args.event.key == "Tab") {
       this._navigationFieldManager.nextField(true);
     }
+  }
+
+  async onSlashShortcut(args: DocumentEditorKeyDownEventArgs): Promise<void> {
+    args.isHandled = true;
+    args.event.preventDefault();
+    new IaraSyncfusionAIAssistant(
+      this._editor,
+      this._recognition,
+      this._config
+    );
   }
 }

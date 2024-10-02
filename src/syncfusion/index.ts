@@ -167,8 +167,9 @@ export class IaraSyncfusionAdapter
     new IaraSyncfusionShortcutsManager(
       this._documentEditor,
       _recognition,
-      this.onTemplateSelectedAtShortCut.bind(this),
-      this._navigationFieldManager
+      this.config,
+      this._navigationFieldManager,
+      this.onTemplateSelectedAtShortCut.bind(this)
     );
 
     new IaraSyncfusionContextMenuManager(
