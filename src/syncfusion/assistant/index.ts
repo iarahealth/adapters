@@ -2,7 +2,7 @@ import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionContentManager } from "../content";
-import { diffWords } from "../content/jsdiff/src";
+import { diffWords } from "diff";
 
 export class IaraSyncfusionAIAssistant {
   constructor(
@@ -72,7 +72,7 @@ export class IaraSyncfusionAIAssistant {
         this._recognition.richTranscriptTemplates.templates[
           template.key
         ].metadata = {
-          ...(template.metadata as Object || {}),
+          ...((template.metadata as object) || {}),
           plainReplaceText:
             await this._contentManager.reader.getPlainTextContent(),
         };
