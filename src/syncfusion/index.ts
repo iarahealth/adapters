@@ -457,6 +457,11 @@ export class IaraSyncfusionAdapter
       line = line.trimStart();
       if (line) this._documentEditor.editor.insertText(line);
     });
+    if (lines.length) {
+      const { endOffset } = this._documentEditor.selection;
+      this._selectionManager?.resetSelection();
+      this._documentEditor.selection.select(endOffset, endOffset);
+    }
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
