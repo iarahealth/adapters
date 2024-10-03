@@ -34,6 +34,22 @@ export class IaraSyncfusionContentWriteManager {
     private _config: IaraSyncfusionConfig
   ) {}
 
+  private _formatSectionTitle(titleQueries: string[]): void {
+    let matchedQuery = "";
+    while (!matchedQuery && titleQueries.length) {
+      const query = titleQueries.shift();
+      if (!query) continue;
+
+      this._editor.search.findAll(query);
+      if (this._editor.search.searchResults.length) {
+        matchedQuery = query;
+        this._editor.selection.characterFormat.bold = true;
+      }
+    }
+
+    this._editor.search.searchResults.clear();
+  }
+
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
     const hadSelectedText = this._editor.selection.text.length;
@@ -110,7 +126,7 @@ export class IaraSyncfusionContentWriteManager {
       });
       if (this.preprocessAndInsertTemplate)
         this.preprocessAndInsertTemplate?.(template, metadata);
-      else this.insertTemplate(template);
+      else this.insertTemplate(template, false);
       return true;
     }
 
@@ -140,7 +156,7 @@ export class IaraSyncfusionContentWriteManager {
 
   async insertTemplate(
     content: string,
-    replaceAllContent = false
+    replaceAllContent: boolean
   ): Promise<void> {
     const sfdt = await this._readManager.fromContent(content);
     if (replaceAllContent) this._editor.open(sfdt.value);
@@ -162,6 +178,13 @@ export class IaraSyncfusionContentWriteManager {
     this._editor.selection.moveToDocumentEnd();
   }
 
+  clear(): void {
+    this._editor.enableTrackChanges = false;
+    this._editor.selection?.selectAll();
+    this._editor.editor?.delete();
+    if (this._editor.editor) this._styleManager?.setEditorDefaultFont();
+  }
+
   insertText(text: string): void {
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._editor.editor.insertText(firstLine);
@@ -170,6 +193,68 @@ export class IaraSyncfusionContentWriteManager {
       line = line.trimStart();
       if (line) this._editor.editor.insertText(line);
     });
+  }
+
+  formatSectionTitles(): void {
+    this._formatSectionTitle([
+      "Técnica:",
+      "Técnica de Exame:",
+      "Técnica do Exame:",
+    ]);
+    this._formatSectionTitle(["Contraste:"]);
+    this._formatSectionTitle([
+      "Histórico Clínico:",
+      "Indicação:",
+      "Indicação Clínica:",
+      "Informações Clínicas:",
+    ]);
+    this._formatSectionTitle(["Exames Anteriores:"]);
+    this._formatSectionTitle([
+      "Análise:",
+      "Interpretação:",
+      "Os seguintes aspectos foram observados:",
+      "Relatório:",
+    ]);
+    this._formatSectionTitle(["Objetivo:"]);
+    this._formatSectionTitle([
+      "Conclusão:",
+      "Hipótese Diagnóstica:",
+      "Impressão Diagnóstica:",
+      "Impressão:",
+      "Resumo:",
+      "Observação:",
+      "Observações:",
+      "Opinião:",
+    ]);
+    this._formatSectionTitle([
+      "Achados:",
+      "Achados Adicionais:",
+      "Comparação:",
+      "Demais Achados:",
+      "Método:",
+      "Protocolo:",
+    ]);
+  }
+
+  formatTitle(): void {
+    this._editor.selection.moveToDocumentEnd();
+    const lastParagraph = parseInt(
+      this._editor.selection.endOffset.split(";")[1]
+    );
+    this._editor.selection.moveToDocumentStart();
+
+    let titleLine = "";
+    let currentParagraph = 0;
+    while (!titleLine && currentParagraph <= lastParagraph) {
+      this._editor.selection.selectLine();
+      titleLine = this._editor.selection.text.trim();
+      currentParagraph++;
+    }
+    if (titleLine) {
+      this._editor.selection.characterFormat.bold = true;
+      this._editor.selection.characterFormat.allCaps = true;
+      this._editor.selection.paragraphFormat.textAlignment = "Center";
+    }
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {

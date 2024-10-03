@@ -1,0 +1,3 @@
+[submodule "src/syncfusion/content/jsdiff"]
+	path = src/syncfusion/content/jsdiff
+	url = git@github.com:kpdecker/jsdiff.git

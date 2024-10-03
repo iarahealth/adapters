@@ -81,6 +81,11 @@ export class IaraSyncfusionAdapter
   public get documentEditor(): DocumentEditor {
     return this._documentEditor;
   }
+  public set preprocessAndInsertTemplate(
+    func: (template: unknown, metadata: unknown) => Promise<void>
+  ) {
+    this._contentManager.writer.preprocessAndInsertTemplate = func;
+  }
 
   constructor(
     _editorInstance: DocumentEditorContainer | DocumentEditor,
@@ -170,6 +175,7 @@ export class IaraSyncfusionAdapter
     new IaraSyncfusionShortcutsManager(
       this._documentEditor,
       _recognition,
+      this._contentManager,
       this.config,
       this._navigationFieldManager,
       this.onTemplateSelectedAtShortCut.bind(this)
@@ -297,30 +303,23 @@ export class IaraSyncfusionAdapter
   }
 
   clearReport(): void {
-    this._documentEditor.enableTrackChanges = false;
-    this._documentEditor.selection?.selectAll();
-    this._documentEditor.editor?.delete();
-    if (this._documentEditor.editor) this._styleManager?.setEditorDefaultFont();
+    this._contentManager.writer.clear();
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
     return this._contentManager.reader.getContent();
   }
 
-  private _formatSectionTitle(titleQueries: string[]): void {
-    let matchedQuery = "";
-    while (!matchedQuery && titleQueries.length) {
-      const query = titleQueries.shift();
-      if (!query) continue;
+  insertText(text: string): void {
+    this._contentManager.writer.insertText(text);
+  }
 
-      this._documentEditor.search.findAll(query);
-      if (this._documentEditor.search.searchResults.length) {
-        matchedQuery = query;
-        this._documentEditor.selection.characterFormat.bold = true;
-      }
-    }
+  insertParagraph(): void {
+    this._contentManager.writer.insertParagraph();
+  }
 
-    this._documentEditor.search.searchResults.clear();
+  insertTemplate(content: string, replaceAllContent = false): void {
+    this._contentManager.writer.insertTemplate(content, replaceAllContent);
   }
 
   async finishReport(): Promise<string[]> {
@@ -363,68 +362,6 @@ export class IaraSyncfusionAdapter
     this._inferenceBookmarksManager.clearBookmarks();
     dispatchEvent(new CustomEvent("IaraOnFinishReport", { detail: content }));
     return content;
-  }
-
-  formatSectionTitles(): void {
-    this._formatSectionTitle([
-      "Técnica:",
-      "Técnica de Exame:",
-      "Técnica do Exame:",
-    ]);
-    this._formatSectionTitle(["Contraste:"]);
-    this._formatSectionTitle([
-      "Histórico Clínico:",
-      "Indicação:",
-      "Indicação Clínica:",
-      "Informações Clínicas:",
-    ]);
-    this._formatSectionTitle(["Exames Anteriores:"]);
-    this._formatSectionTitle([
-      "Análise:",
-      "Interpretação:",
-      "Os seguintes aspectos foram observados:",
-      "Relatório:",
-    ]);
-    this._formatSectionTitle(["Objetivo:"]);
-    this._formatSectionTitle([
-      "Conclusão:",
-      "Hipótese Diagnóstica:",
-      "Impressão Diagnóstica:",
-      "Impressão:",
-      "Resumo:",
-      "Observação:",
-      "Observações:",
-      "Opinião:",
-    ]);
-    this._formatSectionTitle([
-      "Achados:",
-      "Achados Adicionais:",
-      "Comparação:",
-      "Demais Achados:",
-      "Método:",
-      "Protocolo:",
-    ]);
-  }
-
-  formatTitle(): void {
-    this._documentEditor.selection.moveToDocumentEnd();
-    const lastParagraph = parseInt(
-      this._documentEditor.selection.endOffset.split(";")[1]
-    );
-    this._documentEditor.selection.moveToDocumentStart();
-
-    let titleLine = "";
-    let currentParagraph = 0;
-    while (!titleLine && currentParagraph <= lastParagraph) {
-      this._documentEditor.selection.selectLine();
-      titleLine = this._documentEditor.selection.text.trim();
-      currentParagraph++;
-    }
-    if (titleLine) {
-      this._documentEditor.selection.characterFormat.bold = true;
-      this._documentEditor.selection.characterFormat.allCaps = true;
-      this._documentEditor.selection.paragraphFormat.textAlignment = "Center";
-    }
   }
 
   hideSpinner(): void {
@@ -499,7 +436,8 @@ export class IaraSyncfusionAdapter
                 item.content,
                 item
               );
-            else this._contentManager.writer.insertTemplate(item.content);
+            else
+              this._contentManager.writer.insertTemplate(item.content, false);
           } else this._contentManager.writer.insertText(item.content);
 
           dialogObj.hide();

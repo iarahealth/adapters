@@ -7,6 +7,7 @@ import { Dialog } from "@syncfusion/ej2-popups";
 import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionAIAssistant } from "../assistant";
+import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { IaraSyncfusionTemplateSearch } from "./templateSearch";
 
@@ -14,6 +15,7 @@ export class IaraSyncfusionShortcutsManager {
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
+    private _contentManager: IaraSyncfusionContentManager,
     private _config: IaraEditorConfig,
     private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private onTemplateSelected: (
@@ -87,6 +89,7 @@ export class IaraSyncfusionShortcutsManager {
     new IaraSyncfusionAIAssistant(
       this._editor,
       this._recognition,
+      this._contentManager,
       this._config
     );
   }
