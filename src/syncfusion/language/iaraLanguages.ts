@@ -1,11 +1,11 @@
-import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
-import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
+import EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 import { IaraLanguages } from "./language";
 
 export class IaraSyncfusionLanguages {
   public ptBr: IaraLanguages = {
     language: {
-      syncfusionTranslate: { ...EJ2_LOCALE_PT_BR["pt-BR"] },
+      syncfusionTranslate: EJ2_LOCALE_PT_BR["pt-BR"],
       iaraTranslate: {
         customfields: {
           header: "Marcadores",
@@ -46,9 +46,7 @@ export class IaraSyncfusionLanguages {
 
   public es: IaraLanguages = {
     language: {
-      syncfusionTranslate: {
-        ...EJ2_LOCALE_ES["es"],
-      },
+      syncfusionTranslate: EJ2_LOCALE_ES["es"],
       iaraTranslate: {
         changes: {
           trackchanges: "Rastrear cambios",

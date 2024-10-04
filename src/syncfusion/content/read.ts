@@ -7,7 +7,7 @@ import {
   PdfSection,
   SizeF,
 } from "@syncfusion/ej2-pdf-export";
-import { IaraSyncfusionConfig } from ".";
+import { IaraSyncfusionConfig } from "..";
 
 export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
@@ -135,6 +135,11 @@ export class IaraSFDT {
         return `${group1}\\'${parseInt(group2).toString(16).slice(-2)}`;
       }
     );
+
+    // Remove bookmark comments, as they may not play nice with
+    // other editors
+    rtf = rtf.replace(/\{\\\*\\bkmk(end|start) \w+\}/giu, "");
+
     return rtf;
   }
 
@@ -230,14 +235,14 @@ export class IaraSFDT {
   }
 }
 
-export class IaraSyncfusionEditorContentManager {
+export class IaraSyncfusionContentReadManager {
   private _isDirty = true;
   private _sfdt: IaraSFDT | undefined;
 
-  constructor(private _editor: DocumentEditor, onContentChange: () => void) {
+  constructor(private _editor: DocumentEditor) {
     this._editor.contentChange = () => {
-      this._onContentChange();
-      onContentChange();
+      this._isDirty = true;
+      dispatchEvent(new Event("IaraSyncfusionContentChange"));
     };
   }
 
@@ -292,9 +297,5 @@ export class IaraSyncfusionEditorContentManager {
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
     return this._sfdt;
-  }
-
-  private _onContentChange(): void {
-    this._isDirty = true;
   }
 }
