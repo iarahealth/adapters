@@ -1,4 +1,5 @@
 // vite.config.js
+import libAssetsPlugin from "@laynezh/vite-plugin-lib-assets";
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
@@ -12,5 +13,10 @@ export default defineConfig({
     },
     rollupOptions: {},
   },
-  plugins: [dts({ rollupTypes: true })],
+  plugins: [
+    libAssetsPlugin({
+      include: /.json$/,
+    }),
+    dts({ rollupTypes: true }),
+  ],
 });
