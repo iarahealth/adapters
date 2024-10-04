@@ -174,7 +174,7 @@ export class IaraSyncfusionContentWriteManager {
       fontColor: this._config.darkMode ? "#fff" : "#000",
     });
 
-    this._navigationFieldManager.getBookmarks();
+    this._navigationFieldManager.createBookmarks();
     this._editor.selection.moveToDocumentEnd();
   }
 
