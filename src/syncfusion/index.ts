@@ -12,7 +12,6 @@ import {
   showSpinner,
 } from "@syncfusion/ej2-popups";
 import debounce from "debounce";
-import { EditorAdapter, IaraEditorConfig } from "../editor";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSyncfusionConfig } from "./config";
