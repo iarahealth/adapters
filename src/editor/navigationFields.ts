@@ -12,11 +12,11 @@ export abstract class IaraEditorNavigationFieldManager {
     type?: "Field" | "Mandatory" | "Optional"
   ): void;
   abstract additiveBookmark: IaraAdditiveBookmark;
-  constructor(private _recognition: IaraSpeechRecognition) {
-    this._recognition.addEventListener("iaraSpeechMikeForwardButtonPress", () =>
+  constructor(public recognition: IaraSpeechRecognition) {
+    this.recognition.addEventListener("iaraSpeechMikeForwardButtonPress", () =>
       this.nextField()
     );
-    this._recognition.addEventListener("iaraSpeechMikeRewindButtonPress", () =>
+    this.recognition.addEventListener("iaraSpeechMikeRewindButtonPress", () =>
       this.previousField()
     );
   }
