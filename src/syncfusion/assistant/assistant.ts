@@ -19,20 +19,16 @@ export class IaraSyncfusionAIAssistant {
   > {
     this._editor.isReadOnly = true;
 
-    const viewerContainerBounds =
-      this._editor.documentHelper.viewerContainer.getBoundingClientRect();
     const firstPageBounds =
       this._editor.viewer.visiblePages[0].boundingRectangle;
     const textPosition = this._editor.selection.start.location;
     const textXPadding =
       this._editor.viewer.clientArea.x +
-      viewerContainerBounds.left +
       firstPageBounds.x;
     
     const container = document.createElement("div");
     container.style.position = "absolute";
     container.style.top = `${Math.ceil(
-      viewerContainerBounds.top +
         firstPageBounds.y +
         textPosition.y -
         this._editor.selection.characterFormat.fontSize * 0.35
@@ -90,7 +86,7 @@ export class IaraSyncfusionAIAssistant {
     });
 
     container.appendChild(assistant);
-    document.body.appendChild(container);
+    this._editor.documentHelper.viewerContainer.appendChild(container);
 
     return assistant;
   }

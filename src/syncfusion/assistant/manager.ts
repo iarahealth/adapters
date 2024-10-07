@@ -34,9 +34,7 @@ export class IaraSyncfusionAIAssistantManager {
     container.style.left = left;
     container.style.position = "absolute";
     container.style.top = top;
-    container.style.zIndex = "1000";
-
-    console.log("Creating assistant container", left, top);
+    container.style.zIndex = "0";
 
     const assistantButton = document.createElement("iara-button");
     assistantButton.setAttribute(
@@ -55,37 +53,29 @@ export class IaraSyncfusionAIAssistantManager {
     });
 
     container.appendChild(assistantButton);
-    document.body.appendChild(container);
+    this._editor.documentHelper.viewerContainer.appendChild(container);
 
     return container;
   }
 
   private _getContainerPosition(): string[] {
-    const viewerContainerBounds =
-      this._editor.documentHelper.viewerContainer.getBoundingClientRect();
     const firstPageBounds =
       this._editor.viewer.visiblePages[0].boundingRectangle;
     const containerXPosition =
       Math.ceil(this._editor.viewer.pageGap * 1.5) +
-      viewerContainerBounds.left +
       firstPageBounds.x;
     const textPosition = this._editor.selection.start.location;
 
-    // Check if the minimum distance between the container and the text is kept
-    const startingTextXPosition =
-      this._editor.viewer.clientArea.x +
-      viewerContainerBounds.left +
-      firstPageBounds.x;
-    const containerXPadding = 10;
-    const spaceBetweenContainerAndText =
-      startingTextXPosition - containerXPosition;
-    if (spaceBetweenContainerAndText < containerXPadding) {
+    // With the pages layout, the clientArea is the actual editable area with paddings.
+    // Therefore, clientArea.x would be the paddding between the pageBounds and the initial text position.
+    // In the continuous layout, the clientArea.x is the same as the pageBounds.x.
+    //In this layout, we do not want to add the assistant button in the left padding.
+    if (this._editor.viewer.clientArea.x === firstPageBounds.x) { 
       return [];
     }
     
     const left = `${containerXPosition}px`;
     const top = `${Math.ceil(
-      viewerContainerBounds.top +
         firstPageBounds.y +
         textPosition.y -
         this._editor.selection.characterFormat.fontSize * 0.35
@@ -97,6 +87,8 @@ export class IaraSyncfusionAIAssistantManager {
   private _updateContainerPosition(container: HTMLElement): void {
     const [left, top] = this._getContainerPosition();
     if (!left || !top) {
+      this._assistantButtonContainer?.remove();
+      this._assistantButtonContainer = undefined;
       return;
     }
 
