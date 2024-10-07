@@ -218,7 +218,7 @@ export class IaraSyncfusionAdapter
       dispatchEvent(new CustomEvent("SyncfusionOnSelectionChange"));
     }
 
-    this._documentEditor.selectionChange = debounce(selectionChangeCallback, 150)
+    this._documentEditor.selectionChange = debounce(selectionChangeCallback, 100)
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
