@@ -19,15 +19,25 @@ export class IaraSyncfusionAIAssistant {
   > {
     this._editor.isReadOnly = true;
 
-    const hRulerBounds = this._editor.hRuler.element.getBoundingClientRect();
+    const viewerContainerBounds =
+      this._editor.documentHelper.viewerContainer.getBoundingClientRect();
+    const firstPageBounds =
+      this._editor.viewer.visiblePages[0].boundingRectangle;
     const textPosition = this._editor.selection.start.location;
-
+    const textXPadding =
+      this._editor.viewer.clientArea.x +
+      viewerContainerBounds.left +
+      firstPageBounds.x;
+    
     const container = document.createElement("div");
     container.style.position = "absolute";
     container.style.top = `${Math.ceil(
-      textPosition.y + this._editor.selection.characterFormat.fontSize * 1.5
+      viewerContainerBounds.top +
+        firstPageBounds.y +
+        textPosition.y -
+        this._editor.selection.characterFormat.fontSize * 0.35
     )}px`;
-    container.style.left = `${hRulerBounds.left}px`;
+    container.style.left = `${textXPadding}px`;
     container.style.zIndex = "1000";
 
     const assistant = document.createElement(
@@ -80,7 +90,7 @@ export class IaraSyncfusionAIAssistant {
     });
 
     container.appendChild(assistant);
-    this._editor.documentHelper.viewerContainer.appendChild(container);
+    document.body.appendChild(container);
 
     return assistant;
   }

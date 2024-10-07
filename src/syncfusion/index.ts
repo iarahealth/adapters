@@ -214,9 +214,11 @@ export class IaraSyncfusionAdapter
       defaultOnCopy(event);
     };
 
-    this._documentEditor.selectionChange = () => {
+    const selectionChangeCallback = () => { 
       dispatchEvent(new CustomEvent("SyncfusionOnSelectionChange"));
-    };
+    }
+
+    this._documentEditor.selectionChange = debounce(selectionChangeCallback, 150)
   }
 
   blockEditorWhileSpeaking(status: boolean): void {

@@ -5,7 +5,7 @@ import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionAIAssistant } from "./assistant";
 
 export class IaraSyncfusionAIAssistantManager {
-  private _assistantButtonContainer: HTMLElement;
+  private _assistantButtonContainer?: HTMLElement;
 
   constructor(
     private _editor: DocumentEditor,
@@ -13,19 +13,38 @@ export class IaraSyncfusionAIAssistantManager {
     private _contentManager: IaraSyncfusionContentManager,
     private _config: IaraEditorConfig
   ) {
-    this._assistantButtonContainer = this._createAssistantContainer();
     addEventListener("SyncfusionOnSelectionChange", () => {
-      this._updateAssistantContainerPosition(this._assistantButtonContainer);
+      if (!this._assistantButtonContainer) {
+        this._assistantButtonContainer = this._createAssistantContainer();
+      }
+
+      if (this._assistantButtonContainer) {
+        this._updateContainerPosition(this._assistantButtonContainer);
+      }
     });
   }
 
-  private _createAssistantContainer(): HTMLElement {
-    const container = document.createElement("div");
-    container.style.position = "absolute";
-    container.style.zIndex = "99";
+  private _createAssistantContainer(): HTMLElement | undefined {
+    const [left, top] = this._getContainerPosition();
+    if (!left || !top) {
+      return;
+    }
 
-    const assistantButton = document.createElement("button");
-    assistantButton.innerHTML = "AI";
+    const container = document.createElement("div");
+    container.style.left = left;
+    container.style.position = "absolute";
+    container.style.top = top;
+    container.style.zIndex = "1000";
+
+    console.log("Creating assistant container", left, top);
+
+    const assistantButton = document.createElement("iara-button");
+    assistantButton.setAttribute(
+      "class",
+      "btn btn-transparent text-primary px-1 py-0 border-0 shadow-none"
+    );
+    assistantButton.setAttribute("icon", "stars");
+
     assistantButton.addEventListener("click", () => {
       new IaraSyncfusionAIAssistant(
         this._editor,
@@ -41,23 +60,47 @@ export class IaraSyncfusionAIAssistantManager {
     return container;
   }
 
-  private _updateAssistantContainerPosition(container: HTMLElement): void {
+  private _getContainerPosition(): string[] {
     const viewerContainerBounds =
       this._editor.documentHelper.viewerContainer.getBoundingClientRect();
     const firstPageBounds =
       this._editor.viewer.visiblePages[0].boundingRectangle;
-    const textPosition = this._editor.selection.start.location;
-    const textXPadding =
+    const containerXPosition =
       Math.ceil(this._editor.viewer.pageGap * 1.5) +
       viewerContainerBounds.left +
       firstPageBounds.x;
+    const textPosition = this._editor.selection.start.location;
 
-    container.style.top = `${Math.ceil(
+    // Check if the minimum distance between the container and the text is kept
+    const startingTextXPosition =
+      this._editor.viewer.clientArea.x +
+      viewerContainerBounds.left +
+      firstPageBounds.x;
+    const containerXPadding = 10;
+    const spaceBetweenContainerAndText =
+      startingTextXPosition - containerXPosition;
+    if (spaceBetweenContainerAndText < containerXPadding) {
+      return [];
+    }
+    
+    const left = `${containerXPosition}px`;
+    const top = `${Math.ceil(
       viewerContainerBounds.top +
         firstPageBounds.y +
         textPosition.y -
-        this._editor.selection.characterFormat.fontSize * 0.25
+        this._editor.selection.characterFormat.fontSize * 0.35
     )}px`;
-    container.style.left = `${textXPadding}px`;
+
+    return [left, top];
+  }
+
+  private _updateContainerPosition(container: HTMLElement): void {
+    const [left, top] = this._getContainerPosition();
+    if (!left || !top) {
+      return;
+    }
+
+    container.style.left = left;
+    container.style.top = top;
   }
 }
