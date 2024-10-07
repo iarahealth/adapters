@@ -214,14 +214,22 @@ export class IaraSyncfusionAdapter
     // Wrap paragraph and span tags in strong tags if font-weight is bold to support older editors (tiny v3)
     const document = new DOMParser().parseFromString(html, "text/html");
 
-    const paragraphs = [...document.getElementsByTagName("p")];
+    const paragraphs = [
+      ...(document.getElementsByTagName(
+        "p"
+      ) as unknown as HTMLParagraphElement[]),
+    ];
     paragraphs.forEach(paragraph => {
       // Allow breaking long lines
       paragraph.style.whiteSpace = "normal";
       this._wrapElementWithLegacyStyles(paragraph);
     });
 
-    const spans = [...document.getElementsByTagName("span")];
+    const spans = [
+      ...(document.getElementsByTagName(
+        "span"
+      ) as unknown as HTMLSpanElement[]),
+    ];
     spans.forEach(span => this._wrapElementWithLegacyStyles(span));
 
     html = document.body.innerHTML;
