@@ -11,6 +11,7 @@ import {
   hideSpinner,
   showSpinner,
 } from "@syncfusion/ej2-popups";
+import debounce from "debounce";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import { IaraSyncfusionConfig } from "./config";
@@ -111,6 +112,7 @@ export class IaraSyncfusionAdapter
 
     this._languageManager = new IaraSyncfusionLanguageManager(this.config);
 
+    this._debouncedSaveReport = debounce(this._saveReport.bind(this), 1000);
     const saveReportCallback = () =>
       this.config.saveReport ? this._debouncedSaveReport() : undefined;
     addEventListener("IaraSyncfusionContentChange", saveReportCallback);
@@ -163,8 +165,6 @@ export class IaraSyncfusionAdapter
 
     this._documentEditor.enablePrint = true;
     this._documentEditor.enableImageResizer = true;
-
-    this._debouncedSaveReport = this._debounce(this._saveReport.bind(this));
 
     this._documentEditor.addEventListener("destroyed", () => {
       if (saveReportCallback)
@@ -380,16 +380,6 @@ export class IaraSyncfusionAdapter
     this._documentEditor.editorHistory.undo();
   }
 
-  private _debounce(func: () => unknown) {
-    let timer: ReturnType<typeof setTimeout>;
-    return () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        func();
-      }, 1000);
-    };
-  }
-
   private async _saveReport(): Promise<void> {
     if (this._documentEditor.isDocumentEmpty) return;
     this._footerBarManager.updateSavingReportStatus("loading");
@@ -520,3 +510,4 @@ export * from "./selection";
 export * from "./shortcuts";
 export * from "./style";
 export * from "./toolbar";
+

@@ -193,6 +193,11 @@ export class IaraSyncfusionContentWriteManager {
       line = line.trimStart();
       if (line) this._editor.editor.insertText(line);
     });
+    if (lines.length) {
+      const { endOffset } = this._editor.selection;
+      this._selectionManager?.resetSelection();
+      this._editor.selection.select(endOffset, endOffset);
+    }
   }
 
   formatSectionTitles(): void {
