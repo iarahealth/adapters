@@ -14,6 +14,7 @@ import {
 import debounce from "debounce";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraSyncfusionAIAssistantManager } from "./assistant";
 import { IaraSyncfusionConfig } from "./config";
 import { IaraSFDT, IaraSyncfusionContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
@@ -55,6 +56,7 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   public static IARA_API_URL = "https://api.iarahealth.com/";
+  private _aiAssistantManager: IaraSyncfusionAIAssistantManager;
   private _contentManager: IaraSyncfusionContentManager;
   private _contentDate?: Date;
   private _cursorSelection?: { startOffset: string; endOffset: string };
@@ -161,6 +163,13 @@ export class IaraSyncfusionAdapter
       this.config
     );
 
+    this._aiAssistantManager = new IaraSyncfusionAIAssistantManager(
+      this._documentEditor,
+      this._recognition,
+      this._contentManager,
+      this.config
+    );
+
     DocumentEditor.Inject(Print);
 
     this._documentEditor.enablePrint = true;
@@ -203,6 +212,10 @@ export class IaraSyncfusionAdapter
         );
 
       defaultOnCopy(event);
+    };
+
+    this._documentEditor.selectionChange = () => {
+      dispatchEvent(new CustomEvent("SyncfusionOnSelectionChange"));
     };
   }
 
