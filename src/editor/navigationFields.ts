@@ -1,5 +1,5 @@
 import type { IaraSpeechRecognition } from "../speech";
-import { IaraAdditiveBookmark } from "../syncfusion/navigationFields/navigationBookmark";
+import { IaraNavigationBookmark } from "../syncfusion/navigationFields/navigationBookmark";
 
 export abstract class IaraEditorNavigationFieldManager {
   abstract nextField(): void;
@@ -11,7 +11,7 @@ export abstract class IaraEditorNavigationFieldManager {
     title?: string,
     type?: "Field" | "Mandatory" | "Optional"
   ): void;
-  abstract additiveBookmark: IaraAdditiveBookmark;
+  abstract bookmarks: IaraNavigationBookmark[];
   constructor(public recognition: IaraSpeechRecognition) {
     this.recognition.addEventListener("iaraSpeechMikeForwardButtonPress", () =>
       this.nextField()

@@ -53,11 +53,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   constructor(
     public _documentEditor: DocumentEditor,
     private _config: IaraSyncfusionConfig,
-    recognition: IaraSpeechRecognition,
+    _recognition: IaraSpeechRecognition,
     private _languageManager: IaraSyncfusionLanguageManager
   ) {
-    super(recognition);
-    console.log(recognition.templates);
+    super(_recognition);
     this.previousBookmark = {
       name: "",
       content: "",
@@ -84,13 +83,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     new IaraSyncfusionAdditiveDialog(this._languageManager, this);
   }
 
-  createBookmarks(setColor = true): void {
+  createBookmarks(setColor = true, metadata?: Record<string, unknown>): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
-    console.log(this.recognition.templates);
-    this.updateBookmark(editorBookmarks);
+    if (metadata?.bookmarks)
+      this.bookmarks = metadata.bookmarks as IaraNavigationBookmark[];
+    else this.updateBookmark(editorBookmarks);
     this.removeEmptyField(editorBookmarks);
     this.sortByPosition();
-
     if (setColor) this.setColor();
 
     this._documentEditor.selection.clear();
