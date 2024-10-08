@@ -427,7 +427,8 @@ export class IaraSyncfusionAdapter
 
   async insertTemplate(
     content: string,
-    replaceAllContent = false
+    replaceAllContent = false,
+    metadata = {}
   ): Promise<void> {
     const sfdt = await this.contentManager.fromContent(content);
     if (replaceAllContent) this._documentEditor.open(sfdt.value);
@@ -444,8 +445,7 @@ export class IaraSyncfusionAdapter
       fontSize: this._documentEditor.selection.characterFormat.fontSize,
       fontColor: this.config.darkMode ? "#fff" : "#000",
     });
-
-    this._navigationFieldManager.createBookmarks();
+    this._navigationFieldManager.createBookmarks(true, metadata);
     this._documentEditor.selection.moveToDocumentEnd();
   }
 
