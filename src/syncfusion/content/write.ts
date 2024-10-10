@@ -176,6 +176,8 @@ export class IaraSyncfusionContentWriteManager {
 
     this._navigationFieldManager.getBookmarks();
     this._editor.selection.moveToDocumentEnd();
+    if (this._navigationFieldManager.bookmarks.length)
+      this._navigationFieldManager.nextField();
   }
 
   clear(): void {
