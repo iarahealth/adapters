@@ -23,6 +23,7 @@ export interface IaraEditorConfig {
   zoomFactor: string;
   highlightInference: boolean;
   ribbon?: Ribbon;
+  mouseButton: boolean;
 }
 
 export abstract class EditorAdapter {
@@ -46,6 +47,7 @@ export abstract class EditorAdapter {
     zoomFactor: "100%",
     language: "pt-BR",
     highlightInference: true,
+    mouseButton: false,
   };
   protected _inferenceFormatter: IaraEditorInferenceFormatter;
   protected _currentLanguage: { [k: string]: any } = {};

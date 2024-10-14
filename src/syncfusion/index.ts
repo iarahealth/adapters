@@ -26,6 +26,28 @@ import { IaraSyncfusionShortcutsManager } from "./shortcuts";
 import { IaraSyncfusionStyleManager } from "./style";
 import { IaraSyncfusionToolbarManager } from "./toolbar";
 
+interface ClipboardItem {
+  readonly types: ReadonlyArray<string>;
+  getType(type: string): Promise<Blob>;
+}
+
+declare let ClipboardItem: {
+  prototype: ClipboardItem;
+  new (
+    items: Record<string, string | Blob | PromiseLike<string | Blob>>,
+    options?: any
+  ): ClipboardItem;
+};
+
+declare global {
+  interface Clipboard extends EventTarget {
+    read(): Promise<ClipboardItem[]>;
+    readText(): Promise<string>;
+    write(data: ClipboardItem[]): Promise<void>;
+    writeText(data: string): Promise<void>;
+  }
+}
+
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   replaceToolbar: boolean;
   showBookmarks: boolean;
@@ -38,7 +60,7 @@ export class IaraSyncfusionAdapter
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionEditorContentManager;
   private _contentDate?: Date;
-  private _cursorSelection?: IaraSyncfusionSelectionManager;
+  private _cursorSelection?: { startOffset: string; endOffset: string };
   private _debouncedSaveReport: () => void;
   private _documentEditor: DocumentEditor;
   private _editorContainer?: DocumentEditorContainer;
@@ -153,6 +175,18 @@ export class IaraSyncfusionAdapter
     });
 
     this._setScrollClickHandler();
+
+    const defaultOnCopy = this._documentEditor.selection.onCopy.bind(
+      this._documentEditor.selection
+    );
+    this._documentEditor.selection.onCopy = async (event: ClipboardEvent) => {
+      this._documentEditor.selection["htmlContent"] =
+        this._preprocessClipboardHtml(
+          this._documentEditor.selection["htmlContent"]
+        );
+
+      defaultOnCopy(event);
+    };
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -160,14 +194,73 @@ export class IaraSyncfusionAdapter
     if (wrapper) wrapper.style.cursor = status ? "not-allowed" : "auto";
   }
 
+  private _wrapElementWithLegacyStyles(element: HTMLElement): void {
+    if (element.style.fontWeight === "bold") {
+      element.innerHTML = element.innerHTML.replace(/^( )+$/giu, "&nbsp;");
+      element.innerHTML = `<strong>${element.innerHTML}</strong>`;
+    }
+    if (element.style.fontStyle === "italic") {
+      element.innerHTML = `<em>${element.innerHTML}</em>`;
+    }
+    if (element.style.textDecoration === "underline") {
+      element.innerHTML = `<u>${element.innerHTML}</u>`;
+    }
+    if (element.style.textDecoration === "line-through") {
+      element.innerHTML = `<s>${element.innerHTML}</s>`;
+    }
+  }
+
+  private _preprocessClipboardHtml(html: string): string {
+    // Wrap paragraph and span tags in strong tags if font-weight is bold to support older editors (tiny v3)
+    const document = new DOMParser().parseFromString(html, "text/html");
+
+    const paragraphs = [
+      ...(document.getElementsByTagName(
+        "p"
+      ) as unknown as HTMLParagraphElement[]),
+    ];
+    paragraphs.forEach(paragraph => {
+      // Allow breaking long lines
+      paragraph.style.whiteSpace = "normal";
+      this._wrapElementWithLegacyStyles(paragraph);
+    });
+
+    const spans = [
+      ...(document.getElementsByTagName(
+        "span"
+      ) as unknown as HTMLSpanElement[]),
+    ];
+    spans.forEach(span => this._wrapElementWithLegacyStyles(span));
+
+    html = document.body.innerHTML;
+
+    // Some needed processing for the clipboard html:
+    // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
+    // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
+    //    target editor. These tags are added by our bookmarks, and can be safely removed.
+    // 3. Replace empty paragraphs for a simpler paragraph with a line break
+    // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
+    html = html
+      .replace(/<(meta|a) [^>]+>/giu, "")
+      .replace(/<\/a>/giu, "")
+      .replace(
+        /(<p [^>]+>)<span( [^>]+)?>(<strong><\/strong>)?\s+<\/span>(<\/p>)/giu,
+        "$1&nbsp;</p>"
+      );
+    html = `<!-- x-tinymce/html -->${html}`;
+
+    return html;
+  }
+
   async copyReport(): Promise<string[]> {
+    this.showSpinner();
+
     this._documentEditor.revisions.acceptAll();
     this._documentEditor.enableTrackChanges = false;
-
     this._documentEditor.focusIn();
     this._documentEditor.selection.selectAll();
+    this._documentEditor.selection.copy();
 
-    this.showSpinner();
     try {
       const content = await this._contentManager.getContent();
 
@@ -187,6 +280,7 @@ export class IaraSyncfusionAdapter
 
       return content.slice(0, 3);
     } catch (error) {
+      console.error(error);
       this.hideSpinner();
       this._documentEditor.selection.moveToDocumentStart();
       throw error;
@@ -543,17 +637,23 @@ export class IaraSyncfusionAdapter
         if (event.button === 1) {
           if (this._documentEditor.selection.text.length > 0)
             this._documentEditor.editor.delete();
-          this._cursorSelection = new IaraSyncfusionSelectionManager(
-            this._documentEditor,
-            this.config
-          );
+          this._cursorSelection = {
+            startOffset: this._documentEditor.selection.startOffset,
+            endOffset: this._documentEditor.selection.endOffset,
+          };
         }
       });
 
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
-      if (event.button === 1) {
-        this._cursorSelection?.resetSelection();
-        this._cursorSelection?.destroy();
+      if (
+        event.button === 1 &&
+        this._cursorSelection &&
+        this.config.mouseButton
+      ) {
+        this._documentEditor.selection.select(
+          this._cursorSelection.startOffset,
+          this._cursorSelection.endOffset
+        );
         this._cursorSelection = undefined;
         this._recognition.toggleRecording();
       }
@@ -601,7 +701,6 @@ export class IaraSyncfusionAdapter
       inference.inferenceId
         ? `inferenceId_${inference.inferenceId}`
         : undefined,
-      true,
       this.config.highlightInference
     );
 

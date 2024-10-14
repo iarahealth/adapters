@@ -135,6 +135,11 @@ export class IaraSFDT {
         return `${group1}\\'${parseInt(group2).toString(16).slice(-2)}`;
       }
     );
+
+    // Remove bookmark comments, as they may not play nice with
+    // other editors
+    rtf = rtf.replace(/\{\\\*\\bkmk(end|start) \w+\}/giu, "");
+
     return rtf;
   }
 
