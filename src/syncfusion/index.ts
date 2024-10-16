@@ -56,7 +56,6 @@ export class IaraSyncfusionAdapter
 {
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionContentManager;
-  private _clipboardHtmlContent?: string;
   private _contentDate?: Date;
   private _cursorSelection?: { startOffset: string; endOffset: string };
   private _debouncedSaveReport: () => void;
@@ -202,8 +201,6 @@ export class IaraSyncfusionAdapter
         this._preprocessClipboardHtml(
           this._documentEditor.selection["htmlContent"]
         );
-      this._clipboardHtmlContent =
-        this._documentEditor.selection["htmlContent"];
       defaultOnCopy(event);
     };
   }
@@ -280,13 +277,12 @@ export class IaraSyncfusionAdapter
 
     const { startOffset, endOffset } = this._documentEditor.selection;
     this._documentEditor.selection.selectAll();
-    this._documentEditor.selection.copy();
 
     try {
       const content = await this._contentManager.reader.getContent();
-      const htmlContent =
-        this._clipboardHtmlContent || this._preprocessClipboardHtml(content[1]);
-      this._clipboardHtmlContent = undefined;
+      const htmlContent = this._preprocessClipboardHtml(
+        this._documentEditor.selection.getHtmlContent() || content[1]
+      );
 
       this._recognition.automation.copyText(
         content[0],
