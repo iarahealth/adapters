@@ -7,7 +7,8 @@ import {
   PdfSection,
   SizeF,
 } from "@syncfusion/ej2-pdf-export";
-import { IaraSyncfusionConfig } from ".";
+import debounce from "debounce";
+import { IaraSyncfusionConfig } from "..";
 
 export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
@@ -235,15 +236,16 @@ export class IaraSFDT {
   }
 }
 
-export class IaraSyncfusionEditorContentManager {
+export class IaraSyncfusionContentReadManager {
   private _isDirty = true;
   private _sfdt: IaraSFDT | undefined;
 
-  constructor(private _editor: DocumentEditor, onContentChange: () => void) {
-    this._editor.contentChange = () => {
-      this._onContentChange();
-      onContentChange();
+  constructor(private _editor: DocumentEditor) {
+    const onContentChange = () => {
+      this._isDirty = true;
+      dispatchEvent(new Event("IaraSyncfusionContentChange"));
     };
+    this._editor.contentChange = debounce(onContentChange.bind(this), 100);
   }
 
   async fromContent(content: string) {
@@ -297,9 +299,5 @@ export class IaraSyncfusionEditorContentManager {
     }
     if (!this._sfdt) throw new Error("Invalid SFDT content");
     return this._sfdt;
-  }
-
-  private _onContentChange(): void {
-    this._isDirty = true;
   }
 }

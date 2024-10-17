@@ -151,3 +151,7 @@ export class IaraSyncfusionToolbarManager {
     });
   }
 }
+
+export * from "./config";
+export * from "./ribbon";
+export * from "./tabs";
