@@ -322,8 +322,14 @@ export class IaraSyncfusionAdapter
     this._contentManager.writer.insertParagraph();
   }
 
-  insertTemplate(content: string, replaceAllContent = false): void {
-    this._contentManager.writer.insertTemplate(content, replaceAllContent);
+  async insertTemplate(
+    content: string,
+    replaceAllContent = false
+  ): Promise<void> {
+    await this._contentManager.writer.insertTemplate(
+      content,
+      replaceAllContent
+    );
   }
 
   async finishReport(): Promise<string[]> {
