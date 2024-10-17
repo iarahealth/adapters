@@ -162,7 +162,6 @@ export class IaraSyncfusionContentWriteManager {
     if (replaceAllContent) this._editor.open(sfdt.value);
     else {
       this._editor.editor.paste(sfdt.value);
-      this._editor.editor.onBackSpace();
     }
 
     this._editor.selection.moveToDocumentStart();
