@@ -94,17 +94,17 @@ export class IaraSyncfusionToolbarManager {
       ".e-ribbon-group-content"
     );
     if (layout === "Classic") {
-      editorContainerViewer.style.height = "calc(100% - 161px)";
-      ribbonGroupContent.forEach(ribbon => {
-        const ribbons = ribbon as HTMLElement;
-        ribbons.style.height = "88px";
-      });
+      this._config.darkMode
+        ? (editorContainerViewer.style.height = "calc(100% - 161px)")
+        : (editorContainerViewer.style.height = "calc(100% - 191px)");
       ribbonContentElement.style.height = "120px";
-      ribbonExpandedMenuElement.style.height = "120px";
+      this._config.darkMode
+        ? (ribbonExpandedMenuElement.style.height = "120px")
+        : (ribbonExpandedMenuElement.style.height = "150px");
       this._editorContainer.resize();
     }
     if (layout === "Simplified") {
-      editorContainerViewer.style.height = "calc(100% - 22px)";
+      editorContainerViewer.style.height = "calc(100% - 85px)";
       ribbonGroupContent.forEach(ribbon => {
         const ribbons = ribbon as HTMLElement;
         ribbons.style.height = "auto";
