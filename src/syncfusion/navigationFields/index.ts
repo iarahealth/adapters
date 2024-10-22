@@ -574,6 +574,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return this.requiredFields();
   }
 
+  showAdditiveList(): void {
+    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
+  }
+
   selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
     IaraSyncfusionSelectionManager.selectBookmark(
       this._documentEditor,
