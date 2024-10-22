@@ -56,7 +56,6 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   public static IARA_API_URL = "https://api.iarahealth.com/";
-  private _aiAssistantManager: IaraSyncfusionAIAssistantManager;
   private _contentManager: IaraSyncfusionContentManager;
   private _contentDate?: Date;
   private _cursorSelection?: { startOffset: string; endOffset: string };
@@ -163,7 +162,7 @@ export class IaraSyncfusionAdapter
       this.config
     );
 
-    this._aiAssistantManager = new IaraSyncfusionAIAssistantManager(
+    new IaraSyncfusionAIAssistantManager(
       this._documentEditor,
       this._recognition,
       this._contentManager,
@@ -214,11 +213,14 @@ export class IaraSyncfusionAdapter
       defaultOnCopy(event);
     };
 
-    const selectionChangeCallback = () => { 
+    const selectionChangeCallback = () => {
       dispatchEvent(new CustomEvent("SyncfusionOnSelectionChange"));
-    }
+    };
 
-    this._documentEditor.selectionChange = debounce(selectionChangeCallback, 100)
+    this._documentEditor.selectionChange = debounce(
+      selectionChangeCallback,
+      100
+    );
   }
 
   blockEditorWhileSpeaking(status: boolean): void {
@@ -539,4 +541,3 @@ export * from "./selection";
 export * from "./shortcuts";
 export * from "./style";
 export * from "./toolbar";
-
