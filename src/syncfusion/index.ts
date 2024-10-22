@@ -233,51 +233,62 @@ export class IaraSyncfusionAdapter
   }
 
   private _wrapElementWithLegacyStyles(element: HTMLElement): void {
+    element.innerHTML = element.innerHTML.replace(/^( )+$/giu, "&nbsp;");
+
+    // Wrap paragraph and span tags in strong, em, u, and s tags if style properties are set to support older editors (tiny v3)ß
     if (element.style.fontWeight === "bold") {
-      element.innerHTML = element.innerHTML.replace(/^( )+$/giu, "&nbsp;");
       element.innerHTML = `<strong>${element.innerHTML}</strong>`;
+      element.style.fontWeight = "";
     }
     if (element.style.fontStyle === "italic") {
       element.innerHTML = `<em>${element.innerHTML}</em>`;
+      element.style.fontStyle = "";
     }
     if (element.style.textDecoration === "underline") {
       element.innerHTML = `<u>${element.innerHTML}</u>`;
+      element.style.textDecoration = "";
     }
     if (element.style.textDecoration === "line-through") {
       element.innerHTML = `<s>${element.innerHTML}</s>`;
+      element.style.textDecoration = "";
     }
   }
 
   private _preprocessClipboardHtml(html: string): string {
-    // Wrap paragraph and span tags in strong tags if font-weight is bold to support older editors (tiny v3)
     const document = new DOMParser().parseFromString(html, "text/html");
 
-    const paragraphs = [...document.getElementsByTagName("p")];
+    const paragraphs = [
+      ...(document.getElementsByTagName(
+        "p"
+      ) as unknown as HTMLParagraphElement[]),
+    ];
     paragraphs.forEach(paragraph => {
       // Allow breaking long lines
       paragraph.style.whiteSpace = "normal";
       this._wrapElementWithLegacyStyles(paragraph);
     });
 
-    const spans = [...document.getElementsByTagName("span")];
+    const spans = [
+      ...(document.getElementsByTagName(
+        "span"
+      ) as unknown as HTMLSpanElement[]),
+    ];
     spans.forEach(span => this._wrapElementWithLegacyStyles(span));
 
-    html = document.body.innerHTML;
+    html = document.documentElement.innerHTML;
 
     // Some needed processing for the clipboard html:
     // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
     // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
     //    target editor. These tags are added by our bookmarks, and can be safely removed.
     // 3. Replace empty paragraphs for a simpler paragraph with a line break
-    // 4. Pretend this html comes from tinymce by adding the <!-- x-tinymce/html --> comment.
     html = html
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
       .replace(
-        /(<p [^>]+>)<span( [^>]+)?>(<strong><\/strong>)?\s+<\/span>(<\/p>)/giu,
+        /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
       );
-    html = `<!-- x-tinymce/html -->${html}`;
 
     return html;
   }
@@ -287,19 +298,12 @@ export class IaraSyncfusionAdapter
 
     this._documentEditor.revisions.acceptAll();
     this._documentEditor.enableTrackChanges = false;
-    this._documentEditor.focusIn();
-    this._documentEditor.selection.selectAll();
-    this._documentEditor.selection.copy();
 
     try {
       const content = await this._contentManager.reader.getContent();
 
-      // By pretending our html comes from google docs, we can paste it into
-      // tinymce without losing the formatting for some reason.
-      const htmlContent = content[1].replace(
-        '<div class="Section0">',
-        '<div class="Section0" id="docs-internal-guid-iara">'
-      );
+      const htmlContent = this._preprocessClipboardHtml(content[1]);
+
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
@@ -333,8 +337,14 @@ export class IaraSyncfusionAdapter
     this._contentManager.writer.insertParagraph();
   }
 
-  insertTemplate(content: string, replaceAllContent = false): void {
-    this._contentManager.writer.insertTemplate(content, replaceAllContent);
+  async insertTemplate(
+    content: string,
+    replaceAllContent = false
+  ): Promise<void> {
+    await this._contentManager.writer.insertTemplate(
+      content,
+      replaceAllContent
+    );
   }
 
   async finishReport(): Promise<string[]> {
@@ -490,7 +500,11 @@ export class IaraSyncfusionAdapter
       });
 
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
-      if (event.button === 1 && this._cursorSelection) {
+      if (
+        event.button === 1 &&
+        this._cursorSelection &&
+        this.config.mouseButton
+      ) {
         this._documentEditor.selection.select(
           this._cursorSelection.startOffset,
           this._cursorSelection.endOffset

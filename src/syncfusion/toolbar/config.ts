@@ -2,12 +2,12 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-
 import {
   Ribbon,
   RibbonColorPicker,
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
+import debounce from "debounce";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { IaraLanguages } from "../language/language";
@@ -287,9 +287,7 @@ export const toolBarSettings = (
   config: IaraSyncfusionConfig
 ): Ribbon => {
   addEventListener("SyncfusionOnSelectionChange", () => {
-    setTimeout(() => {
-      onSelectionChange();
-    }, 20);
+    onSelectionChange();
   });
 
   const ribbonMethods = {
@@ -356,6 +354,7 @@ export const toolBarSettings = (
       enableDisableFontOptions(characterFormat);
     }
   };
+  editor.selectionChange = debounce(onSelectionChange.bind(this), 100);
 
   return ribbonConfig;
 };
