@@ -14,6 +14,7 @@ import {
 import debounce from "debounce";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import { IaraSyncfusionAIAssistantManager } from "./assistant";
 import { IaraSyncfusionConfig } from "./config";
 import { IaraSFDT, IaraSyncfusionContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
@@ -161,6 +162,13 @@ export class IaraSyncfusionAdapter
       this.config
     );
 
+    new IaraSyncfusionAIAssistantManager(
+      this._documentEditor,
+      this._recognition,
+      this._contentManager,
+      this.config
+    );
+
     DocumentEditor.Inject(Print);
 
     this._documentEditor.enablePrint = true;
@@ -204,6 +212,15 @@ export class IaraSyncfusionAdapter
 
       defaultOnCopy(event);
     };
+
+    const selectionChangeCallback = () => {
+      dispatchEvent(new CustomEvent("SyncfusionOnSelectionChange"));
+    };
+
+    this._documentEditor.selectionChange = debounce(
+      selectionChangeCallback,
+      100
+    );
   }
 
   blockEditorWhileSpeaking(status: boolean): void {

@@ -286,6 +286,10 @@ export const toolBarSettings = (
   editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
 ): Ribbon => {
+  addEventListener("SyncfusionOnSelectionChange", () => {
+    onSelectionChange();
+  });
+
   const ribbonMethods = {
     ribbonFontMethods: () => ribbonFontMethods(editor),
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
