@@ -7,6 +7,7 @@ import {
   PdfSection,
   SizeF,
 } from "@syncfusion/ej2-pdf-export";
+import debounce from "debounce";
 import { IaraSyncfusionConfig } from "..";
 
 export enum IaraSyncfusionContentTypes {
@@ -240,10 +241,11 @@ export class IaraSyncfusionContentReadManager {
   private _sfdt: IaraSFDT | undefined;
 
   constructor(private _editor: DocumentEditor) {
-    this._editor.contentChange = () => {
+    const onContentChange = () => {
       this._isDirty = true;
       dispatchEvent(new Event("IaraSyncfusionContentChange"));
     };
+    this._editor.contentChange = debounce(onContentChange.bind(this), 100);
   }
 
   async fromContent(content: string) {

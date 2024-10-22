@@ -72,6 +72,7 @@
     }
   },
   "dependencies": {
+    "debounce": "^2.1.1",
     "diff": "^7.0.0",
     "sortablejs": "^1.15.2",
     "uuid": "^10.0.0"
