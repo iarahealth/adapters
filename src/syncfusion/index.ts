@@ -242,14 +242,22 @@ export class IaraSyncfusionAdapter
   private _preprocessClipboardHtml(html: string): string {
     const document = new DOMParser().parseFromString(html, "text/html");
 
-    const paragraphs = [...document.getElementsByTagName("p")];
+    const paragraphs = [
+      ...(document.getElementsByTagName(
+        "p"
+      ) as unknown as HTMLParagraphElement[]),
+    ];
     paragraphs.forEach(paragraph => {
       // Allow breaking long lines
       paragraph.style.whiteSpace = "normal";
       this._wrapElementWithLegacyStyles(paragraph);
     });
 
-    const spans = [...document.getElementsByTagName("span")];
+    const spans = [
+      ...(document.getElementsByTagName(
+        "span"
+      ) as unknown as HTMLSpanElement[]),
+    ];
     spans.forEach(span => this._wrapElementWithLegacyStyles(span));
 
     html = document.documentElement.innerHTML;
@@ -477,7 +485,11 @@ export class IaraSyncfusionAdapter
       });
 
     this._documentEditor.getRootElement().addEventListener("mouseup", event => {
-      if (event.button === 1 && this._cursorSelection) {
+      if (
+        event.button === 1 &&
+        this._cursorSelection &&
+        this.config.mouseButton
+      ) {
         this._documentEditor.selection.select(
           this._cursorSelection.startOffset,
           this._cursorSelection.endOffset

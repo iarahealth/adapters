@@ -107,4 +107,5 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   insertField() {
     throw new Error("Method not implemented.");
   }
+  aditiveBookmark = {};
 }
