@@ -14,6 +14,7 @@ import {
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
   additiveListIntance: IaraSyncfusionAdditiveList | null = null;
+  additiveIdList: string[] = [];
   additiveBookmark: IaraAdditiveBookmark = {
     title: "",
     delimiterStart: "",
@@ -76,6 +77,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       },
     };
     this._documentEditor.selectionChange = this.selectionChange.bind(this);
+    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
   }
 
   addAdditiveField() {
@@ -116,6 +118,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     title = "Nome do campo",
     type: "Field" | "Mandatory" | "Optional" = "Field"
   ): void {
+    this.blockSelectionInBookmarkCreate = false;
     const bookmarksCount = uuidv4();
     this._documentEditor.editor.insertText(" ");
     this._documentEditor.editor.onBackSpace();
@@ -142,6 +145,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.isFirstPreviousNavigation = true;
     this.selectBookmark(`${type}-${bookmarksCount}`, true);
     this.selectTitle(title, `${type}-${bookmarksCount}`);
+    this.blockSelectionInBookmarkCreate = true;
   }
 
   goToField(title: string): void | string {
@@ -172,6 +176,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       );
     else this.selectBookmark(this.nextBookmark.name);
     this.isFirstNextNavigation = false;
+    this.blockSelectionInBookmarkCreate = true;
+    this._documentEditor.isReadOnly = false;
   }
 
   previousField(isShortcutNavigation?: boolean): void {
@@ -180,6 +186,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       this.selectTitle(this.insertedBookmark.title, this.insertedBookmark.name);
     else this.selectBookmark(this.previousBookmark.name);
     this.isFirstPreviousNavigation = false;
+    this.blockSelectionInBookmarkCreate = true;
+    this._documentEditor.isReadOnly = false;
   }
 
   selectContent(title: string, content: string, bookmarkName: string): void {
@@ -523,7 +531,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   clearReportToCopyContent(): void {
-    this.additiveListIntance?.closeList();
+    this.additiveListIntance?.hide();
     this.createBookmarks(false);
     this.bookmarks.filter(field => {
       this.selectBookmark(field.name);
@@ -566,12 +574,8 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return this.requiredFields();
   }
 
-  showAdditiveList(additive: IaraAdditiveBookmark, id: string): void {
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(
-      this,
-      additive,
-      id
-    );
+  showAdditiveList(): void {
+    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
   }
 
   selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
@@ -588,17 +592,27 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       !this._documentEditor.isReadOnly
     ) {
       const selectionBookmark = this._documentEditor.selection.getBookmarks();
-      selectionBookmark.find(bookmark => bookmark.startsWith("Additive"));
+      const isAditiveField = selectionBookmark.find(bookmark =>
+        bookmark.startsWith("Additive")
+      );
       const currentAdditiveField = this.bookmarks.filter(
         bookmark => bookmark.name === selectionBookmark[0]
       );
-      if (currentAdditiveField.length && currentAdditiveField[0].additive) {
-        this.showAdditiveList(
-          currentAdditiveField[0].additive,
-          currentAdditiveField[0].name
-        );
-        this._documentEditor.isReadOnly = true;
-      }
+      if (
+        currentAdditiveField.length &&
+        currentAdditiveField[0].additive &&
+        isAditiveField?.length
+      ) {
+        const additiveId = currentAdditiveField[0].name;
+        const additiveField = currentAdditiveField[0].additive;
+        this.additiveListIntance?.hide();
+        if (this.additiveIdList.includes(additiveId)) {
+          this.additiveListIntance?.show(additiveField, additiveId);
+        } else {
+          this.additiveListIntance?.create(additiveField, additiveId);
+          this.additiveIdList = [...this.additiveIdList, additiveId];
+        }
+      } else this.additiveListIntance?.hide();
     }
     this.currentSelectionOffset = {
       start: this._documentEditor.selection.startOffset,

@@ -1,7 +1,6 @@
 {
   "name": "@iarahealth/adapters",
-  "private": true,
-  "version": "0.2.7",
+  "version": "0.2.9",
   "main": "./dist/adapters.umd.js",
   "module": "./dist/adapters.mjs",
   "types": "./dist/adapters.d.ts",
@@ -11,6 +10,12 @@
       "import": "./dist/adapters.mjs"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE*",
+    "*.md",
+    "*.json"
+  ],
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
@@ -23,6 +28,9 @@
     "format": "npm run format:scripts && npm run format:styles"
   },
   "devDependencies": {
+    "@laynezh/vite-plugin-lib-assets": "^0.5.24",
+    "@rollup/plugin-json": "^6.1.0",
+    "@types/diff": "^5.2.2",
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
     "@types/sortablejs": "^1.15.8",
@@ -64,6 +72,8 @@
     }
   },
   "dependencies": {
+    "debounce": "^2.1.1",
+    "diff": "^7.0.0",
     "sortablejs": "^1.15.2",
     "uuid": "^10.0.0"
   }

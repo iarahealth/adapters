@@ -2,6 +2,7 @@ import { IaraEditorNavigationFieldManager } from "../editor/navigationFields";
 import { IaraAdditiveBookmark } from "../syncfusion/navigationFields/navigationBookmark";
 
 export class IaraTinyMceNavigationFieldManager extends IaraEditorNavigationFieldManager {
+  additiveBookmark: IaraAdditiveBookmark = {} as IaraAdditiveBookmark;
   nextField(): void {
     throw new Error("Method not implemented.");
   }
