@@ -19,5 +19,4 @@ export class IaraTinyMceNavigationFieldManager extends IaraEditorNavigationField
   insertField(): void {
     throw new Error("Method not implemented.");
   }
-  additiveBookmark = {} as IaraAdditiveBookmark;
 }
