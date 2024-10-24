@@ -2184,6 +2184,7 @@ export interface Template {
   config?: TemplateConfig;
   callback: TemplateCallback<void>;
   metadata: unknown;
+  callbackThis?: any;
 }
 export type TemplateCallback<T> = (
   resultEvent: CustomEvent<IaraSpeechRecognitionDetail>,

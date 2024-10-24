@@ -98,7 +98,13 @@ export class IaraSyncfusionSelectionManager {
 
   private _getWordBeforeSelection(): string[] {
     this._editor.selection.extendToLineStart();
-    const lineBefore = this._editor.selection.text;
+    let lineBefore = this._editor.selection.text;
+    // if the line ends with a line break, it means we are at the very end of the line
+    // and the last character is actually the one before the line break
+    if (lineBefore.endsWith("\r") || lineBefore.endsWith("\n")) {
+      lineBefore = lineBefore.slice(0, -1);
+    }
+
     const endsWithSpace = lineBefore.endsWith(" ");
     const words = lineBefore
       .split(" ")
