@@ -470,8 +470,6 @@ export class IaraSyncfusionAdapter
       .getRootElement()
       .addEventListener("mousedown", event => {
         if (event.button === 1) {
-          if (this._documentEditor.selection.text.length > 0)
-            this._documentEditor.editor.delete();
           this._cursorSelection = {
             startOffset: this._documentEditor.selection.startOffset,
             endOffset: this._documentEditor.selection.endOffset,
