@@ -58,6 +58,7 @@ export class IaraSyncfusionAdapter
   public static IARA_API_URL = "https://api.iarahealth.com/";
   private _contentManager: IaraSyncfusionContentManager;
   private _contentDate?: Date;
+  private _currentTemplatePlainText?: string;
   private _cursorSelection?: { startOffset: string; endOffset: string };
   private _debouncedSaveReport: () => void;
   private _documentEditor: DocumentEditor;
@@ -328,6 +329,7 @@ export class IaraSyncfusionAdapter
 
   clearReport(): void {
     this._contentManager.writer.clear();
+    this._currentTemplatePlainText = undefined;
   }
 
   getEditorContent(): Promise<[string, string, string, string]> {
@@ -350,6 +352,8 @@ export class IaraSyncfusionAdapter
       content,
       replaceAllContent
     );
+    this._currentTemplatePlainText =
+      await this._contentManager.reader.getPlainTextContent();
   }
 
   async finishReport(): Promise<string[]> {
@@ -387,8 +391,10 @@ export class IaraSyncfusionAdapter
         });
       }
     );
-
-    const content = await super.finishReport();
+    const content = await super.finishReport({
+      template: this._currentTemplatePlainText,
+      transcriptions: Object.values(this._inferenceBookmarksManager.bookmarks),
+    });
     this._inferenceBookmarksManager.clearBookmarks();
     dispatchEvent(new CustomEvent("IaraOnFinishReport", { detail: content }));
     return content;
