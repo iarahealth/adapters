@@ -22,14 +22,12 @@ export class IaraSyncfusionAIAssistant {
     const firstPageBounds =
       this._editor.viewer.visiblePages[0].boundingRectangle;
     const textPosition = this._editor.selection.start.location;
-    const textXPadding =
-      this._editor.viewer.clientArea.x +
-      firstPageBounds.x;
-    
+    const textXPadding = this._editor.viewer.clientArea.x + firstPageBounds.x;
+
     const container = document.createElement("div");
     container.style.position = "absolute";
     container.style.top = `${Math.ceil(
-        firstPageBounds.y +
+      firstPageBounds.y +
         textPosition.y -
         this._editor.selection.characterFormat.fontSize * 0.35
     )}px`;
@@ -43,10 +41,23 @@ export class IaraSyncfusionAIAssistant {
     assistant.recognition = this._recognition;
     assistant.style.zIndex = "1000";
     assistant.addEventListener("diagnosticImpression", (event: Event) => {
-      this._insertDiagnosticImpression((event as CustomEvent).detail);
+      const detail = (
+        event as CustomEvent<{
+          diagnosticImpression: string;
+          input: Record<string, unknown>;
+        }>
+      ).detail;
+      this._insertDiagnosticImpression(detail.diagnosticImpression);
+      dispatchEvent(
+        new CustomEvent("IaraAssistantDiagnosticImpression", { detail })
+      );
     });
     assistant.addEventListener("report", (event: Event) => {
-      this._insertReport((event as CustomEvent).detail);
+      const detail = (
+        event as CustomEvent<{ report: string; input: Record<string, unknown> }>
+      ).detail;
+      this._insertReport(detail.report);
+      dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
     });
 
     // Disable speech recognition while assistant is open,

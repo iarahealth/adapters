@@ -59,6 +59,7 @@ export class IaraSyncfusionAdapter
   private _contentManager: IaraSyncfusionContentManager;
   private _contentDate?: Date;
   private _currentTemplatePlainText?: string;
+  private _currentAssistantGeneratedReport?: Record<string, unknown>;
   private _cursorSelection?: { startOffset: string; endOffset: string };
   private _debouncedSaveReport: () => void;
   private _documentEditor: DocumentEditor;
@@ -169,6 +170,14 @@ export class IaraSyncfusionAdapter
       this._contentManager,
       this.config
     );
+    addEventListener("IaraAssistantReport", (event: Event) => {
+      this._currentAssistantGeneratedReport = (
+        event as CustomEvent<{
+          report: string;
+          input: Record<string, unknown>;
+        }>
+      ).detail;
+    });
 
     DocumentEditor.Inject(Print);
 
@@ -394,8 +403,13 @@ export class IaraSyncfusionAdapter
     const content = await super.finishReport({
       template: this._currentTemplatePlainText,
       transcriptions: Object.values(this._inferenceBookmarksManager.bookmarks),
+      generatedReport: this._currentAssistantGeneratedReport,
     });
+
+    this._currentAssistantGeneratedReport = undefined;
+    this._currentTemplatePlainText = undefined;
     this._inferenceBookmarksManager.clearBookmarks();
+
     dispatchEvent(new CustomEvent("IaraOnFinishReport", { detail: content }));
     return content;
   }
