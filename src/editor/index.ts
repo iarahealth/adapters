@@ -119,11 +119,11 @@ export abstract class EditorAdapter {
     return this._recognition.report.begin("", "");
   }
 
-  async finishReport(): Promise<string[]> {
+  async finishReport(metadata?: Record<string, unknown>): Promise<string[]> {
     if (!this.config.saveReport) return [];
     const content = await this.copyReport();
     this.clearReport();
-    await this._recognition.report.finish(content[0], content[1]);
+    await this._recognition.report.finish(content[0], content[1], metadata);
     return content;
   }
 
