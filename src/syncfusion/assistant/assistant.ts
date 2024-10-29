@@ -59,6 +59,7 @@ export class IaraSyncfusionAIAssistant {
       ).detail;
       this._insertReport(detail.report);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
+      this._recognition.start();
     });
 
     // Disable speech recognition while assistant is open,
@@ -176,5 +177,6 @@ export class IaraSyncfusionAIAssistant {
     this._editor.enableTrackChanges = false;
     this._contentManager.writer.formatSectionTitles();
     this._contentManager.writer.formatTitle();
+    this._editor.selection.moveToDocumentEnd();
   }
 }
