@@ -11,6 +11,7 @@ export class IaraSyncfusionAIAssistant {
     private _contentManager: IaraSyncfusionContentManager,
     private _config: IaraEditorConfig
   ) {
+    if (document.querySelector("iara-ai-assistant")) return;
     this._createAssistantElement();
   }
 
@@ -69,6 +70,7 @@ export class IaraSyncfusionAIAssistant {
       if (detail.id == "close") {
         this._config.enableSpeechRecognition = enableSpeechRecognition;
         this._editor.isReadOnly = false;
+        assistant.remove();
       }
     });
 
