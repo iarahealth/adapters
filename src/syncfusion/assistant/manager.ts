@@ -22,6 +22,9 @@ export class IaraSyncfusionAIAssistantManager {
         this._updateContainerPosition(this._assistantButtonContainer);
       }
     });
+    this._recognition.commands.add("aceitar", () => {
+      this._editor.revisions.acceptAll();
+    });
   }
 
   private _createAssistantContainer(): HTMLElement | undefined {
@@ -62,21 +65,20 @@ export class IaraSyncfusionAIAssistantManager {
     const firstPageBounds =
       this._editor.viewer.visiblePages[0].boundingRectangle;
     const containerXPosition =
-      Math.ceil(this._editor.viewer.pageGap * 1.5) +
-      firstPageBounds.x;
+      Math.ceil(this._editor.viewer.pageGap * 1.5) + firstPageBounds.x;
     const textPosition = this._editor.selection.start.location;
 
     // With the pages layout, the clientArea is the actual editable area with paddings.
     // Therefore, clientArea.x would be the paddding between the pageBounds and the initial text position.
     // In the continuous layout, the clientArea.x is the same as the pageBounds.x.
     //In this layout, we do not want to add the assistant button in the left padding.
-    if (this._editor.viewer.clientArea.x === firstPageBounds.x) { 
+    if (this._editor.viewer.clientArea.x === firstPageBounds.x) {
       return [];
     }
-    
+
     const left = `${containerXPosition}px`;
     const top = `${Math.ceil(
-        firstPageBounds.y +
+      firstPageBounds.y +
         textPosition.y -
         this._editor.selection.characterFormat.fontSize * 0.35
     )}px`;
