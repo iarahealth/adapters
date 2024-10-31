@@ -76,7 +76,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         end: "",
       },
     };
-    this._documentEditor.selectionChange = this.selectionChange.bind(this);
+    addEventListener(
+      "SyncfusionOnSelectionChange",
+      this.selectionChange.bind(this)
+    );
     this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
   }
 
