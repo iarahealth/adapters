@@ -7,7 +7,6 @@ import {
   RibbonColorPicker,
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
-import debounce from "debounce";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { IaraLanguages } from "../language/language";
