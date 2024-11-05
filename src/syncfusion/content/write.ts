@@ -187,6 +187,10 @@ export class IaraSyncfusionContentWriteManager {
   }
 
   insertText(text: string): void {
+    this._editor.editor.insertText(text);
+  }
+
+  insertInferenceText(text: string): void {
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._editor.editor.insertText(firstLine);
     lines.forEach(line => {
