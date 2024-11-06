@@ -88,6 +88,11 @@ export class IaraSyncfusionShortcutsManager {
   async onSlashShortcut(args: DocumentEditorKeyDownEventArgs): Promise<void> {
     args.isHandled = true;
     args.event.preventDefault();
+    this._editor.selection.select(
+      this._editor.selection.startOffset,
+      this._editor.selection.endOffset
+    );
+
     new IaraSyncfusionAIAssistant(
       this._editor,
       this._recognition,
