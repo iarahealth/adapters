@@ -159,8 +159,9 @@ export class IaraSyncfusionContentWriteManager {
     replaceAllContent: boolean
   ): Promise<void> {
     const sfdt = await this._readManager.fromContent(content);
-    if (replaceAllContent) this._editor.open(sfdt.value);
-    else {
+    if (replaceAllContent || this._editor.isDocumentEmpty) {
+      this._editor.open(sfdt.value);
+    } else {
       this._editor.editor.paste(sfdt.value);
     }
 
