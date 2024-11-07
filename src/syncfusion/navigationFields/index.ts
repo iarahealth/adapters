@@ -1,6 +1,4 @@
-import {
-  DocumentEditor
-} from "@syncfusion/ej2-documenteditor";
+import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { v4 as uuidv4 } from "uuid";
 import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
@@ -68,12 +66,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   insertField(
-    content = "Escreva uma dica de texto",
-    title = "Nome do campo",
+    content = this._languageManager.languages.language.iaraTranslate
+      .customfields.tipText.content,
+    title = this._languageManager.languages.language.iaraTranslate.customfields
+      .tipText.title,
     type: "Field" | "Mandatory" | "Optional" = "Field"
   ): void {
     const bookmarksCount = uuidv4();
-    this._documentEditor.editor.insertText(' ');
+    this._documentEditor.editor.insertText(" ");
     this._documentEditor.editor.onBackSpace();
     this._documentEditor.editor.insertBookmark(`${type}-${bookmarksCount}`);
     this._documentEditor.editor.insertText("[]");
@@ -91,8 +91,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       if (!content.includes("?")) this._documentEditor.editor.insertText(`?`);
     }
     this.getBookmarks();
-    this.insertedBookmark = this.bookmarks.filter(bookmark =>
-      bookmark.name === `${type}-${bookmarksCount}`)[0];
+    this.insertedBookmark = this.bookmarks.filter(
+      bookmark => bookmark.name === `${type}-${bookmarksCount}`
+    )[0];
     this.isFirstNextNavigation = true;
     this.isFirstPreviousNavigation = true;
     this.selectBookmark(`${type}-${bookmarksCount}`, true);

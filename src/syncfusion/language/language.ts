@@ -12,6 +12,10 @@ export interface IaraLanguages {
         content: string;
         add: string;
         mandatory: string;
+        tipText: {
+          title: string;
+          content: string;
+        };
         optional: string;
         additive: string;
         next: string;
