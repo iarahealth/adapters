@@ -46,14 +46,14 @@ export class IaraSyncfusionAIAssistantManager {
     );
     assistantButton.setAttribute("icon", "stars");
 
-    assistantButton.addEventListener("click", () => {
+    assistantButton.onclick = () => {
       new IaraSyncfusionAIAssistant(
         this._editor,
         this._recognition,
         this._contentManager,
         this._config
       );
-    });
+    };
 
     container.appendChild(assistantButton);
     this._editor.documentHelper.viewerContainer.appendChild(container);
