@@ -75,15 +75,23 @@ export class IaraSyncfusionAIAssistant {
       }
     });
 
-    assistant.addEventListener("stepChange", async (event: Event) => {
+    assistant.addEventListener("stepChanged", async (event: Event) => {
       const detail = (event as CustomEvent).detail;
-      if (detail.sourceComponentName == "GenerateReportActionMenu") {
+      if (detail.componentName == "GenerateReportInput") {
         if (!detail.data.template) return;
 
         await this._contentManager.writer.insertTemplate(
           detail.data.template.replaceText,
           true
         );
+
+        // Focus the textarea after the template is inserted
+        // This will not work withour a setTimeout, even if it is 0,
+        // as this is handled differently by the browser
+        setTimeout(() => {
+          assistant.shadowRoot?.querySelector("textarea")?.focus();
+        }, 0);
+
         const template = Object.values(
           this._recognition.richTranscriptTemplates.templates
         ).find(template => template.key == detail.data.template.key);
