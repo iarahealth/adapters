@@ -313,6 +313,10 @@ export class IaraSyncfusionAdapter
     this._contentManager.writer.insertText(text);
   }
 
+  insertInferenceText(text: string): void {
+    this._contentManager.writer.insertInferenceText(text);
+  }
+
   insertParagraph(): void {
     this._contentManager.writer.insertParagraph();
   }
