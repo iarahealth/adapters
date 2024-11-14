@@ -18,10 +18,7 @@ import { IaraSyncfusionConfig } from "./config";
 import { IaraSFDT, IaraSyncfusionContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 import { IaraSyncfusionFooterBarManager } from "./footerBar";
-import {
-  IaraInferenceBookmark,
-  IaraSyncfusionInferenceBookmarksManager,
-} from "./inferenceBookmarks";
+import { IaraSyncfusionInferenceBookmarksManager } from "./inferenceBookmarks";
 import { IaraSyncfusionLanguageManager } from "./language";
 import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
@@ -332,40 +329,40 @@ export class IaraSyncfusionAdapter
   }
 
   async finishReport(): Promise<string[]> {
-    this._inferenceBookmarksManager.updateBookmarks();
+    // this._inferenceBookmarksManager.updateBookmarks();
 
-    Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
-      async (bookmark: IaraInferenceBookmark) => {
-        const normalizedContent = bookmark.content
-          .replace(/\r/g, "\n")
-          .trim()
-          .toLocaleLowerCase();
-        const normalizedInferenceText = bookmark.inferenceText
-          ?.trim()
-          .toLocaleLowerCase();
-        if (
-          !bookmark.recordingId ||
-          !normalizedContent.length ||
-          !normalizedInferenceText?.length
-        )
-          return;
+    // Object.values(this._inferenceBookmarksManager.bookmarks).forEach(
+    //   async (bookmark: IaraInferenceBookmark) => {
+    //     const normalizedContent = bookmark.content
+    //       .replace(/\r/g, "\n")
+    //       .trim()
+    //       .toLocaleLowerCase();
+    //     const normalizedInferenceText = bookmark.inferenceText
+    //       ?.trim()
+    //       .toLocaleLowerCase();
+    //     if (
+    //       !bookmark.recordingId ||
+    //       !normalizedContent.length ||
+    //       !normalizedInferenceText?.length
+    //     )
+    //       return;
 
-        const evaluation =
-          normalizedContent === normalizedInferenceText ? 6 : 5;
-        await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
-          headers: {
-            ...this._recognition.internal.iaraAPIMandatoryHeaders,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            evaluation, // editor-made validation as documented
-            recording_id: bookmark.recordingId,
-            corrected_text: bookmark.content.replace("\\r", "\\n"),
-          }),
-        });
-      }
-    );
+    //     const evaluation =
+    //       normalizedContent === normalizedInferenceText ? 6 : 5;
+    //     await fetch(`${IaraSyncfusionAdapter.IARA_API_URL}voice/validation/`, {
+    //       headers: {
+    //         ...this._recognition.internal.iaraAPIMandatoryHeaders,
+    //         "Content-Type": "application/json",
+    //       },
+    //       method: "POST",
+    //       body: JSON.stringify({
+    //         evaluation, // editor-made validation as documented
+    //         recording_id: bookmark.recordingId,
+    //         corrected_text: bookmark.content.replace("\\r", "\\n"),
+    //       }),
+    //     });
+    //   }
+    // );
 
     const content = await super.finishReport();
     this._inferenceBookmarksManager.clearBookmarks();
