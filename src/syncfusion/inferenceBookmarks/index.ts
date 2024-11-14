@@ -34,8 +34,13 @@ export class IaraSyncfusionInferenceBookmarksManager {
   }
 
   private _updateBookmarkContent(bookmarkName: string): void {
+    console.log("infupdateBookmarkContent");
     if (!(bookmarkName in this._bookmarks)) return;
-    IaraSyncfusionSelectionManager.selectBookmark(this._documentEditor, bookmarkName, true);
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._documentEditor,
+      bookmarkName,
+      true
+    );
     this._bookmarks[bookmarkName]["content"] =
       this._documentEditor.selection.text;
   }
@@ -69,7 +74,10 @@ export class IaraSyncfusionInferenceBookmarksManager {
     });
   }
 
-  updateBookmarkInference(bookmarkName: string, inference: IaraSpeechRecognitionDetail): void {
+  updateBookmarkInference(
+    bookmarkName: string,
+    inference: IaraSpeechRecognitionDetail
+  ): void {
     if (!(bookmarkName in this._bookmarks)) return;
 
     const richTranscript = inference.richTranscript

@@ -101,14 +101,15 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   getBookmarks(setColor = true): void {
-    const editorBookmarks = this._documentEditor.getBookmarks();
-    this.updateBookmark(editorBookmarks);
-    this.removeEmptyField(editorBookmarks);
-    this.sortByPosition();
+    console.log("navgetBookmarks");
+    // const editorBookmarks = this._documentEditor.getBookmarks();
+    // this.updateBookmark(editorBookmarks);
+    // this.removeEmptyField(editorBookmarks);
+    // this.sortByPosition();
 
-    if (setColor) this.setColor();
+    // if (setColor) this.setColor();
 
-    this._documentEditor.selection.clear();
+    // this._documentEditor.selection.clear();
   }
 
   goToField(title: string): void | string {
@@ -406,12 +407,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   updateBookmark(editorBookmarks: string[]): void {
-    editorBookmarks.map(bookmark => {
-      this.selectBookmark(bookmark);
-      const bookmarkContent = this._documentEditor.selection.text;
-      const { title, content } = this.getTitleAndContent(bookmarkContent);
-      this.popAndUpdate(bookmark, content, title);
-    });
+    // editorBookmarks.map(bookmark => {
+    //   this.selectBookmark(bookmark);
+    //   const bookmarkContent = this._documentEditor.selection.text;
+    //   const { title, content } = this.getTitleAndContent(bookmarkContent);
+    //   this.popAndUpdate(bookmark, content, title);
+    // });
   }
 
   removeEmptyField(editorBookmarks: string[]): void {
@@ -545,10 +546,11 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
-    IaraSyncfusionSelectionManager.selectBookmark(
-      this._documentEditor,
-      bookmarkId,
-      excludeBookmarkStartEnd
-    );
+    console.log("navselectBookmark");
+    // IaraSyncfusionSelectionManager.selectBookmark(
+    //   this._documentEditor,
+    //   bookmarkId,
+    //   excludeBookmarkStartEnd
+    // );
   }
 }
