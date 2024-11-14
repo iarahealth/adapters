@@ -4,7 +4,6 @@ import { IaraSyncfusionConfig } from "..";
 import { IaraEditorNavigationFieldManager } from "../../editor/navigationFields";
 import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionLanguageManager } from "../language";
-import { IaraSyncfusionSelectionManager } from "../selection";
 import { IaraSyncfusionAdditiveFieldModal } from "./additiveFieldModal";
 import { IaraNavigationBookmark } from "./navigationBookmark";
 
@@ -100,7 +99,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     this.selectTitle(title, `${type}-${bookmarksCount}`);
   }
 
-  getBookmarks(setColor = true): void {
+  getBookmarks(_setColor = true): void {
     console.log("navgetBookmarks");
     // const editorBookmarks = this._documentEditor.getBookmarks();
     // this.updateBookmark(editorBookmarks);
@@ -406,7 +405,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
-  updateBookmark(editorBookmarks: string[]): void {
+  updateBookmark(_editorBookmarks: string[]): void {
     // editorBookmarks.map(bookmark => {
     //   this.selectBookmark(bookmark);
     //   const bookmarkContent = this._documentEditor.selection.text;
@@ -545,7 +544,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return this.requiredFields();
   }
 
-  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
+  selectBookmark(
+    _bookmarkId: string,
+    _excludeBookmarkStartEnd?: boolean
+  ): void {
     console.log("navselectBookmark");
     // IaraSyncfusionSelectionManager.selectBookmark(
     //   this._documentEditor,
