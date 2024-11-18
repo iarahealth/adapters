@@ -538,10 +538,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   hasEmptyRequiredFields(): boolean {
-    if (!this.requiredFields()) {
-      this.clearReportToCopyContent();
-    }
-    return this.requiredFields();
+    return false;
+    // The code below crashes the editor when incomplete bookmarks are present
+    // if (!this.requiredFields()) {
+    //   this.clearReportToCopyContent();
+    // }
+    // return this.requiredFields();
   }
 
   selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
