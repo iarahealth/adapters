@@ -18,10 +18,7 @@ import { IaraSyncfusionConfig } from "./config";
 import { IaraSFDT, IaraSyncfusionContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
 import { IaraSyncfusionFooterBarManager } from "./footerBar";
-import {
-  IaraInferenceBookmark,
-  IaraSyncfusionInferenceBookmarksManager,
-} from "./inferenceBookmarks";
+import { IaraSyncfusionInferenceBookmarksManager } from "./inferenceBookmarks";
 import { IaraSyncfusionLanguageManager } from "./language";
 import { IaraSyncfusionNavigationFieldManager } from "./navigationFields/index";
 import { IaraSyncfusionShortcutsManager } from "./shortcuts";
