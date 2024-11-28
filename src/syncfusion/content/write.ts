@@ -301,7 +301,7 @@ export class IaraSyncfusionContentWriteManager {
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text);
+    if (text.length) this.insertInferenceText(text);
 
     if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
       // Insert text is not respecting the allCaps property, work around that
