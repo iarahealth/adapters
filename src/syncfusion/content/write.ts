@@ -54,8 +54,6 @@ export class IaraSyncfusionContentWriteManager {
     this._updateSelectedNavigationField(this._editor.selection.text);
     const hadSelectedText = this._editor.selection.text.length;
 
-    if (hadSelectedText) this._editor.editor.delete();
-
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
       this._config,
@@ -64,6 +62,13 @@ export class IaraSyncfusionContentWriteManager {
         : undefined,
       this._config.highlightInference
     );
+
+    if (hadSelectedText) {
+      // Text contains a line break, clear wordBeforeSelection to remove trailing space.
+      if (/([\n\r\v]+)?$/.test(this._editor.selection.text)) {
+        this._selectionManager.wordBeforeSelection = " ";
+      } else this._editor.editor.delete();
+    }
 
     this._inferenceBookmarksManager.addBookmark(
       inference,
