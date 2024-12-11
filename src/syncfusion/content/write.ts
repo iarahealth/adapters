@@ -53,6 +53,9 @@ export class IaraSyncfusionContentWriteManager {
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
     const hadSelectedText = this._editor.selection.text.length;
+    const islineBreak = /[\n\r\v]$/.test(this._editor.selection.text);
+
+    if (hadSelectedText && !islineBreak) this._editor.editor.delete();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
@@ -63,17 +66,12 @@ export class IaraSyncfusionContentWriteManager {
       this._config.highlightInference
     );
 
-    if (hadSelectedText) {
-      // Text contains a line break, clear wordBeforeSelection to remove trailing space.
-      if (/([\n\r\v]+)?$/.test(this._editor.selection.text)) {
-        this._selectionManager.wordBeforeSelection = " ";
-      } else this._editor.editor.delete();
-    }
-
     this._inferenceBookmarksManager.addBookmark(
       inference,
       this._selectionManager.initialSelectionData.bookmarkId
     );
+
+    if (islineBreak) this._selectionManager.wordBeforeSelection = " ";
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       // Removes trailing space so that the formatter can determine whether the space is required or not.
