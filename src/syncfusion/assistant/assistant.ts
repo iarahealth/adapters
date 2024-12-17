@@ -24,6 +24,8 @@ export class IaraSyncfusionAIAssistant {
       this._editor.viewer.visiblePages[0].boundingRectangle;
     const textPosition = this._editor.selection.start.location;
     const textXPadding = this._editor.viewer.clientArea.x + firstPageBounds.x;
+    const buttonSize = 24;
+    const buttonPadding = 14;
 
     const container = document.createElement("div");
     container.style.position = "absolute";
@@ -32,7 +34,9 @@ export class IaraSyncfusionAIAssistant {
         textPosition.y -
         this._editor.selection.characterFormat.fontSize * 0.35
     )}px`;
-    container.style.left = `${textXPadding}px`;
+    if (this._editor.viewer.clientArea.x === firstPageBounds.x) {
+      container.style.right = `${textXPadding + buttonSize + buttonPadding}px`;
+    } else container.style.left = `${textXPadding}px`;
     container.style.zIndex = "1000";
 
     const assistant = document.createElement(

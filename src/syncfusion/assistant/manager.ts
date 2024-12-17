@@ -57,7 +57,6 @@ export class IaraSyncfusionAIAssistantManager {
 
     container.appendChild(assistantButton);
     this._editor.documentHelper.viewerContainer.appendChild(container);
-
     return container;
   }
 
@@ -67,21 +66,25 @@ export class IaraSyncfusionAIAssistantManager {
     const containerXPosition =
       Math.ceil(this._editor.viewer.pageGap * 1.5) + firstPageBounds.x;
     const textPosition = this._editor.selection.start.location;
+    const top = `${Math.ceil(
+      firstPageBounds.y +
+        textPosition.y -
+        this._editor.selection.characterFormat.fontSize * 0.35
+    )}px`;
 
     // With the pages layout, the clientArea is the actual editable area with paddings.
     // Therefore, clientArea.x would be the paddding between the pageBounds and the initial text position.
     // In the continuous layout, the clientArea.x is the same as the pageBounds.x.
     //In this layout, we do not want to add the assistant button in the left padding.
     if (this._editor.viewer.clientArea.x === firstPageBounds.x) {
-      return [];
+      const left = `${Math.ceil(
+        containerXPosition +
+          this._editor.viewer.clientArea.width +
+          this._editor.selection.characterFormat.fontSize * 0.35
+      )}px`;
+      return [left, top];
     }
-
     const left = `${containerXPosition}px`;
-    const top = `${Math.ceil(
-      firstPageBounds.y +
-        textPosition.y -
-        this._editor.selection.characterFormat.fontSize * 0.35
-    )}px`;
 
     return [left, top];
   }
