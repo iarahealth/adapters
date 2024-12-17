@@ -31,9 +31,6 @@ export class IaraSyncfusionShortcutsManager {
       case "@":
         this.shortcutByAt();
         break;
-      case "/":
-        this.onSlashShortcut(args);
-        break;
       case "Tab":
         args.isHandled = true;
         this.shortcutByTabAndShiftTab(args);
