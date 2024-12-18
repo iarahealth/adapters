@@ -84,6 +84,19 @@ export class IaraSyncfusionSelectionManager {
     this.resetSelection();
   }
 
+  private _isValidOffsetDistance(selectionText: string) {
+    const { endOffset, startOffset } = this._editor.selection;
+    const startParts = startOffset.split(";").map(Number);
+    const endParts = endOffset.split(";").map(Number);
+    const distance = startParts.reduce(
+      (acc, startValue, index) => acc + Math.abs(endParts[index] - startValue),
+      0
+    );
+    const startDistance = startParts.reduce((acc, value) => acc + value, 0);
+    if (Math.abs(distance - selectionText.length) < startDistance) return true;
+    return false;
+  }
+
   private _getWordAfterSelection(): string[] {
     this._editor.selection.extendToLineEnd();
     const lineAfter = this._editor.selection.text;
@@ -98,7 +111,10 @@ export class IaraSyncfusionSelectionManager {
 
   private _getWordBeforeSelection(): string[] {
     this._editor.selection.extendToLineStart();
-    let lineBefore = this._editor.selection.text;
+    // to prevent the extendToLineStart error, check the offset and size of the selection are same
+    let lineBefore = this._isValidOffsetDistance(this._editor.selection.text)
+      ? this._editor.selection.text
+      : "";
     // if the line ends with a line break, it means we are at the very end of the line
     // and the last character is actually the one before the line break
     if (lineBefore.endsWith("\r") || lineBefore.endsWith("\n")) {
