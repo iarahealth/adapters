@@ -53,8 +53,9 @@ export class IaraSyncfusionContentWriteManager {
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
     const hadSelectedText = this._editor.selection.text.length;
+    const islineBreak = /[\n\r\v]$/.test(this._editor.selection.text);
 
-    if (hadSelectedText) this._editor.editor.delete();
+    if (hadSelectedText && !islineBreak) this._editor.editor.delete();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
@@ -69,6 +70,8 @@ export class IaraSyncfusionContentWriteManager {
       inference,
       this._selectionManager.initialSelectionData.bookmarkId
     );
+
+    if (islineBreak) this._selectionManager.wordBeforeSelection = " ";
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       // Removes trailing space so that the formatter can determine whether the space is required or not.
@@ -302,7 +305,7 @@ export class IaraSyncfusionContentWriteManager {
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text);
+    if (text.length) this.insertInferenceText(text);
 
     if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
       // Insert text is not respecting the allCaps property, work around that

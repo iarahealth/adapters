@@ -117,8 +117,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   insertField(
-    content = "Escreva uma dica de texto",
-    title = "Nome do campo",
+    content = this._languageManager.languages.language.iaraTranslate
+      .customfields.tipText.content,
+    title = this._languageManager.languages.language.iaraTranslate.customfields
+      .tipText.title,
     type: "Field" | "Mandatory" | "Optional" = "Field"
   ): void {
     this.blockSelectionInBookmarkCreate = false;

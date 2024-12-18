@@ -472,7 +472,6 @@ export class IaraSyncfusionAdapter
             content: string;
             id: number;
           };
-          this.undo();
 
           if (item.category === "Template") {
             if (this._contentManager.writer.preprocessAndInsertTemplate)

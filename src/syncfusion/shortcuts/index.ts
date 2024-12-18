@@ -29,7 +29,7 @@ export class IaraSyncfusionShortcutsManager {
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     switch (args.event.key) {
       case "@":
-        this.shortcutByAt();
+        this.shortcutByAt(args);
         break;
       case "Tab":
         args.isHandled = true;
@@ -40,7 +40,10 @@ export class IaraSyncfusionShortcutsManager {
     }
   }
 
-  shortcutByAt(): void {
+  shortcutByAt(args: DocumentEditorKeyDownEventArgs): void {
+    args.isHandled = true;
+    args.event.preventDefault();
+
     const templates = [
       ...Object.values(this._recognition.richTranscriptTemplates.templates),
     ];
