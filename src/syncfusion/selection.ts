@@ -92,7 +92,6 @@ export class IaraSyncfusionSelectionManager {
       (acc, startValue, index) => acc + Math.abs(endParts[index] - startValue),
       0
     );
-    console.log(distance, text.length);
     return distance === text.length;
   }
 
