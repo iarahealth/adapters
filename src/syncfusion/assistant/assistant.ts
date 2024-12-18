@@ -185,7 +185,8 @@ export class IaraSyncfusionAIAssistant {
         this._contentManager.writer.insertText(change.value);
       }
     }
-
+    const revisions = this._editor.revisions;
+    revisions.acceptAll();
     this._editor.enableTrackChanges = false;
     this._contentManager.writer.formatSectionTitles();
     this._contentManager.writer.formatTitle();
