@@ -84,7 +84,7 @@ export class IaraSyncfusionSelectionManager {
     this.resetSelection();
   }
 
-  private _isValidOffsetDistance(text: string) {
+  private _isValidOffsetDistance(selectionText: string) {
     const { endOffset, startOffset } = this._editor.selection;
     const startParts = startOffset.split(";").map(Number);
     const endParts = endOffset.split(";").map(Number);
@@ -92,7 +92,9 @@ export class IaraSyncfusionSelectionManager {
       (acc, startValue, index) => acc + Math.abs(endParts[index] - startValue),
       0
     );
-    return distance === text.length;
+    const startDistance = startParts.reduce((acc, value) => acc + value, 0);
+    if (Math.abs(distance - selectionText.length) < startDistance) return true;
+    return false;
   }
 
   private _getWordAfterSelection(): string[] {
