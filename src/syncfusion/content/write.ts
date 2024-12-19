@@ -55,7 +55,7 @@ export class IaraSyncfusionContentWriteManager {
     const hadSelectedText = this._editor.selection.text.length;
     const islineBreak = /[\n\r\v]$/.test(this._editor.selection.text);
 
-    if (hadSelectedText && !islineBreak) this._editor.editor.delete();
+    if (hadSelectedText && !islineBreak) this._editor.editor.onBackSpace();
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
@@ -82,7 +82,7 @@ export class IaraSyncfusionContentWriteManager {
       if (!hadSelectedText) {
         this._editor.selection.moveToPreviousCharacter();
         this._editor.selection.extendForward();
-        this._editor.editor.delete();
+        this._editor.editor.onBackSpace();
         this._selectionManager.wordBeforeSelection =
           this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
