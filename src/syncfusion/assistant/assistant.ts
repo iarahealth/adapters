@@ -117,6 +117,29 @@ export class IaraSyncfusionAIAssistant {
     return assistant;
   }
 
+  private _ensureParagraphsForDiagnosticInsertion() {
+    this._editor.selection.extendToLineStart();
+    this._editor.selection.select(
+      this._editor.selection.startOffset,
+      this._editor.selection.endOffset
+    );
+    let lineContent = this._editor.selection.text;
+    //charCode 13 line break
+    while (
+      lineContent.charCodeAt(0) === 13 ||
+      lineContent === "" ||
+      lineContent.startsWith(" ")
+    ) {
+      this._editor.selection.moveToPreviousLine();
+      this._editor.selection.extendToLineEnd();
+      lineContent = this._editor.selection.text;
+      continue;
+    }
+    this._editor.selection.moveNextPosition();
+    this._contentManager.writer.insertParagraph();
+    this._contentManager.writer.insertParagraph();
+  }
+
   private _insertDiagnosticImpression(diagnosticImpression: string): void {
     this._editor.isReadOnly = false;
 
@@ -154,14 +177,18 @@ export class IaraSyncfusionAIAssistant {
         this._editor.selection.endOffset
       );
       this._editor.editor.delete();
+
       impressionTitle = matchedQuery;
     } else {
       this._editor.selection.moveToDocumentEnd();
     }
-    this._editor.editor.toggleBold();
+    this._ensureParagraphsForDiagnosticInsertion();
+    if (!this._editor.selection.characterFormat.bold)
+      this._editor.editor.toggleBold();
     this._contentManager.writer.insertText(impressionTitle);
     this._contentManager.writer.insertParagraph();
-    this._editor.editor.toggleBold();
+    if (this._editor.selection.characterFormat.bold)
+      this._editor.editor.toggleBold();
     this._contentManager.writer.insertText(diagnosticImpression);
   }
 
