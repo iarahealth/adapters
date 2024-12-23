@@ -316,7 +316,7 @@ export class IaraSyncfusionContentWriteManager {
     }
 
     if (inference.isFinal) {
-      if (text.length) {
+      if (text.trim().length) {
         this._selectionManager.moveSelectionToAfterBookmarkEdge(
           this._selectionManager.initialSelectionData.bookmarkId
         );
@@ -326,6 +326,7 @@ export class IaraSyncfusionContentWriteManager {
           false
         );
         this._editor.editor.delete();
+        if (text.length) this.insertInferenceText(text);
       }
     }
   }
