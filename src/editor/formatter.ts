@@ -136,12 +136,14 @@ export class IaraEditorInferenceFormatter {
     );
 
     text = this._capitalize(text, wordBefore);
-    text = this._addTrailingSpaces(
-      text,
-      wordAfter,
-      wordBefore,
-      isAtStartOfLine
-    );
+    if (text.trim().length) {
+      text = this._addTrailingSpaces(
+        text,
+        wordAfter,
+        wordBefore,
+        isAtStartOfLine
+      );
+    }
 
     return text;
   }

@@ -323,10 +323,20 @@ export class IaraSyncfusionContentWriteManager {
       } else {
         this._selectionManager.selectBookmark(
           this._selectionManager.initialSelectionData.bookmarkId,
+          true
+        );
+        this._editor.editor.insertText(" ");
+        this._selectionManager.selectBookmark(
+          this._selectionManager.initialSelectionData.bookmarkId,
           false
         );
         this._editor.editor.delete();
-        if (text.length) this.insertInferenceText(text);
+        text
+          .split("\n")
+          .slice(0, -1)
+          .forEach(() => {
+            this.insertParagraph();
+          });
       }
     }
   }
