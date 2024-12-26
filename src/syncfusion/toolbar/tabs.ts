@@ -40,7 +40,10 @@ export const tabsConfig = (
   const allItems = {
     open: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -58,7 +61,10 @@ export const tabsConfig = (
     },
     undo: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -77,7 +83,10 @@ export const tabsConfig = (
     },
     redo: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -96,7 +105,10 @@ export const tabsConfig = (
     },
     image: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -116,7 +128,10 @@ export const tabsConfig = (
 
     table: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate.richtexteditor[
@@ -136,7 +151,10 @@ export const tabsConfig = (
 
     paste: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paste",
         content:
@@ -157,7 +175,10 @@ export const tabsConfig = (
 
     copy: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-copy",
         content:
@@ -178,7 +199,10 @@ export const tabsConfig = (
 
     cut: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-cut",
         content:
@@ -199,7 +223,10 @@ export const tabsConfig = (
 
     fontFamily: {
       type: "ComboBox",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "fontFamilySelect",
       comboBoxSettings: {
         dataSource: config.font?.availableFamilies,
@@ -220,7 +247,10 @@ export const tabsConfig = (
 
     fontSize: {
       type: "ComboBox",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "fontSizeSelect",
       comboBoxSettings: {
         dataSource: config.font?.availableSizes.map(value => value.toString()),
@@ -241,7 +271,10 @@ export const tabsConfig = (
 
     fontColor: {
       type: "ColorPicker",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "fontColorSelect",
       displayOptions: DisplayMode.Simplified | DisplayMode.Classic,
       colorPickerSettings: {
@@ -259,7 +292,10 @@ export const tabsConfig = (
     bold: {
       type: "Button",
       id: "bold",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         content:
           editorContainerLocale.language.syncfusionTranslate
@@ -279,7 +315,10 @@ export const tabsConfig = (
 
     italic: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "italic",
       buttonSettings: {
         isToggle: true,
@@ -300,7 +339,10 @@ export const tabsConfig = (
 
     underline: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "underline",
       buttonSettings: {
         isToggle: true,
@@ -320,7 +362,10 @@ export const tabsConfig = (
     },
 
     strikeThrough: {
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       type: "Button",
       id: "strikethrough",
       buttonSettings: {
@@ -342,7 +387,10 @@ export const tabsConfig = (
 
     decreaseIdent: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-decrease-indent",
         content:
@@ -361,7 +409,10 @@ export const tabsConfig = (
 
     increaseIdent: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-increase-indent",
         content:
@@ -380,7 +431,10 @@ export const tabsConfig = (
 
     lineSpacing: {
       type: "ComboBox",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       id: "lineSpacingSelect",
       comboBoxSettings: {
         dataSource: ["1", "1.15", "1.5", "2"],
@@ -401,7 +455,10 @@ export const tabsConfig = (
 
     bullets: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-list-unordered-3",
         content:
@@ -420,7 +477,10 @@ export const tabsConfig = (
 
     numbering: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-list-ordered",
         content:
@@ -439,7 +499,10 @@ export const tabsConfig = (
 
     paragraphMark: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-paragraph",
         content:
@@ -458,7 +521,10 @@ export const tabsConfig = (
 
     alignment: {
       type: "GroupButton",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       groupButtonSettings: {
         selection: RibbonGroupButtonSelection.Single,
         items: [
@@ -511,7 +577,10 @@ export const tabsConfig = (
     },
     navigationField: {
       type: "DropDown",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : RibbonItemSize.Large,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : RibbonItemSize.Large,
       dropDownSettings: {
         iconCss: "e-icons e-bookmark",
         content:
@@ -534,12 +603,12 @@ export const tabsConfig = (
             text: editorContainerLocale.language.iaraTranslate.customfields
               .optional,
           },
-          {
-            id: "add_additive_field",
-            iconCss: "e-icons e-plus",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .additive,
-          },
+          // {
+          //   id: "add_additive_field",
+          //   iconCss: "e-icons e-plus",
+          //   text: editorContainerLocale.language.iaraTranslate.customfields
+          //     .additive,
+          // },
           {
             id: "next_field",
             iconCss: "e-icons e-arrow-right",
@@ -561,7 +630,10 @@ export const tabsConfig = (
 
     exportPdf: {
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-export-pdf",
         content:
@@ -579,7 +651,10 @@ export const tabsConfig = (
     trackchanges: {
       id: "trackChangesBtn",
       type: "Button",
-      allowedSizes: config.ribbon?.displayMode === 'Simplified' ? RibbonItemSize.Small : undefined,
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
       buttonSettings: {
         iconCss: "e-icons e-changes-track",
         content:
@@ -646,7 +721,7 @@ export const tabsConfig = (
 
   const fileItems = [
     { items: [allItems.open] },
-    { items: [allItems.undo, allItems.redo] }
+    { items: [allItems.undo, allItems.redo] },
   ];
 
   const insertItems = [
@@ -670,18 +745,14 @@ export const tabsConfig = (
       items: [
         allItems.paragraphMark,
         allItems.decreaseIdent,
-        allItems.increaseIdent
-      ]
+        allItems.increaseIdent,
+      ],
     },
     {
-      items: [
-        allItems.lineSpacing,
-        allItems.bullets,
-        allItems.numbering
-      ]
+      items: [allItems.lineSpacing, allItems.bullets, allItems.numbering],
     },
     {
-      items: [allItems.alignment]
+      items: [allItems.alignment],
     },
   ];
 
