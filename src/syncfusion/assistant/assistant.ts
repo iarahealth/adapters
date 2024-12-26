@@ -135,7 +135,7 @@ export class IaraSyncfusionAIAssistant {
       lineContent = this._editor.selection.text;
       continue;
     }
-    this._editor.selection.moveNextPosition();
+    this._editor.selection.moveToLineEnd();
     this._contentManager.writer.insertParagraph();
     this._contentManager.writer.insertParagraph();
   }
