@@ -137,20 +137,23 @@ export class IaraSyncfusionContentWriteManager {
   }
 
   private _updateSelectedNavigationField(field: string): void {
-    if (field.match(/\[(.*)\]/)) {
-      const { title, content } =
-        this._navigationFieldManager.getTitleAndContent(field);
+    this.selectedField = { content: "", title: "", type: "Field" };
+    if (!field.match(/\[(.*)\]/)) return;
 
-      let type: "Field" | "Mandatory" | "Optional" = "Field";
-      if (content.includes("*")) type = "Mandatory";
-      if (content.includes("?")) type = "Optional";
+    const { title, content } =
+      this._navigationFieldManager.getTitleAndContent(field);
 
-      this.selectedField = {
-        content,
-        title,
-        type,
-      };
-    } else this.selectedField = { content: "", title: "", type: "Field" };
+    if (!content || !title) return;
+
+    let type: "Field" | "Mandatory" | "Optional" = "Field";
+    if (content.includes("*")) type = "Mandatory";
+    if (content.includes("?")) type = "Optional";
+
+    this.selectedField = {
+      content,
+      title,
+      type,
+    };
   }
 
   insertParagraph(): void {
