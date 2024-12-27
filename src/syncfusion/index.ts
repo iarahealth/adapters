@@ -72,6 +72,7 @@ export class IaraSyncfusionAdapter
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
+    enableAIAssistant: true,
     replaceToolbar: false,
     showBookmarks: false,
     showFinishReportButton: true,
@@ -164,12 +165,14 @@ export class IaraSyncfusionAdapter
       this.config
     );
 
-    new IaraSyncfusionAIAssistantManager(
-      this._documentEditor,
-      this._recognition,
-      this._contentManager,
-      this.config
-    );
+    if (this.config.enableAIAssistant) {
+      new IaraSyncfusionAIAssistantManager(
+        this._documentEditor,
+        this._recognition,
+        this._contentManager,
+        this.config
+      );
+    }
     addEventListener("IaraAssistantReport", (event: Event) => {
       this._currentAssistantGeneratedReport = (
         event as CustomEvent<{
