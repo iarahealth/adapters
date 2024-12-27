@@ -28,6 +28,38 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
   blockSelectionInBookmarkCreate = false;
   bookmarks: IaraNavigationBookmark[] = [];
+  bookmarkColors = {
+    mandatory: {
+      title: {
+        dark: "#C07240",
+        light: "#FFEBD8",
+      },
+      content: {
+        dark: "#6C4E35",
+        light: "#FFD5BB",
+      },
+    },
+    optional: {
+      title: {
+        dark: "#4C83AC",
+        light: "#CEEFFE",
+      },
+      content: {
+        dark: "#356688",
+        light: "#BAE1FE",
+      },
+    },
+    field: {
+      title: {
+        dark: "#3F3F3F",
+        light: "#AEAEAE",
+      },
+      content: {
+        dark: "#565656",
+        light: "#DDDDDD",
+      },
+    },
+  };
   currentSelectionOffset: {
     start: string;
     end: string;
@@ -342,93 +374,93 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#6C4E35")
+              this.bookmarkColors.mandatory.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#FFD5BB");
+              this.bookmarkColors.mandatory.content.light);
         this.selectTitle(bookmark.title, bookmark.name, true);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#C07240")
+              this.bookmarkColors.mandatory.title.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#FFEBD8");
+              this.bookmarkColors.mandatory.title.light);
         this.selectContent(bookmark.title, bookmark.content, bookmark.name);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#6C4E35")
+              this.bookmarkColors.mandatory.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#FFD5BB");
+              this.bookmarkColors.mandatory.content.light);
       }
       if (bookmark.name.includes("Field")) {
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#565656")
+              this.bookmarkColors.field.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#DDDDDD");
+              this.bookmarkColors.field.content.light);
         this.selectTitle(bookmark.title, bookmark.name, true);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#3F3F3F")
+              this.bookmarkColors.field.title.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#AEAEAE");
+              this.bookmarkColors.field.title.light);
         this.selectContent(bookmark.title, bookmark.content, bookmark.name);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#565656")
+              this.bookmarkColors.field.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#DDDDDD");
+              this.bookmarkColors.field.content.light);
       }
       if (bookmark.name.includes("Optional")) {
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#4C83AC")
+              this.bookmarkColors.optional.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#CEEFFE");
+              this.bookmarkColors.optional.content.light);
         this.selectTitle(bookmark.title, bookmark.name, true);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#356688")
+              this.bookmarkColors.optional.title.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#BAE1FE");
+              this.bookmarkColors.optional.title.light);
         this.selectContent(bookmark.title, bookmark.content, bookmark.name);
         this._config.darkMode
           ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#4C83AC")
+              this.bookmarkColors.optional.content.dark)
           : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             (this._documentEditor.selection.characterFormat.highlightColor =
-              "#CEEFFE");
+              this.bookmarkColors.optional.content.light);
       }
       if (bookmark.name.includes("Additive")) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -591,7 +623,20 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     );
   }
 
+  updateBookmarkColor = () => {
+    const selectionBookmark = this._documentEditor.selection.getBookmarks();
+    if (selectionBookmark) {
+      console.log(
+        this._documentEditor.selection.characterFormat.highlightColor,
+        "COLOR"
+      );
+    }
+  };
+
   selectionChange = () => {
+    console.time();
+    this.updateBookmarkColor();
+    console.timeEnd();
     if (
       this.blockSelectionInBookmarkCreate &&
       !this._documentEditor.isReadOnly
