@@ -42,7 +42,14 @@ export class IaraSyncfusionAIAssistant {
     const assistant = document.createElement(
       "iara-ai-assistant"
     ) as HTMLElement & { recognition: IaraSpeechRecognition; report: string };
-    assistant.report = await this._contentManager.reader.getPlainTextContent();
+    let reportContent = await this._contentManager.reader.getPlainTextContent();
+    if (
+      reportContent.charCodeAt(0) === 13 ||
+      reportContent === "" ||
+      reportContent.startsWith(" ")
+    )
+      reportContent = "";
+    assistant.report = reportContent;
     assistant.recognition = this._recognition;
     assistant.style.zIndex = "1000";
     assistant.addEventListener("diagnosticImpression", (event: Event) => {
