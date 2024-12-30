@@ -242,10 +242,13 @@ export class IaraSyncfusionContentReadManager {
 
   constructor(private _editor: DocumentEditor) {
     const onContentChange = () => {
-      this._isDirty = true;
       dispatchEvent(new Event("IaraSyncfusionContentChange"));
     };
-    this._editor.contentChange = debounce(onContentChange.bind(this), 100);
+    const debouncedOnContentChange = debounce(onContentChange.bind(this), 100);
+    this._editor.contentChange = () => {
+      this._isDirty = true;
+      debouncedOnContentChange();
+    };
   }
 
   async fromContent(content: string) {
