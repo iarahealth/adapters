@@ -76,10 +76,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         end: "",
       },
     };
-    addEventListener(
-      "SyncfusionOnSelectionChange",
-      this.selectionChange.bind(this)
-    );
     this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
   }
 
@@ -558,7 +554,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
-  requiredFields(): boolean {
+  hasEmptyRequiredFields(): boolean {
     this.createBookmarks(false);
     const mandatoriesFields = this.bookmarks.filter(
       bookmark => bookmark.name.includes("Mandatory") && bookmark.title
@@ -570,13 +566,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       return true;
     }
     return false;
-  }
-
-  hasEmptyRequiredFields(): boolean {
-    if (!this.requiredFields()) {
-      this.clearReportToCopyContent();
-    }
-    return this.requiredFields();
   }
 
   showAdditiveList(): void {

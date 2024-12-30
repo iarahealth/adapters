@@ -309,6 +309,8 @@ export class IaraSyncfusionAdapter
 
   async copyReport(): Promise<string[]> {
     this.showSpinner();
+    if (this._navigationFieldManager.bookmarks.length)
+      this._navigationFieldManager.clearReportToCopyContent();
 
     this._documentEditor.revisions.acceptAll();
     this._documentEditor.enableTrackChanges = false;
