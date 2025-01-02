@@ -76,7 +76,10 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         end: "",
       },
     };
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
+    addEventListener(
+      "SyncfusionOnSelectionChange",
+      this.selectionChange.bind(this)
+    );
   }
 
   addAdditiveField() {
@@ -568,19 +571,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return false;
   }
 
-  showAdditiveList(): void {
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
-  }
-
-  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
-    IaraSyncfusionSelectionManager.selectBookmark(
-      this._documentEditor,
-      bookmarkId,
-      excludeBookmarkStartEnd
-    );
-  }
-
-  selectionChange = () => {
+  sectionAdditiveField = () => {
     if (
       this.blockSelectionInBookmarkCreate &&
       !this._documentEditor.isReadOnly
@@ -608,9 +599,24 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         }
       } else this.additiveListIntance?.hide();
     }
+  };
+
+  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._documentEditor,
+      bookmarkId,
+      excludeBookmarkStartEnd
+    );
+  }
+
+  selectionChange = () => {
     this.currentSelectionOffset = {
       start: this._documentEditor.selection.startOffset,
       end: this._documentEditor.selection.endOffset,
     };
   };
+
+  showAdditiveList(): void {
+    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
+  }
 }
