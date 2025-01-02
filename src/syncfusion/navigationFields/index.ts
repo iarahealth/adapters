@@ -171,7 +171,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   nextField(isShortcutNavigation?: boolean): void {
-    console.log(this.currentSelectionOffset, "this.currentSelectionOffset");
     this.getPreviousAndNext(this.currentSelectionOffset);
     if (isShortcutNavigation && this.isFirstNextNavigation)
       this.selectContent(
