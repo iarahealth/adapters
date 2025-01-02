@@ -80,7 +80,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       "SyncfusionOnSelectionChange",
       this.selectionChange.bind(this)
     );
-    this._documentEditor.selectionChange = this.selectionChange.bind(this);
   }
 
   addAdditiveField() {
