@@ -80,7 +80,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       "SyncfusionOnSelectionChange",
       this.selectionChange.bind(this)
     );
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
   }
 
   addAdditiveField() {
@@ -558,7 +557,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
-  requiredFields(): boolean {
+  hasEmptyRequiredFields(): boolean {
     this.createBookmarks(false);
     const mandatoriesFields = this.bookmarks.filter(
       bookmark => bookmark.name.includes("Mandatory") && bookmark.title
@@ -572,26 +571,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return false;
   }
 
-  hasEmptyRequiredFields(): boolean {
-    if (!this.requiredFields()) {
-      this.clearReportToCopyContent();
-    }
-    return this.requiredFields();
-  }
-
-  showAdditiveList(): void {
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
-  }
-
-  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
-    IaraSyncfusionSelectionManager.selectBookmark(
-      this._documentEditor,
-      bookmarkId,
-      excludeBookmarkStartEnd
-    );
-  }
-
-  selectionChange = () => {
+  sectionAdditiveField = () => {
     if (
       this.blockSelectionInBookmarkCreate &&
       !this._documentEditor.isReadOnly
@@ -619,9 +599,24 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         }
       } else this.additiveListIntance?.hide();
     }
+  };
+
+  selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void {
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._documentEditor,
+      bookmarkId,
+      excludeBookmarkStartEnd
+    );
+  }
+
+  selectionChange = () => {
     this.currentSelectionOffset = {
       start: this._documentEditor.selection.startOffset,
       end: this._documentEditor.selection.endOffset,
     };
   };
+
+  showAdditiveList(): void {
+    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
+  }
 }
