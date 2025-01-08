@@ -182,6 +182,8 @@ export class IaraSyncfusionContentWriteManager {
 
     this._editor.selection.moveToDocumentStart();
 
+    this._styleManager.setTheme(this._config.darkMode ? "dark" : "light");
+
     // Set the default editor format after inserting the template
     this._styleManager.setEditorDefaultFont({
       fontFamily: this._editor.selection.characterFormat.fontFamily,
