@@ -56,18 +56,23 @@ export class IaraSyncfusionAdapter
   implements EditorAdapter
 {
   public static IARA_API_URL = "https://api.iarahealth.com/";
-  private _contentManager: IaraSyncfusionContentManager;
+  private readonly _assistantManager?: IaraSyncfusionAIAssistantManager;
+  private readonly _contentManager: IaraSyncfusionContentManager;
   private _contentDate?: Date;
   private _currentTemplatePlainText?: string;
   private _currentAssistantGeneratedReport?: Record<string, unknown>;
   private _cursorSelection?: { startOffset: string; endOffset: string };
-  private _debouncedSaveReport: () => void;
-  private _documentEditor: DocumentEditor;
-  private _editorContainer?: DocumentEditorContainer;
-  private _toolbarManager?: IaraSyncfusionToolbarManager;
-  private _languageManager: IaraSyncfusionLanguageManager;
-  private _inferenceBookmarksManager: IaraSyncfusionInferenceBookmarksManager;
-  private _footerBarManager: IaraSyncfusionFooterBarManager;
+  private readonly _debouncedSaveReport: () => void;
+  private readonly _documentEditor: DocumentEditor;
+  private readonly _editorContainer?: DocumentEditorContainer;
+  private readonly _toolbarManager?: IaraSyncfusionToolbarManager;
+  private readonly _languageManager: IaraSyncfusionLanguageManager;
+  private readonly _inferenceBookmarksManager: IaraSyncfusionInferenceBookmarksManager;
+  private readonly _footerBarManager: IaraSyncfusionFooterBarManager;
+  private readonly _listeners: {
+    key: string;
+    callback: (event?: Event) => void;
+  }[] = [];
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
@@ -119,7 +124,10 @@ export class IaraSyncfusionAdapter
     this._debouncedSaveReport = debounce(this._saveReport.bind(this), 1000);
     const saveReportCallback = () =>
       this.config.saveReport ? this._debouncedSaveReport() : undefined;
-    addEventListener("IaraSyncfusionContentChange", saveReportCallback);
+    this._listeners.push({
+      key: "IaraSyncfusionContentChange",
+      callback: saveReportCallback,
+    });
 
     this._styleManager = new IaraSyncfusionStyleManager(
       this._documentEditor,
@@ -166,20 +174,29 @@ export class IaraSyncfusionAdapter
     );
 
     if (this.config.enableAIAssistant) {
-      new IaraSyncfusionAIAssistantManager(
+      this._assistantManager = new IaraSyncfusionAIAssistantManager(
         this._documentEditor,
         this._recognition,
         this._contentManager,
         this.config
       );
     }
-    addEventListener("IaraAssistantReport", (event: Event) => {
-      this._currentAssistantGeneratedReport = (
-        event as CustomEvent<{
-          report: string;
-          input: Record<string, unknown>;
-        }>
-      ).detail;
+
+    this._listeners.push({
+      key: "IaraAssistantReport",
+      callback: (event?: Event) => {
+        if (!event) return;
+        this._currentAssistantGeneratedReport = (
+          event as CustomEvent<{
+            report: string;
+            input: Record<string, unknown>;
+          }>
+        ).detail;
+      },
+    });
+
+    this._listeners.forEach(({ key, callback }) => {
+      addEventListener(key, callback);
     });
 
     DocumentEditor.Inject(Print);
@@ -191,6 +208,13 @@ export class IaraSyncfusionAdapter
       if (saveReportCallback)
         removeEventListener("IaraSyncfusionContentChange", saveReportCallback);
       this._onEditorDestroyed();
+      this._assistantManager?.destroy();
+      this._inferenceBookmarksManager.destroy();
+      this._navigationFieldManager.destroy();
+      this._toolbarManager?.destroy();
+      this._listeners.forEach(({ key, callback }) => {
+        removeEventListener(key, callback);
+      });
     });
 
     new IaraSyncfusionShortcutsManager(
