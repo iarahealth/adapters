@@ -12,7 +12,7 @@ export class IaraEditorInferenceFormatter {
       wordBefore
     );
     const wordBeforeEndsInSpecialCharacters = /[[{"(]+$/.test(wordBefore);
-    const textStartsWithPunctuation = /^[.,:;?!]/.test(text);
+    const textStartsWithPunctuation = /^[.,:;?!)\]}]/.test(text);
     const addSpaceBefore =
       !textStartsWithPunctuation &&
       !wordBeforeEndsInSpace &&
