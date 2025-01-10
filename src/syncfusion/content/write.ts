@@ -52,17 +52,21 @@ export class IaraSyncfusionContentWriteManager {
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
+
+    const { startOffset, endOffset } = this._editor.selection;
+    this._editor.selection.selectParagraph();
+    const { startOffset: lineStartOffset, endOffset: lineEndOffset } =
+      this._editor.selection;
+    this._editor.selection.select(startOffset, endOffset);
+
     const hadSelectedText = this._editor.selection.text.length;
-    //This is a workaround for syncfusion behavior, the triple-click selection selects up to the line break space
-    //if there's no space, there's no need to add a new line break.
-    const selectionEndsWithLineBreak = /\s$/.test(this._editor.selection.text);
     if (hadSelectedText) this._editor.editor.onBackSpace();
     // This is a workaround to a syncfusion behavior where selecting all the way to the start of the line
     // will remove a line break, so we re-add it.
     if (
-      this._editor.selection.startOffset.endsWith(";0") &&
       hadSelectedText &&
-      selectionEndsWithLineBreak
+      startOffset === lineStartOffset &&
+      endOffset === lineEndOffset
     ) {
       this._editor.editor.onEnter();
       this._editor.selection.movePreviousPosition();
