@@ -11,14 +11,18 @@ export class IaraEditorInferenceFormatter {
     const wordBeforeEndsInSpace = /([ \u00A0\u200C]+)([\n\r\v]+)?$/.test(
       wordBefore
     );
-    const textStartsWithPunctuation = /^[.,:;?!]/.test(text);
+    const wordBeforeEndsInSpecialCharacters = /[[{"(]+$/.test(wordBefore);
+    const textStartsWithPunctuation = /^[.,:;?!)\]}]/.test(text);
     const addSpaceBefore =
-      !textStartsWithPunctuation && !wordBeforeEndsInSpace && !isAtStartOfLine;
+      !textStartsWithPunctuation &&
+      !wordBeforeEndsInSpace &&
+      !wordBeforeEndsInSpecialCharacters &&
+      !isAtStartOfLine;
 
     const wordAfterStartsWithSpaceOrNewLine = /^[\s\u00A0\u200C]/.test(
       wordAfter
     );
-    const wordAfterStartsWithPunctuation = /^[.,:;?!]/.test(wordAfter);
+    const wordAfterStartsWithPunctuation = /^[.,:;?!)}\]"]/.test(wordAfter);
     const textEndsWithSpaceOrNewLine = /\s$/.test(text);
     const addSpaceAfter =
       wordAfter.length &&

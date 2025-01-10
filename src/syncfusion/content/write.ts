@@ -53,9 +53,20 @@ export class IaraSyncfusionContentWriteManager {
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
     const hadSelectedText = this._editor.selection.text.length;
-    const islineBreak = /[\n\r\v]$/.test(this._editor.selection.text);
-
-    if (hadSelectedText && !islineBreak) this._editor.editor.onBackSpace();
+    //This is a workaround for syncfusion behavior, the triple-click selection selects up to the line break space
+    //if there's no space, there's no need to add a new line break.
+    const selectionEndsWithLineBreak = /\s$/.test(this._editor.selection.text);
+    if (hadSelectedText) this._editor.editor.onBackSpace();
+    // This is a workaround to a syncfusion behavior where selecting all the way to the start of the line
+    // will remove a line break, so we re-add it.
+    if (
+      this._editor.selection.startOffset.endsWith(";0") &&
+      hadSelectedText &&
+      selectionEndsWithLineBreak
+    ) {
+      this._editor.editor.onEnter();
+      this._editor.selection.movePreviousPosition();
+    }
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
@@ -70,8 +81,6 @@ export class IaraSyncfusionContentWriteManager {
       inference,
       this._selectionManager.initialSelectionData.bookmarkId
     );
-
-    if (islineBreak) this._selectionManager.wordBeforeSelection = " ";
 
     if (this._selectionManager.wordBeforeSelection.endsWith(" ")) {
       // Removes trailing space so that the formatter can determine whether the space is required or not.
@@ -172,6 +181,8 @@ export class IaraSyncfusionContentWriteManager {
     }
 
     this._editor.selection.moveToDocumentStart();
+
+    this._styleManager.setTheme(this._config.darkMode ? "dark" : "light");
 
     // Set the default editor format after inserting the template
     this._styleManager.setEditorDefaultFont({
