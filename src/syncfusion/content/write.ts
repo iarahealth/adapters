@@ -53,11 +53,20 @@ export class IaraSyncfusionContentWriteManager {
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
 
+    // Save the current selection offset and character format
     const { startOffset, endOffset } = this._editor.selection;
+    const characterFormat = IaraSyncfusionSelectionManager.copyStyles(
+      this._editor.selection.characterFormat
+    );
+
+    // Select the paragraph to compare offsets later on
     this._editor.selection.selectParagraph();
     const { startOffset: lineStartOffset, endOffset: lineEndOffset } =
       this._editor.selection;
+
+    // Reset the selection
     this._editor.selection.select(startOffset, endOffset);
+    IaraSyncfusionSelectionManager.resetStyles(this._editor, characterFormat);
 
     const hadSelectedText = this._editor.selection.text.length;
     if (hadSelectedText) this._editor.editor.onBackSpace();
