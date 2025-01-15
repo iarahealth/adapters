@@ -72,7 +72,12 @@ export class IaraSyncfusionAdapter
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
-    enableAIAssistant: true,
+    assistant: {
+      enabled: true,
+      impression: {
+        itemizedOutput: true,
+      },
+    },
     replaceToolbar: false,
     showBookmarks: false,
     showFinishReportButton: true,
@@ -165,7 +170,7 @@ export class IaraSyncfusionAdapter
       this.config
     );
 
-    if (this.config.enableAIAssistant) {
+    if (this.config.assistant.enabled) {
       new IaraSyncfusionAIAssistantManager(
         this._documentEditor,
         this._recognition,

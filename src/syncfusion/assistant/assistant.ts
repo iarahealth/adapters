@@ -1,15 +1,15 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
-import { IaraEditorConfig } from "../../editor";
-import { IaraSpeechRecognition } from "../../speech";
-import { IaraSyncfusionContentManager } from "../content";
 import { diffWords } from "diff";
+import { IaraSpeechRecognition } from "../../speech";
+import { IaraSyncfusionConfig } from "../config";
+import { IaraSyncfusionContentManager } from "../content";
 
 export class IaraSyncfusionAIAssistant {
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     private _contentManager: IaraSyncfusionContentManager,
-    private _config: IaraEditorConfig
+    private _config: IaraSyncfusionConfig
   ) {
     if (document.querySelector("iara-ai-assistant")) return;
     this._createAssistantElement();
@@ -41,7 +41,11 @@ export class IaraSyncfusionAIAssistant {
 
     const assistant = document.createElement(
       "iara-ai-assistant"
-    ) as HTMLElement & { recognition: IaraSpeechRecognition; report: string };
+    ) as HTMLElement & {
+      recognition: IaraSpeechRecognition;
+      report: string;
+      settings: Record<string, any>;
+    };
     let reportContent = await this._contentManager.reader.getPlainTextContent();
     if (
       reportContent.charCodeAt(0) === 13 ||
@@ -51,6 +55,7 @@ export class IaraSyncfusionAIAssistant {
       reportContent = "";
     assistant.report = reportContent;
     assistant.recognition = this._recognition;
+    assistant.settings = this._config.assistant;
     assistant.style.zIndex = "1000";
     assistant.addEventListener("diagnosticImpression", (event: Event) => {
       const detail = (
