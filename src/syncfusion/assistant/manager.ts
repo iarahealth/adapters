@@ -1,6 +1,6 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
-import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
+import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionAIAssistant } from "./assistant";
 
@@ -11,7 +11,7 @@ export class IaraSyncfusionAIAssistantManager {
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     private _contentManager: IaraSyncfusionContentManager,
-    private _config: IaraEditorConfig
+    private _config: IaraSyncfusionConfig
   ) {
     addEventListener("SyncfusionOnSelectionChange", () => {
       if (!this._assistantButtonContainer) {
