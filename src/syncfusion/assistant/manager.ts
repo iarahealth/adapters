@@ -6,24 +6,38 @@ import { IaraSyncfusionAIAssistant } from "./assistant";
 
 export class IaraSyncfusionAIAssistantManager {
   private _assistantButtonContainer?: HTMLElement;
+  private readonly _listeners: { key: string; callback: () => void }[] = [];
 
   constructor(
-    private _editor: DocumentEditor,
-    private _recognition: IaraSpeechRecognition,
-    private _contentManager: IaraSyncfusionContentManager,
-    private _config: IaraSyncfusionConfig
+    private readonly _editor: DocumentEditor,
+    private readonly _recognition: IaraSpeechRecognition,
+    private readonly _contentManager: IaraSyncfusionContentManager,
+    private readonly _config: IaraSyncfusionConfig
   ) {
-    addEventListener("SyncfusionOnSelectionChange", () => {
-      if (!this._assistantButtonContainer) {
-        this._assistantButtonContainer = this._createAssistantContainer();
-      }
+    this._listeners.push({
+      key: "SyncfusionOnSelectionChange",
+      callback: () => () => {
+        if (!this._assistantButtonContainer) {
+          this._assistantButtonContainer = this._createAssistantContainer();
+        }
 
-      if (this._assistantButtonContainer) {
-        this._updateContainerPosition(this._assistantButtonContainer);
-      }
+        if (this._assistantButtonContainer) {
+          this._updateContainerPosition(this._assistantButtonContainer);
+        }
+      },
+    });
+
+    this._listeners.forEach(({ key, callback }) => {
+      addEventListener(key, callback);
     });
     this._recognition.commands.add("aceitar", () => {
       this._editor.revisions.acceptAll();
+    });
+  }
+
+  public destroy(): void {
+    this._listeners.forEach(({ key, callback }) => {
+      removeEventListener(key, callback);
     });
   }
 

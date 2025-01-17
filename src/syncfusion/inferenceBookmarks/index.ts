@@ -20,24 +20,61 @@ export class IaraSyncfusionInferenceBookmarksManager {
     return this._bookmarks;
   }
 
-  constructor(
-    private _documentEditor: DocumentEditor,
-    private _recognition: IaraSpeechRecognition
-  ) {
-    this._recognition.addEventListener("iaraOggFileUploaded", event => {
-      const detail = event?.detail;
-      if (!detail) return;
+  private readonly _listeners: {
+    key: string;
+    callback: (
+      event:
+        | CustomEvent<{ recordingId: string; inferenceId: string }>
+        | undefined
+    ) => void;
+  }[] = [
+    {
+      key: "iaraOggFileUploaded",
+      callback: (
+        event:
+          | CustomEvent<{ recordingId: string; inferenceId: string }>
+          | undefined
+      ) => {
+        const detail = event?.detail;
+        if (!detail) return;
 
-      this._bookmarks[`inferenceId_${detail.inferenceId}`].recordingId =
-        detail.recordingId;
+        this._bookmarks[`inferenceId_${detail.inferenceId}`].recordingId =
+          detail.recordingId;
+      },
+    },
+  ];
+
+  constructor(
+    private readonly _documentEditor: DocumentEditor,
+    private readonly _recognition: IaraSpeechRecognition
+  ) {
+    this._initListeners();
+  }
+
+  private _initListeners(): void {
+    this._listeners.forEach(listener => {
+      this._recognition.addEventListener(listener.key, listener.callback);
     });
   }
 
   private _updateBookmarkContent(bookmarkName: string): void {
     if (!(bookmarkName in this._bookmarks)) return;
-    IaraSyncfusionSelectionManager.selectBookmark(this._documentEditor, bookmarkName, true);
+    IaraSyncfusionSelectionManager.selectBookmark(
+      this._documentEditor,
+      bookmarkName,
+      true
+    );
     this._bookmarks[bookmarkName]["content"] =
       this._documentEditor.selection.text;
+  }
+
+  destroy(): void {
+    this._listeners.forEach(listener => {
+      this._recognition.removeEventListener(
+        listener.key,
+        listener.callback as EventListenerOrEventListenerObject
+      );
+    });
   }
 
   clearBookmarks(): void {
@@ -69,7 +106,10 @@ export class IaraSyncfusionInferenceBookmarksManager {
     });
   }
 
-  updateBookmarkInference(bookmarkName: string, inference: IaraSpeechRecognitionDetail): void {
+  updateBookmarkInference(
+    bookmarkName: string,
+    inference: IaraSpeechRecognitionDetail
+  ): void {
     if (!(bookmarkName in this._bookmarks)) return;
 
     const richTranscript = inference.richTranscript
