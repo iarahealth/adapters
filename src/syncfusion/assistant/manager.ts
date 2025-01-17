@@ -1,6 +1,6 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
-import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
+import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionAIAssistant } from "./assistant";
 
@@ -12,7 +12,7 @@ export class IaraSyncfusionAIAssistantManager {
     private readonly _editor: DocumentEditor,
     private readonly _recognition: IaraSpeechRecognition,
     private readonly _contentManager: IaraSyncfusionContentManager,
-    private readonly _config: IaraEditorConfig
+    private readonly _config: IaraSyncfusionConfig
   ) {
     this._listeners.push({
       key: "SyncfusionOnSelectionChange",

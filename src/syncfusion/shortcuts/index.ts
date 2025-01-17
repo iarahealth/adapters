@@ -4,9 +4,9 @@ import {
 } from "@syncfusion/ej2-documenteditor";
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
-import { IaraEditorConfig } from "../../editor";
 import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionAIAssistant } from "../assistant";
+import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { IaraSyncfusionTemplateSearch } from "./templateSearch";
@@ -16,7 +16,7 @@ export class IaraSyncfusionShortcutsManager {
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     private _contentManager: IaraSyncfusionContentManager,
-    private _config: IaraEditorConfig,
+    private _config: IaraSyncfusionConfig,
     private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private onTemplateSelected: (
       listViewInstance: ListView,

@@ -1,7 +1,12 @@
 import { IaraEditorConfig } from "../editor";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
-  enableAIAssistant: boolean;
+  assistant: {
+    enabled: boolean;
+    impression: {
+      itemizedOutput: boolean;
+    };
+  };
   mouseButton: boolean;
   replaceToolbar: boolean;
   showBookmarks: boolean;

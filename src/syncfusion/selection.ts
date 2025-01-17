@@ -46,18 +46,8 @@ export class IaraSyncfusionSelectionManager {
     const characterFormat = this._editor.selection.characterFormat;
     this.initialSelectionData = {
       bookmarkId: bookmarkId || uuidv4(),
-      characterFormat: {
-        allCaps: characterFormat.allCaps,
-        baselineAlignment: characterFormat.baselineAlignment,
-        bold: characterFormat.bold,
-        fontColor: characterFormat.fontColor,
-        fontFamily: characterFormat.fontFamily,
-        fontSize: characterFormat.fontSize,
-        highlightColor: characterFormat.highlightColor,
-        italic: characterFormat.italic,
-        strikethrough: characterFormat.strikethrough,
-        underline: characterFormat.underline,
-      },
+      characterFormat:
+        IaraSyncfusionSelectionManager.copyStyles(characterFormat),
     };
 
     const { endOffset, startOffset } = this._editor.selection;
@@ -162,7 +152,27 @@ export class IaraSyncfusionSelectionManager {
     this._editor.selection.movePreviousPosition();
   }
 
-  public resetStyles(): void {
+  public static copyStyles(
+    characterFormat: SelectionCharacterFormatData
+  ): SelectionCharacterFormatData {
+    return {
+      allCaps: characterFormat.allCaps,
+      baselineAlignment: characterFormat.baselineAlignment,
+      bold: characterFormat.bold,
+      fontColor: characterFormat.fontColor,
+      fontFamily: characterFormat.fontFamily,
+      fontSize: characterFormat.fontSize,
+      highlightColor: characterFormat.highlightColor,
+      italic: characterFormat.italic,
+      strikethrough: characterFormat.strikethrough,
+      underline: characterFormat.underline,
+    };
+  }
+
+  public static resetStyles(
+    documentEditor: DocumentEditor,
+    characterFormat: SelectionCharacterFormatData
+  ): void {
     const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
       "allCaps",
       "baselineAlignment",
@@ -177,9 +187,16 @@ export class IaraSyncfusionSelectionManager {
     ];
 
     charFormatProps.forEach(prop => {
-      (this._editor.selection.characterFormat as any)[prop] =
-        this.initialSelectionData.characterFormat[prop];
+      (documentEditor.selection.characterFormat as any)[prop] =
+        characterFormat[prop];
     });
+  }
+
+  public resetStyles(): void {
+    IaraSyncfusionSelectionManager.resetStyles(
+      this._editor,
+      this.initialSelectionData.characterFormat
+    );
   }
 
   public selectBookmark(
