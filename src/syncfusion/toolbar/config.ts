@@ -7,7 +7,6 @@ import {
   RibbonColorPicker,
   RibbonFileMenu,
 } from "@syncfusion/ej2-ribbon";
-import debounce from "debounce";
 import { IaraSyncfusionConfig } from "..";
 import { IaraSFDT } from "../content";
 import { IaraLanguages } from "../language/language";
@@ -350,8 +349,7 @@ export const toolBarSettings = (
       enableDisableFontOptions(characterFormat);
     }
   };
-  editor.selectionChange = debounce(onSelectionChange.bind(this), 100);
-
+  addEventListener("SyncfusionOnSelectionChange", onSelectionChange.bind(this));
   return ribbonConfig;
 };
 
@@ -396,7 +394,6 @@ const ribbonFontMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   //To Change the font Size of selected content
   const changeFontSize = (args: { value: number }, ribbon?: Ribbon) => {
@@ -409,14 +406,11 @@ const ribbonFontMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   //To Change the font Color of selected content
   const changeFontColor = (args: { currentValue: { hex: string } }) => {
     editor.documentEditor.selection.characterFormat.fontColor =
       args.currentValue.hex;
-
-    editor.documentEditor.focusIn();
   };
   return { changeFontFamily, changeFontSize, changeFontColor };
 };
@@ -434,7 +428,6 @@ const ribbonParagraphMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   return { changeLineSpacing };
 };

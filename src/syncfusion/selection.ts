@@ -46,18 +46,8 @@ export class IaraSyncfusionSelectionManager {
     const characterFormat = this._editor.selection.characterFormat;
     this.initialSelectionData = {
       bookmarkId: bookmarkId || uuidv4(),
-      characterFormat: {
-        allCaps: characterFormat.allCaps,
-        baselineAlignment: characterFormat.baselineAlignment,
-        bold: characterFormat.bold,
-        fontColor: characterFormat.fontColor,
-        fontFamily: characterFormat.fontFamily,
-        fontSize: characterFormat.fontSize,
-        highlightColor: characterFormat.highlightColor,
-        italic: characterFormat.italic,
-        strikethrough: characterFormat.strikethrough,
-        underline: characterFormat.underline,
-      },
+      characterFormat:
+        IaraSyncfusionSelectionManager.copyStyles(characterFormat),
     };
 
     const { endOffset, startOffset } = this._editor.selection;
@@ -84,6 +74,19 @@ export class IaraSyncfusionSelectionManager {
     this.resetSelection();
   }
 
+  private _isValidOffsetDistance(selectionText: string) {
+    const { endOffset, startOffset } = this._editor.selection;
+    const startParts = startOffset.split(";").map(Number);
+    const endParts = endOffset.split(";").map(Number);
+    const distance = startParts.reduce(
+      (acc, startValue, index) => acc + Math.abs(endParts[index] - startValue),
+      0
+    );
+    const startDistance = startParts.reduce((acc, value) => acc + value, 0);
+    if (Math.abs(distance - selectionText.length) < startDistance) return true;
+    return false;
+  }
+
   private _getWordAfterSelection(): string[] {
     this._editor.selection.extendToLineEnd();
     const lineAfter = this._editor.selection.text;
@@ -98,7 +101,16 @@ export class IaraSyncfusionSelectionManager {
 
   private _getWordBeforeSelection(): string[] {
     this._editor.selection.extendToLineStart();
-    const lineBefore = this._editor.selection.text;
+    // to prevent the extendToLineStart error, check the offset and size of the selection are same
+    let lineBefore = this._isValidOffsetDistance(this._editor.selection.text)
+      ? this._editor.selection.text
+      : "";
+    // if the line ends with a line break, it means we are at the very end of the line
+    // and the last character is actually the one before the line break
+    if (lineBefore.endsWith("\r") || lineBefore.endsWith("\n")) {
+      lineBefore = lineBefore.slice(0, -1);
+    }
+
     const endsWithSpace = lineBefore.endsWith(" ");
     const words = lineBefore
       .split(" ")
@@ -140,7 +152,27 @@ export class IaraSyncfusionSelectionManager {
     this._editor.selection.movePreviousPosition();
   }
 
-  public resetStyles(): void {
+  public static copyStyles(
+    characterFormat: SelectionCharacterFormatData
+  ): SelectionCharacterFormatData {
+    return {
+      allCaps: characterFormat.allCaps,
+      baselineAlignment: characterFormat.baselineAlignment,
+      bold: characterFormat.bold,
+      fontColor: characterFormat.fontColor,
+      fontFamily: characterFormat.fontFamily,
+      fontSize: characterFormat.fontSize,
+      highlightColor: characterFormat.highlightColor,
+      italic: characterFormat.italic,
+      strikethrough: characterFormat.strikethrough,
+      underline: characterFormat.underline,
+    };
+  }
+
+  public static resetStyles(
+    documentEditor: DocumentEditor,
+    characterFormat: SelectionCharacterFormatData
+  ): void {
     const charFormatProps: (keyof SelectionCharacterFormatData)[] = [
       "allCaps",
       "baselineAlignment",
@@ -155,9 +187,16 @@ export class IaraSyncfusionSelectionManager {
     ];
 
     charFormatProps.forEach(prop => {
-      (this._editor.selection.characterFormat as any)[prop] =
-        this.initialSelectionData.characterFormat[prop];
+      (documentEditor.selection.characterFormat as any)[prop] =
+        characterFormat[prop];
     });
+  }
+
+  public resetStyles(): void {
+    IaraSyncfusionSelectionManager.resetStyles(
+      this._editor,
+      this.initialSelectionData.characterFormat
+    );
   }
 
   public selectBookmark(

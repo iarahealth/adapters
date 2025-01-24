@@ -52,9 +52,34 @@ export class IaraSyncfusionContentWriteManager {
 
   private _handleFirstInference(inference: IaraSpeechRecognitionDetail): void {
     this._updateSelectedNavigationField(this._editor.selection.text);
-    const hadSelectedText = this._editor.selection.text.length;
 
-    if (hadSelectedText) this._editor.editor.delete();
+    // Save the current selection offset and character format
+    const { startOffset, endOffset } = this._editor.selection;
+    const characterFormat = IaraSyncfusionSelectionManager.copyStyles(
+      this._editor.selection.characterFormat
+    );
+
+    // Select the paragraph to compare offsets later on
+    this._editor.selection.selectParagraph();
+    const { startOffset: lineStartOffset, endOffset: lineEndOffset } =
+      this._editor.selection;
+
+    // Reset the selection
+    this._editor.selection.select(startOffset, endOffset);
+    IaraSyncfusionSelectionManager.resetStyles(this._editor, characterFormat);
+
+    const hadSelectedText = this._editor.selection.text.length;
+    if (hadSelectedText) this._editor.editor.onBackSpace();
+    // This is a workaround to a syncfusion behavior where selecting all the way to the start of the line
+    // will remove a line break, so we re-add it.
+    if (
+      hadSelectedText &&
+      startOffset === lineStartOffset &&
+      endOffset === lineEndOffset
+    ) {
+      this._editor.editor.onEnter();
+      this._editor.selection.movePreviousPosition();
+    }
 
     this._selectionManager = new IaraSyncfusionSelectionManager(
       this._editor,
@@ -79,7 +104,7 @@ export class IaraSyncfusionContentWriteManager {
       if (!hadSelectedText) {
         this._editor.selection.moveToPreviousCharacter();
         this._editor.selection.extendForward();
-        this._editor.editor.delete();
+        this._editor.editor.onBackSpace();
         this._selectionManager.wordBeforeSelection =
           this._selectionManager.wordBeforeSelection.slice(0, -1);
       }
@@ -134,20 +159,23 @@ export class IaraSyncfusionContentWriteManager {
   }
 
   private _updateSelectedNavigationField(field: string): void {
-    if (field.match(/\[(.*)\]/)) {
-      const { title, content } =
-        this._navigationFieldManager.getTitleAndContent(field);
+    this.selectedField = { content: "", title: "", type: "Field" };
+    if (!field.match(/\[(.*)\]/)) return;
 
-      let type: "Field" | "Mandatory" | "Optional" = "Field";
-      if (content.includes("*")) type = "Mandatory";
-      if (content.includes("?")) type = "Optional";
+    const { title, content } =
+      this._navigationFieldManager.getTitleAndContent(field);
 
-      this.selectedField = {
-        content,
-        title,
-        type,
-      };
-    } else this.selectedField = { content: "", title: "", type: "Field" };
+    if (!content || !title) return;
+
+    let type: "Field" | "Mandatory" | "Optional" = "Field";
+    if (content.includes("*")) type = "Mandatory";
+    if (content.includes("?")) type = "Optional";
+
+    this.selectedField = {
+      content,
+      title,
+      type,
+    };
   }
 
   insertParagraph(): void {
@@ -159,13 +187,15 @@ export class IaraSyncfusionContentWriteManager {
     replaceAllContent: boolean
   ): Promise<void> {
     const sfdt = await this._readManager.fromContent(content);
-    if (replaceAllContent) this._editor.open(sfdt.value);
-    else {
+    if (replaceAllContent || this._editor.isDocumentEmpty) {
+      this._editor.open(sfdt.value);
+    } else {
       this._editor.editor.paste(sfdt.value);
-      this._editor.editor.onBackSpace();
     }
 
     this._editor.selection.moveToDocumentStart();
+
+    this._styleManager.setTheme(this._config.darkMode ? "dark" : "light");
 
     // Set the default editor format after inserting the template
     this._styleManager.setEditorDefaultFont({
@@ -189,6 +219,10 @@ export class IaraSyncfusionContentWriteManager {
   }
 
   insertText(text: string): void {
+    this._editor.editor.insertText(text);
+  }
+
+  insertInferenceText(text: string): void {
     const [firstLine, ...lines]: string[] = text.split("\n");
     this._editor.editor.insertText(firstLine);
     lines.forEach(line => {
@@ -299,7 +333,7 @@ export class IaraSyncfusionContentWriteManager {
       this._selectionManager.isAtStartOfLine
     );
 
-    if (text.length) this.insertText(text);
+    if (text.length) this.insertInferenceText(text);
 
     if (this._selectionManager.initialSelectionData.characterFormat.allCaps) {
       // Insert text is not respecting the allCaps property, work around that
@@ -310,16 +344,27 @@ export class IaraSyncfusionContentWriteManager {
     }
 
     if (inference.isFinal) {
-      if (text.length) {
+      if (text.trim().length) {
         this._selectionManager.moveSelectionToAfterBookmarkEdge(
           this._selectionManager.initialSelectionData.bookmarkId
         );
       } else {
         this._selectionManager.selectBookmark(
           this._selectionManager.initialSelectionData.bookmarkId,
+          true
+        );
+        this._editor.editor.insertText(" ");
+        this._selectionManager.selectBookmark(
+          this._selectionManager.initialSelectionData.bookmarkId,
           false
         );
         this._editor.editor.delete();
+        text
+          .split("\n")
+          .slice(0, -1)
+          .forEach(() => {
+            this.insertParagraph();
+          });
       }
     }
   }
