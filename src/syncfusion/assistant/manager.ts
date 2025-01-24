@@ -16,7 +16,7 @@ export class IaraSyncfusionAIAssistantManager {
   ) {
     this._listeners.push({
       key: "SyncfusionOnSelectionChange",
-      callback: () => () => {
+      callback: () => {
         if (!this._assistantButtonContainer) {
           this._assistantButtonContainer = this._createAssistantContainer();
         }
