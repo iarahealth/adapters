@@ -13,7 +13,7 @@ import {
 } from "./navigationBookmark";
 
 export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFieldManager {
-  additiveListIntance: IaraSyncfusionAdditiveList | null = null;
+  additiveListInstance: IaraSyncfusionAdditiveList | null = null;
   additiveIdList: string[] = [];
   additiveBookmark: IaraAdditiveBookmark = {
     title: "",
@@ -45,6 +45,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     },
   };
   isFirstNextNavigation = false;
+  isFirstSelection = false;
   isFirstPreviousNavigation = false;
   nextBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
   previousBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
@@ -82,9 +83,41 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     );
   }
 
-  addAdditiveField() {
-    new IaraSyncfusionAdditiveDialog(this._languageManager, this);
+  addAdditiveField(additiveField?: IaraNavigationBookmark) {
+    new IaraSyncfusionAdditiveDialog(
+      this._languageManager,
+      this,
+      additiveField
+    );
   }
+
+  additiveFieldDetails = (additiveField: IaraNavigationBookmark) => {
+    if (this._config.navigateAdditiveMode === "registry") {
+      this.additiveFieldInRegistryMode(additiveField);
+    } else {
+      this.additiveFieldInUseMode(additiveField);
+    }
+  };
+
+  additiveFieldInRegistryMode = (additiveField: IaraNavigationBookmark) => {
+    if (!this.isFirstSelection) {
+      this.addAdditiveField(additiveField);
+    }
+    this.isFirstSelection = false;
+  };
+
+  additiveFieldInUseMode = (additiveField: IaraNavigationBookmark) => {
+    this.showAdditiveList();
+    const { name, additive } = additiveField;
+    if (!additive) return;
+    const additiveExistInList = this.additiveIdList.filter(id => id === name);
+    if (additiveExistInList.length) {
+      this.additiveListInstance?.show(additive, name);
+    } else {
+      this.additiveListInstance?.create(additive, name);
+      this.additiveIdList = [...this.additiveIdList, name];
+    }
+  };
 
   createBookmarks(setColor = true): void {
     const editorBookmarks = this._documentEditor.getBookmarks();
@@ -448,6 +481,19 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     });
   }
 
+  updateAdditiveField(additiveBookmark: IaraNavigationBookmark) {
+    if (additiveBookmark.additive) {
+      this.additiveBookmark = additiveBookmark.additive;
+      this.popAndUpdate(
+        additiveBookmark.name,
+        additiveBookmark.content,
+        additiveBookmark.title
+      );
+    }
+    this.selectBookmark(additiveBookmark.name, true);
+    this.insertAdditiveField(this.additiveBookmark);
+  }
+
   removeEmptyField(editorBookmarks: string[]): void {
     this.bookmarks = this.bookmarks.filter(item =>
       editorBookmarks.includes(item.name)
@@ -535,7 +581,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   clearReportToCopyContent(): void {
-    this.additiveListIntance?.hide();
+    this.additiveListInstance?.hide();
     this.createBookmarks(false);
     this.bookmarks.filter(field => {
       this.selectBookmark(field.name);
@@ -571,33 +617,20 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     return false;
   }
 
-  sectionAdditiveField = () => {
+  selectAdditiveField = () => {
     if (
       this.blockSelectionInBookmarkCreate &&
       !this._documentEditor.isReadOnly
     ) {
       const selectionBookmark = this._documentEditor.selection.getBookmarks();
-      const isAditiveField = selectionBookmark.find(bookmark =>
-        bookmark.startsWith("Additive")
-      );
       const currentAdditiveField = this.bookmarks.filter(
-        bookmark => bookmark.name === selectionBookmark[0]
-      );
-      if (
-        currentAdditiveField.length &&
-        currentAdditiveField[0].additive &&
-        isAditiveField?.length
-      ) {
-        const additiveId = currentAdditiveField[0].name;
-        const additiveField = currentAdditiveField[0].additive;
-        this.additiveListIntance?.hide();
-        if (this.additiveIdList.includes(additiveId)) {
-          this.additiveListIntance?.show(additiveField, additiveId);
-        } else {
-          this.additiveListIntance?.create(additiveField, additiveId);
-          this.additiveIdList = [...this.additiveIdList, additiveId];
-        }
-      } else this.additiveListIntance?.hide();
+        bookmark =>
+          bookmark.name === selectionBookmark[0] &&
+          bookmark.name.startsWith("Additive")
+      )[0];
+      if (currentAdditiveField) {
+        this.additiveFieldDetails(currentAdditiveField);
+      } else this.additiveListInstance?.hide();
     }
   };
 
@@ -610,6 +643,7 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   }
 
   selectionChange = () => {
+    this.selectAdditiveField();
     this.currentSelectionOffset = {
       start: this._documentEditor.selection.startOffset,
       end: this._documentEditor.selection.endOffset,
@@ -617,6 +651,6 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
 
   showAdditiveList(): void {
-    this.additiveListIntance = new IaraSyncfusionAdditiveList(this);
+    this.additiveListInstance = new IaraSyncfusionAdditiveList(this);
   }
 }

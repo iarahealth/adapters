@@ -37,6 +37,41 @@ export const tabsConfig = (
     ribbonMethods.ribbonFontMethods(editor);
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
 
+  const navigationItems = [
+    {
+      id: "add_field",
+      iconCss: "e-icons e-add-above",
+      text: editorContainerLocale.language.iaraTranslate.customfields.add,
+    },
+    {
+      id: "add_mandatory_field",
+      iconCss: "e-icons e-lock",
+      text: editorContainerLocale.language.iaraTranslate.customfields.mandatory,
+    },
+    {
+      id: "add_optional_field",
+      iconCss: "e-icons e-circle-info",
+      text: editorContainerLocale.language.iaraTranslate.customfields.optional,
+    },
+    {
+      id: "next_field",
+      iconCss: "e-icons e-arrow-right",
+      text: editorContainerLocale.language.iaraTranslate.customfields.next,
+    },
+    {
+      id: "previous_field",
+      iconCss: "e-icons e-arrow-left",
+      text: editorContainerLocale.language.iaraTranslate.customfields.previous,
+    },
+  ];
+
+  if (config.navigateAdditiveMode === "registry")
+    navigationItems.splice(3, 0, {
+      id: "add_additive_field",
+      iconCss: "e-icons e-plus",
+      text: editorContainerLocale.language.iaraTranslate.customfields.additive,
+    });
+
   const allItems = {
     open: {
       type: "Button",
@@ -585,43 +620,7 @@ export const tabsConfig = (
         iconCss: "e-icons e-bookmark",
         content:
           editorContainerLocale.language.iaraTranslate.customfields.content,
-        items: [
-          {
-            id: "add_field",
-            iconCss: "e-icons e-add-above",
-            text: editorContainerLocale.language.iaraTranslate.customfields.add,
-          },
-          {
-            id: "add_mandatory_field",
-            iconCss: "e-icons e-lock",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .mandatory,
-          },
-          {
-            id: "add_optional_field",
-            iconCss: "e-icons e-circle-info",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .optional,
-          },
-          // {
-          //   id: "add_additive_field",
-          //   iconCss: "e-icons e-plus",
-          //   text: editorContainerLocale.language.iaraTranslate.customfields
-          //     .additive,
-          // },
-          {
-            id: "next_field",
-            iconCss: "e-icons e-arrow-right",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .next,
-          },
-          {
-            id: "previous_field",
-            iconCss: "e-icons e-arrow-left",
-            text: editorContainerLocale.language.iaraTranslate.customfields
-              .previous,
-          },
-        ],
+        items: navigationItems,
         select: (e: FileMenuEventArgs) => {
           navigationFunc(e.element.id);
         },
