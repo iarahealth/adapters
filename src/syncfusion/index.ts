@@ -280,11 +280,11 @@ export class IaraSyncfusionAdapter
 
     // Wrap paragraph and span tags in strong, em, u, and s tags if style properties are set to support older editors (tiny v3)ß
     if (element.style.fontWeight === "bold") {
-      element.innerHTML = `<strong>${element.innerHTML}</strong>`;
+      element.innerHTML = `<strong><b>${element.innerHTML}</b></strong>`;
       element.style.fontWeight = "";
     }
     if (element.style.fontStyle === "italic") {
-      element.innerHTML = `<em>${element.innerHTML}</em>`;
+      element.innerHTML = `<em><i>${element.innerHTML}</i></em>`;
       element.style.fontStyle = "";
     }
     if (element.style.textDecoration === "underline") {
