@@ -1,5 +1,6 @@
 import { DocumentEditor } from "@syncfusion/ej2-documenteditor";
 import { diffWords } from "diff";
+import { v4 as uuidv4 } from "uuid";
 import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
@@ -13,6 +14,15 @@ export class IaraSyncfusionAIAssistant {
   ) {
     if (document.querySelector("iara-ai-assistant")) return;
     this._createAssistantElement();
+  }
+
+  private _addBookmark(bookmarkContent: string) {
+    const bookmarkId = `assistantId_${uuidv4()}`;
+    this._editor.editor.insertBookmark(bookmarkId);
+    this._contentManager.writer.insertText(bookmarkContent);
+    this._editor.selection.selectBookmark(bookmarkId);
+    this._highlightSelection();
+    this._editor.selection.clear();
   }
 
   private async _createAssistantElement(): Promise<
@@ -152,6 +162,16 @@ export class IaraSyncfusionAIAssistant {
     this._contentManager.writer.insertParagraph();
   }
 
+  private _highlightSelection(): void {
+    this._config.darkMode
+      ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._editor.selection.characterFormat.highlightColor = "#0e5836")
+      : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        (this._editor.selection.characterFormat.highlightColor = "#ccffe5");
+  }
+
   private _insertDiagnosticImpression(diagnosticImpression: string): void {
     this._editor.isReadOnly = false;
 
@@ -210,23 +230,18 @@ export class IaraSyncfusionAIAssistant {
 
     this._editor.isReadOnly = false;
     this._contentManager.writer.clear();
-    this._editor.enableTrackChanges = false;
 
     const diff = diffWords(previousContent, report);
-
     for (const change of diff) {
       this._editor.selection.moveToDocumentEnd();
       if (change.added) {
-        this._editor.enableTrackChanges = true;
-        this._contentManager.writer.insertText(change.value);
+        this._addBookmark(change.value);
       } else if (!change.removed) {
-        this._editor.enableTrackChanges = false;
+        this._editor.selection.characterFormat.highlightColor = "NoColor";
         this._contentManager.writer.insertText(change.value);
       }
     }
-    const revisions = this._editor.revisions;
-    revisions.acceptAll();
-    this._editor.enableTrackChanges = false;
+
     this._contentManager.writer.formatSectionTitles();
     this._contentManager.writer.formatTitle();
     this._editor.selection.moveToDocumentEnd();
