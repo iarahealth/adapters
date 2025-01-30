@@ -22,6 +22,13 @@ export interface IaraLanguages {
         previous: string;
       };
       changes: { trackchanges: string; header: string };
+      changeCases: {
+        sentence: string;
+        upper: string;
+        lower: string;
+        capitalize: string;
+        toggle: string;
+      };
       saveMessage: {
         success: string;
         error: string;
