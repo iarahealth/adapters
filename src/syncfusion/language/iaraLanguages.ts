@@ -64,11 +64,11 @@ export class IaraSyncfusionLanguages {
           header: "Revisión",
         },
         changeCases: {
-          sentence: "Primera letra de la frase en mayúscula.",
-          upper: "LETRAS MAYÚSCULAS",
-          lower: "letras minúsculas",
-          capitalize: "Escriba todas las palabras en mayúsculas",
-          toggle: "mAIÚSC./mINÚSC. aLTERNATE",
+          sentence: "Tipo oración.",
+          upper: "MAYÚSCULAS",
+          lower: "minúscula",
+          capitalize: "Poner En Mayúsculas Cada Palabra",
+          toggle: "Alternar mayúsculas y minúsculas",
         },
         customfields: {
           header: "Etiquetas",
