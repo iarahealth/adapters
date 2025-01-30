@@ -23,6 +23,7 @@ export interface IaraEditorConfig {
   zoomFactor: string;
   highlightInference: boolean;
   ribbon?: Ribbon;
+  navigateAdditiveMode?: "registry" | "use";
   mouseButton: boolean;
 }
 
@@ -37,6 +38,7 @@ export abstract class EditorAdapter {
     saveReport: true,
     zoomFactor: "100%",
     language: "pt-BR",
+    navigateAdditiveMode: "use",
     highlightInference: true,
     mouseButton: false,
   };
