@@ -5,18 +5,23 @@ import {
 import { ListView } from "@syncfusion/ej2-lists";
 import { Dialog } from "@syncfusion/ej2-popups";
 import { IaraSpeechRecognition } from "../../speech";
-import { IaraSyncfusionTemplateSearch } from "./templateSearch";
+import { IaraSyncfusionAIAssistant } from "../assistant";
+import { IaraSyncfusionConfig } from "../config";
+import { IaraSyncfusionContentManager } from "../content";
 import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
+import { IaraSyncfusionTemplateSearch } from "./templateSearch";
 
 export class IaraSyncfusionShortcutsManager {
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
+    private _contentManager: IaraSyncfusionContentManager,
+    private _config: IaraSyncfusionConfig,
+    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager,
     private onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
-    ) => void,
-    private _navigationFieldManager: IaraSyncfusionNavigationFieldManager
+    ) => void
   ) {
     this._editor.keyDown = this.onKeyDown.bind(this);
   }
@@ -24,7 +29,7 @@ export class IaraSyncfusionShortcutsManager {
   onKeyDown(args: DocumentEditorKeyDownEventArgs): void {
     switch (args.event.key) {
       case "@":
-        this.shortcutByAt();
+        this.shortcutByAt(args);
         break;
       case "Tab":
         args.isHandled = true;
@@ -35,7 +40,10 @@ export class IaraSyncfusionShortcutsManager {
     }
   }
 
-  shortcutByAt(): void {
+  shortcutByAt(args: DocumentEditorKeyDownEventArgs): void {
+    args.isHandled = true;
+    args.event.preventDefault();
+
     const templates = [
       ...Object.values(this._recognition.richTranscriptTemplates.templates),
     ];
@@ -75,5 +83,21 @@ export class IaraSyncfusionShortcutsManager {
       this._navigationFieldManager.nextField(true);
       args.event.preventDefault();
     }
+  }
+
+  async onSlashShortcut(args: DocumentEditorKeyDownEventArgs): Promise<void> {
+    args.isHandled = true;
+    args.event.preventDefault();
+    this._editor.selection.select(
+      this._editor.selection.startOffset,
+      this._editor.selection.endOffset
+    );
+
+    new IaraSyncfusionAIAssistant(
+      this._editor,
+      this._recognition,
+      this._contentManager,
+      this._config
+    );
   }
 }

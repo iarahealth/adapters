@@ -1,11 +1,11 @@
-import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
-import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
+import EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 import { IaraLanguages } from "./language";
 
 export class IaraSyncfusionLanguages {
   public ptBr: IaraLanguages = {
     language: {
-      syncfusionTranslate: { ...EJ2_LOCALE_PT_BR["pt-BR"] },
+      syncfusionTranslate: EJ2_LOCALE_PT_BR["pt-BR"],
       iaraTranslate: {
         customfields: {
           header: "Marcadores",
@@ -14,6 +14,10 @@ export class IaraSyncfusionLanguages {
           mandatory: "Adicionar campo obrigatório",
           optional: "Adicionar campo opcional",
           additive: "Adicionar campo complementar",
+          tipText: {
+            title: "Nome do campo",
+            content: "Escreva uma dica de texto",
+          },
           next: "Próximo campo",
           previous: "Campo anterior",
         },
@@ -46,9 +50,7 @@ export class IaraSyncfusionLanguages {
 
   public es: IaraLanguages = {
     language: {
-      syncfusionTranslate: {
-        ...EJ2_LOCALE_ES["es"],
-      },
+      syncfusionTranslate: EJ2_LOCALE_ES["es"],
       iaraTranslate: {
         changes: {
           trackchanges: "Rastrear cambios",
@@ -59,6 +61,10 @@ export class IaraSyncfusionLanguages {
           content: "Campos de navegación",
           add: "Agregar campo",
           mandatory: "Agregar campo obligatorio",
+          tipText: {
+            title: "Nombre do campo",
+            content: "Escriba un consejo de texto",
+          },
           optional: "Agregar campo opcional",
           additive: "Agregar campo complementar",
           next: "Próximo campo",

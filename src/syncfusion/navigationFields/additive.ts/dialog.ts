@@ -5,7 +5,7 @@ import { Dialog, DialogUtility } from "@syncfusion/ej2-popups";
 import * as Sortable from "sortablejs";
 import { IaraSyncfusionNavigationFieldManager } from "..";
 import { IaraSyncfusionLanguageManager } from "../../language";
-import { SortableList } from "../navigationBookmark";
+import { IaraNavigationBookmark, SortableList } from "../navigationBookmark";
 
 export class IaraSyncfusionAdditiveDialog {
   public dataSource: {
@@ -17,10 +17,32 @@ export class IaraSyncfusionAdditiveDialog {
   public listviewInstance: ListView;
   public requiredField = false;
 
+  private _titleDefault = "";
+  private _delimiterStartField = ",";
+  private _delimiterEndField = "e";
+
   constructor(
     private _languageManager: IaraSyncfusionLanguageManager,
-    private _instance: IaraSyncfusionNavigationFieldManager
+    private _instance: IaraSyncfusionNavigationFieldManager,
+    private _existedField?: IaraNavigationBookmark
   ) {
+    this._instance.blockSelectionInBookmarkCreate = true;
+    const additiveField = this._existedField?.additive
+      ? this._existedField?.additive
+      : undefined;
+
+    this.dataSource = additiveField ? additiveField.additiveTexts : [];
+    this._titleDefault = additiveField ? additiveField.title : "";
+
+    this._delimiterStartField = additiveField
+      ? additiveField.delimiterStart
+      : ",";
+
+    this._delimiterEndField = additiveField
+      ? additiveField.delimiterEnd
+      : this._languageManager.languages.language.iaraTranslate
+          .additiveFieldModal.delimiterFinalPlaceholder;
+
     this.dialogUtility = this._createDialog();
 
     this.listviewInstance = this._createListView();
@@ -100,7 +122,7 @@ export class IaraSyncfusionAdditiveDialog {
               <h5>${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.titleField}:</h5>
             </div>
             <div style="display: flex; flex-grow: 10; padding-left: 1rem;">
-                <input id="outlined" style="width: 100%;" required=""/>
+                <input value="${this._titleDefault}" id="outlined" style="width: 100%;" required=""/>
             </div>
           </div>
         </div>
@@ -115,7 +137,7 @@ export class IaraSyncfusionAdditiveDialog {
               <input style="width: stretch;"
                 type="text" id="delimiter-start" name="delimiter-start"
                 data-required-message="*${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterStartRequired}" required=""
-                data-msg-containerid="delimiterError" placeholder="," value=",">
+                data-msg-containerid="delimiterError" placeholder="," value="${this._delimiterStartField}">
               <div id="delimiterError"></div>
             </div>
             <div style="display: flex;">
@@ -127,7 +149,7 @@ export class IaraSyncfusionAdditiveDialog {
                 data-required-message="*${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterFinalRequired}" required=""
                 data-msg-containerid="finalDelimiterError"
                 placeholder="${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterFinalPlaceholder}"
-                value="${this._languageManager.languages.language.iaraTranslate.additiveFieldModal.delimiterFinalPlaceholder}">
+                value="${this._delimiterEndField}">
               <div id="finalDelimiterError"></div>
             </div>
           </div>
@@ -273,19 +295,33 @@ export class IaraSyncfusionAdditiveDialog {
       identifier: string;
       phrase: string;
     }[];
-
     if (!additiveTexts) {
       identifierElement.required = true;
       phraseElement.required = true;
       return;
     }
+    if (!this._existedField) {
+      this._instance.insertAdditiveField({
+        title: title.value,
+        additiveTexts,
+        delimiterStart: delimiterStart.value,
+        delimiterEnd: delimiterEnd.value,
+      });
+    } else {
+      this._instance.updateAdditiveField({
+        ...this._existedField,
+        ...{
+          additive: {
+            title: title.value,
+            additiveTexts,
+            delimiterStart: delimiterStart.value,
+            delimiterEnd: delimiterEnd.value,
+          },
+        },
+      });
+    }
     dialogObj.hide();
-    this._instance.insertAdditiveField({
-      title: title.value,
-      additiveTexts,
-      delimiterStart: delimiterStart.value,
-      delimiterEnd: delimiterEnd.value,
-    });
+    this._instance.isFirstSelection = true;
   };
 
   public onComplete(): void {

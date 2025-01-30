@@ -2162,17 +2162,29 @@ declare class IaraReport<T> {
    * @param type {String} (optional) the report`s initial text
    * @param type {String} (optional) the report`s initial text in html format
    */
-  begin(text: string, richText: string): Promise<string>;
+  begin(
+    text: string,
+    richText: string,
+    metadata?: Record<string, unknown>
+  ): Promise<string>;
   /**
    * @param type {String} the report`s text to be changed
    * @param type {String} the report`s text in html format to be changed
    */
-  change(text: string, richText: string): Promise<string>;
+  change(
+    text: string,
+    richText: string,
+    metadata?: Record<string, unknown>
+  ): Promise<string>;
   /**
    * @param type {String} the report`s final text
    * @param type {String} the report`s final text in html format
    */
-  finish(text: string, richText: any): Promise<void>;
+  finish(
+    text: string,
+    richText: any,
+    metadata?: Record<string, unknown>
+  ): Promise<void>;
   private _onSubmitError;
   private _submit;
 }
@@ -2184,6 +2196,7 @@ export interface Template {
   config?: TemplateConfig;
   callback: TemplateCallback<void>;
   metadata: unknown;
+  callbackThis?: any;
 }
 export type TemplateCallback<T> = (
   resultEvent: CustomEvent<IaraSpeechRecognitionDetail>,

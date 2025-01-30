@@ -27,6 +27,10 @@ export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
     this._editor.on("destroyed", this._onEditorDestroyed.bind(this));
   }
 
+  protected _handleRemovedNavigationField(): void {
+    throw new Error("Method not implemented.");
+  }
+
   getUndoStackSize(): number {
     return (this._editor.undoManager as any).data.length || 0;
   }

@@ -2,7 +2,6 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-
 import {
   Ribbon,
   RibbonColorPicker,
@@ -286,12 +285,6 @@ export const toolBarSettings = (
   editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
 ): Ribbon => {
-  editor.selectionChange = () => {
-    setTimeout(() => {
-      onSelectionChange();
-    }, 20);
-  };
-
   const ribbonMethods = {
     ribbonFontMethods: () => ribbonFontMethods(editor),
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
@@ -356,7 +349,7 @@ export const toolBarSettings = (
       enableDisableFontOptions(characterFormat);
     }
   };
-
+  addEventListener("SyncfusionOnSelectionChange", onSelectionChange.bind(this));
   return ribbonConfig;
 };
 
@@ -401,7 +394,6 @@ const ribbonFontMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   //To Change the font Size of selected content
   const changeFontSize = (args: { value: number }, ribbon?: Ribbon) => {
@@ -414,14 +406,11 @@ const ribbonFontMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   //To Change the font Color of selected content
   const changeFontColor = (args: { currentValue: { hex: string } }) => {
     editor.documentEditor.selection.characterFormat.fontColor =
       args.currentValue.hex;
-
-    editor.documentEditor.focusIn();
   };
   return { changeFontFamily, changeFontSize, changeFontColor };
 };
@@ -439,7 +428,6 @@ const ribbonParagraphMethods = (
         },
       });
     }
-    editor.documentEditor.focusIn();
   };
   return { changeLineSpacing };
 };

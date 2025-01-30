@@ -1,5 +1,5 @@
-import * as EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
-import * as EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
+import EJ2_LOCALE_PT_BR from "@syncfusion/ej2-locale/src/pt-BR.json";
+import EJ2_LOCALE_ES from "@syncfusion/ej2-locale/src/es.json";
 
 export interface IaraLanguages {
   language: {
@@ -12,6 +12,10 @@ export interface IaraLanguages {
         content: string;
         add: string;
         mandatory: string;
+        tipText: {
+          title: string;
+          content: string;
+        };
         optional: string;
         additive: string;
         next: string;
