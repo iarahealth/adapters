@@ -142,7 +142,6 @@ export class IaraSyncfusionAdditiveList {
   };
 
   show = (additiveField: IaraAdditiveBookmark, additiveId: string) => {
-    console.log(additiveField, additiveId, "ADITIVIS");
     const contextMenuElement = document.createElement("ul");
     contextMenuElement.id = "contextmenu-iara";
     this._instance._documentEditor.documentHelper.viewerContainer.appendChild(
