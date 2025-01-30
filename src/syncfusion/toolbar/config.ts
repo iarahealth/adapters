@@ -2,7 +2,6 @@ import {
   DocumentEditorContainer,
   SelectionCharacterFormat,
 } from "@syncfusion/ej2-documenteditor";
-import { MenuEventArgs } from "@syncfusion/ej2-splitbuttons";
 import {
   Ribbon,
   RibbonColorPicker,
