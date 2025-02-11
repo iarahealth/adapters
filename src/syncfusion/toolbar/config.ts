@@ -162,10 +162,6 @@ const toolbarButtonClick = (
       editor.documentEditor.editor.paste();
       editor.documentEditor.enableLocalPaste = false;
       break;
-    case "ChangeCase":
-      editor.documentEditor.selection.characterFormat.allCaps =
-        !editor.documentEditor.selection.characterFormat.allCaps;
-      break;
     case "bold":
       //Toggles the bold of selected content
       editor.documentEditor.editor.toggleBold();
@@ -290,6 +286,54 @@ export const toolBarSettings = (
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
   };
 
+  const changeCaseFunc = (name: string, editor: DocumentEditorContainer) => {
+    switch (name) {
+      case "sentencecase":
+        if (
+          !editor.documentEditor.isReadOnly &&
+          editor.documentEditor.editorModule
+        ) {
+          editor.documentEditor.editorModule.changeCase("SentenceCase");
+        }
+        break;
+      case "uppercase":
+        if (
+          !editor.documentEditor.isReadOnly &&
+          editor.documentEditor.editorModule
+        ) {
+          console.log("ENTROU AQUI");
+          editor.documentEditor.editorModule.changeCase("Uppercase");
+        }
+        break;
+      case "lowercase":
+        if (
+          !editor.documentEditor.isReadOnly &&
+          editor.documentEditor.editorModule
+        ) {
+          editor.documentEditor.editorModule.changeCase("Lowercase");
+        }
+        break;
+      case "capitalizeEachWord":
+        if (
+          !editor.documentEditor.isReadOnly &&
+          editor.documentEditor.editorModule
+        ) {
+          editor.documentEditor.editorModule.changeCase("CapitalizeEachWord");
+        }
+        break;
+      case "togglecase":
+        if (
+          !editor.documentEditor.isReadOnly &&
+          editor.documentEditor.editorModule
+        ) {
+          editor.documentEditor.editorModule.changeCase("ToggleCase");
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   const navigationFunc = (funcId: string) => {
     if (funcId === "add_field") {
       toolbarButtonClick("AddField", editor, undefined, navigationFields);
@@ -334,7 +378,8 @@ export const toolBarSettings = (
       editorContainerLocale,
       config,
       ribbonMethods,
-      navigationFunc
+      navigationFunc,
+      changeCaseFunc
     ),
     activeLayout: config.ribbon?.displayMode,
   });
@@ -469,9 +514,16 @@ const enableDisableFontOptions = (
     characterformat.italic,
     characterformat.underline,
     characterformat.strikethrough,
+    !characterformat.allCaps,
   ];
 
-  const toggleBtnId = ["bold", "italic", "underline", "strikethrough"];
+  const toggleBtnId = [
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "allCaps",
+  ];
 
   for (let i = 0; i < properties.length; i++) {
     changeActiveState(properties[i], toggleBtnId[i]);

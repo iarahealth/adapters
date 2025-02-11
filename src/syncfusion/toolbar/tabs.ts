@@ -31,7 +31,8 @@ export const tabsConfig = (
       editor: DocumentEditorContainer
     ) => RibbonParagraphMethods;
   },
-  navigationFunc: (funcId: string) => void
+  navigationFunc: (funcId: string) => void,
+  changeCaseFunc: (name: string, editor: DocumentEditorContainer) => void
 ): RibbonTabModel[] => {
   const { changeFontColor, changeFontSize, changeFontFamily } =
     ribbonMethods.ribbonFontMethods(editor);
@@ -62,6 +63,29 @@ export const tabsConfig = (
       id: "previous_field",
       iconCss: "e-icons e-arrow-left",
       text: editorContainerLocale.language.iaraTranslate.customfields.previous,
+    },
+  ];
+
+  const changeCaseItems = [
+    {
+      id: "sentencecase",
+      text: editorContainerLocale.language.iaraTranslate.changeCases.sentence,
+    },
+    {
+      text: editorContainerLocale.language.iaraTranslate.changeCases.upper,
+      id: "uppercase",
+    },
+    {
+      text: editorContainerLocale.language.iaraTranslate.changeCases.lower,
+      id: "lowercase",
+    },
+    {
+      text: editorContainerLocale.language.iaraTranslate.changeCases.capitalize,
+      id: "capitalizeEachWord",
+    },
+    {
+      text: editorContainerLocale.language.iaraTranslate.changeCases.toggle,
+      id: "togglecase",
     },
   ];
 
@@ -348,6 +372,24 @@ export const tabsConfig = (
       },
     },
 
+    changeCase: {
+      type: "DropDown",
+      allowedSizes: RibbonItemSize.Small,
+      id: "changeCase",
+      dropDownSettings: {
+        iconCss: "e-icons e-upper-case",
+        items: changeCaseItems,
+        select: (e: FileMenuEventArgs) => {
+          changeCaseFunc(e.element.id, editor);
+        },
+      },
+      ribbonTooltipSettings: {
+        title:
+          editorContainerLocale.language.syncfusionTranslate
+            .documenteditorcontainer["Change case Tooltip"],
+      },
+    },
+
     italic: {
       type: "Button",
       allowedSizes:
@@ -610,6 +652,7 @@ export const tabsConfig = (
         ],
       },
     },
+
     navigationField: {
       type: "DropDown",
       allowedSizes:
@@ -734,7 +777,14 @@ export const tabsConfig = (
   ];
 
   const fontItems = [
-    { items: [allItems.fontFamily, allItems.fontSize, allItems.fontColor] },
+    {
+      items: [
+        allItems.fontFamily,
+        allItems.fontSize,
+        allItems.fontColor,
+        allItems.changeCase,
+      ],
+    },
     { items: [allItems.bold, allItems.italic] },
     { items: [allItems.underline, allItems.strikeThrough] },
   ];
