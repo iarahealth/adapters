@@ -1,12 +1,16 @@
 import { ListView } from "@syncfusion/ej2-lists";
 import { IaraSyncfusionNavigationFieldManager } from "..";
 import { IaraAdditiveBookmark } from "../navigationBookmark";
+import { IaraSyncfusionConfig } from "../../config";
 
 export class IaraSyncfusionAdditiveList {
   private _list: ListView = new ListView();
   private _fieldsSelected: string[] = [];
 
-  constructor(private _instance: IaraSyncfusionNavigationFieldManager) {}
+  constructor(
+    private _instance: IaraSyncfusionNavigationFieldManager,
+    private _config: IaraSyncfusionConfig
+  ) {}
 
   create = (additiveField: IaraAdditiveBookmark, additiveId: string) => {
     let fieldSelected: string[] = [];
@@ -68,7 +72,9 @@ export class IaraSyncfusionAdditiveList {
     this._list.element.style.margin = "0";
     this._list.element.style.padding = "0";
     this._list.element.style.zIndex = "999";
-    this._list.element.style.borderColor = "#BAE1FE";
+    this._config.darkMode
+      ? (this._list.element.style.borderColor = "#403294")
+      : (this._list.element.style.borderColor = "#b8acf6");
     this._list.element.style.borderRadius = "5px";
     this._list.element.style.borderStyle = "dotted";
     this._list.element.style.borderWidth = "1px";
@@ -81,7 +87,8 @@ export class IaraSyncfusionAdditiveList {
       this._instance._documentEditor.selection.start.location;
     const rulerOffset =
       this._instance._documentEditor.hRuler.element.getBoundingClientRect();
-    const yPos = rulerOffset.top + textPosition.y;
+    const yPos =
+      rulerOffset.top + textPosition.y - (documentEditorContainer.top - 45);
     const xPos =
       rulerOffset.left + textPosition.x - documentEditorContainer.left;
     this._list.element.style.position = "absolute";

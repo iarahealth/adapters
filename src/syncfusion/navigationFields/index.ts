@@ -465,8 +465,16 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
       if (bookmark.name.includes("Additive")) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        this._documentEditor.selection.characterFormat.highlightColor =
-          "#BAE1FE";
+        this._config.darkMode
+          ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#403294")
+          : // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            (this._documentEditor.selection.characterFormat.highlightColor =
+              "#b8acf6");
+
         this.selectTitle(bookmark.title, bookmark.name, true);
       }
     });
@@ -651,6 +659,9 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   };
 
   showAdditiveList(): void {
-    this.additiveListInstance = new IaraSyncfusionAdditiveList(this);
+    this.additiveListInstance = new IaraSyncfusionAdditiveList(
+      this,
+      this._config
+    );
   }
 }
