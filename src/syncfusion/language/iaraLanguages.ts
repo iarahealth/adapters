@@ -22,6 +22,13 @@ export class IaraSyncfusionLanguages {
           previous: "Campo anterior",
         },
         changes: { trackchanges: "Rastrear mudanças", header: "Revisão" },
+        changeCases: {
+          sentence: "Primeira letra da sentença em maiúscula.",
+          upper: "LETRAS MAIÚSCULAS",
+          lower: "letras minúsculas",
+          capitalize: "Colocar Cada Palavra em Maiúscula",
+          toggle: "aLTERNAR mAIÚSC./mINÚSC.",
+        },
         saveMessage: {
           success: "Salvo",
           error: "Erro ao salvar",
@@ -55,6 +62,13 @@ export class IaraSyncfusionLanguages {
         changes: {
           trackchanges: "Rastrear cambios",
           header: "Revisión",
+        },
+        changeCases: {
+          sentence: "Tipo oración.",
+          upper: "MAYÚSCULAS",
+          lower: "minúscula",
+          capitalize: "Poner En Mayúsculas Cada Palabra",
+          toggle: "Alternar mayúsculas y minúsculas",
         },
         customfields: {
           header: "Etiquetas",

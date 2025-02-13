@@ -169,6 +169,7 @@ export type RibbonCustomItems =
       | "fontSize"
       | "fontColor"
       | "bold"
+      | "changeCase"
       | "italic"
       | "underline"
       | "strikeThrough"

@@ -214,6 +214,7 @@ export class IaraSyncfusionContentWriteManager {
     this._editor.enableTrackChanges = false;
     this._editor.selection?.selectAll();
     this._editor.editor?.delete();
+    this._navigationFieldManager.additiveListInstance?.hide();
     if (this._editor.editor) this._styleManager?.setEditorDefaultFont();
   }
 
