@@ -308,7 +308,7 @@ export class IaraSyncfusionAdapter
       )
     );
 
-    for (const [propertyName, value] of Object.entries(parentStyle)) {
+    for (const [propertyName] of Object.entries(parentStyle)) {
       if (span.style[propertyName as keyof CSSStyleDeclaration] !== "") {
         continue;
       }
