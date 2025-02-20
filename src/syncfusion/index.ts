@@ -325,6 +325,7 @@ export class IaraSyncfusionAdapter
     // 1. Remove any `a` tags from the html, as it is broken html
     // 2. Replace empty paragraphs for a simpler paragraph with a line break
     html = html
+      .replace(/<(a|a [^>]+)>/giu, "")
       .replace(/<\/a>/giu, "")
       .replace(/<span([^>]+)?>\s*<\/span>/giu, "")
       .replace(/(<p[^>]+>)\s*(<\/p>)/giu, "$1&nbsp;</p>");
@@ -353,6 +354,7 @@ export class IaraSyncfusionAdapter
     console.log("output html1", html);
 
     html = document.body.innerHTML;
+    console.log("output html1.5", html);
 
     // Some needed processing for the clipboard html:
     // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
