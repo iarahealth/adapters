@@ -352,7 +352,7 @@ export class IaraSyncfusionAdapter
 
     console.log("output html1", html);
 
-    html = document.documentElement.innerHTML;
+    html = document.body.innerHTML;
 
     // Some needed processing for the clipboard html:
     // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
