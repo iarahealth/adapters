@@ -297,7 +297,36 @@ export class IaraSyncfusionAdapter
     }
   }
 
+  private _preprocessSpan(span: HTMLSpanElement): void {
+    this._wrapElementWithLegacyStyles(span);
+
+    if (!span.parentElement) return;
+
+    const parentStyle = Object.fromEntries(
+      Object.entries(span.parentElement.style).filter(
+        ([key, value]) => value !== "" && isNaN(parseInt(key))
+      )
+    );
+
+    for (const [propertyName, value] of Object.entries(parentStyle)) {
+      if (span.style[propertyName as keyof CSSStyleDeclaration] !== "") {
+        continue;
+      }
+
+      (span.style as any)[propertyName as keyof CSSStyleDeclaration] = (
+        span.parentElement.style as any
+      )[propertyName];
+    }
+  }
+
   private _preprocessClipboardHtml(html: string): string {
+    // 1. Remove any `a` tags from the html, as it is broken html
+    // 2. Replace empty paragraphs for a simpler paragraph with a line break
+    html = html
+      .replace(/<\/a>/giu, "")
+      .replace(/<span([^>]+)?>\s*<\/span>/giu, "")
+      .replace(/(<p[^>]+>)\s*(<\/p>)/giu, "$1&nbsp;</p>");
+
     const document = new DOMParser().parseFromString(html, "text/html");
 
     const paragraphs = [
@@ -316,7 +345,7 @@ export class IaraSyncfusionAdapter
         "span"
       ) as unknown as HTMLSpanElement[]),
     ];
-    spans.forEach(span => this._wrapElementWithLegacyStyles(span));
+    spans.forEach(span => this._preprocessSpan(span));
 
     html = document.documentElement.innerHTML;
 
@@ -328,10 +357,8 @@ export class IaraSyncfusionAdapter
     html = html
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
-      .replace(
-        /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
-        "$1&nbsp;</p>"
-      );
+      .replace(/<span([^>]+)?>\s*<\/span>/giu, "")
+      .replace(/(<p[^>]+>)\s*(<\/p>)/giu, "$1&nbsp;</p>");
 
     return html;
   }
