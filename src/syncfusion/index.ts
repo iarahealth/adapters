@@ -320,12 +320,15 @@ export class IaraSyncfusionAdapter
   }
 
   private _preprocessClipboardHtml(html: string): string {
+    console.log("input html", html);
+
     // 1. Remove any `a` tags from the html, as it is broken html
     // 2. Replace empty paragraphs for a simpler paragraph with a line break
     html = html
       .replace(/<\/a>/giu, "")
       .replace(/<span([^>]+)?>\s*<\/span>/giu, "")
       .replace(/(<p[^>]+>)\s*(<\/p>)/giu, "$1&nbsp;</p>");
+    console.log("output html0", html);
 
     const document = new DOMParser().parseFromString(html, "text/html");
 
@@ -347,6 +350,8 @@ export class IaraSyncfusionAdapter
     ];
     spans.forEach(span => this._preprocessSpan(span));
 
+    console.log("output html1", html);
+
     html = document.documentElement.innerHTML;
 
     // Some needed processing for the clipboard html:
@@ -359,6 +364,8 @@ export class IaraSyncfusionAdapter
       .replace(/<\/a>/giu, "")
       .replace(/<span([^>]+)?>\s*<\/span>/giu, "")
       .replace(/(<p[^>]+>)\s*(<\/p>)/giu, "$1&nbsp;</p>");
+
+    console.log("output html2", html);
 
     return html;
   }
