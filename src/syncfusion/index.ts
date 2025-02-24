@@ -353,7 +353,7 @@ export class IaraSyncfusionAdapter
 
     console.log("output html1", html);
 
-    html = document.body.innerHTML;
+    html = document.documentElement.outerHTML;
     console.log("output html1.5", html);
 
     // Some needed processing for the clipboard html:
