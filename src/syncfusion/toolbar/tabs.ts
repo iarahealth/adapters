@@ -38,6 +38,22 @@ export const tabsConfig = (
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
 
   const allItems = {
+    logo: {
+      type: "Button",
+      allowedSizes:
+        config.ribbon?.displayMode === "Simplified"
+          ? RibbonItemSize.Small
+          : undefined,
+      buttonSettings: {
+        iconCss: "e-icons e-iara-logo",
+        clicked: function () {
+          window.open("https://iarahealth.com", "_blank");
+        },
+      },
+      ribbonTooltipSettings: {
+        title: "Iara Health",
+      },
+    },
     open: {
       type: "Button",
       allowedSizes:
@@ -671,6 +687,7 @@ export const tabsConfig = (
   };
 
   const defaultCollections = {
+    logo: true,
     file: true,
     insert: true,
     clipboard: true,
@@ -719,6 +736,8 @@ export const tabsConfig = (
     return [];
   };
 
+  const logoItems = [{ items: [allItems.logo] }];
+
   const fileItems = [
     { items: [allItems.open] },
     { items: [allItems.undo, allItems.redo] },
@@ -765,6 +784,10 @@ export const tabsConfig = (
   const tabs: RibbonTabModel[] = [
     {
       groups: [
+        {
+          id: "logo",
+          collections: collection(logoItems, "logo"),
+        },
         {
           id: "file",
           collections: collection(fileItems, "file"),

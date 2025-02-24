@@ -151,6 +151,7 @@ displayMode: "Simplified"
 };
 
 export type RibbonCollection =
+  | "logo"
   | "file"
   | "insert"
   | "clipboard"
