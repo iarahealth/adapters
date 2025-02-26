@@ -21,13 +21,12 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     document.getElementsByTagName("head")[0].appendChild(styleNode);
     styleNode.sheet?.insertRule(
       `.e-iara-logo {
-        background-image: url("https://app.iarahealth.com/static/angular/assets/images/logos/logo-simple.png") !important;
-        height: 24px !important;
-        margin-top: 6px !important;
-        width: 24px !important;
+        background-image: url("https://downloads.iarahealth.com/assets/logo-iara-vertical.png") !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        width: 100% !important;
       }`
     );
-
     this.setTheme(this._config.darkMode ? "dark" : "light");
     this.setEditorDefaultFont();
     this.setZoomFactor(this._config.zoomFactor ?? "100%");

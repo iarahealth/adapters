@@ -36,6 +36,10 @@ export const tabsConfig = (
   const { changeFontColor, changeFontSize, changeFontFamily } =
     ribbonMethods.ribbonFontMethods(editor);
   const { changeLineSpacing } = ribbonMethods.ribbonParagraphMethods(editor);
+  const iconClassIaraLogo =
+    config.ribbon?.displayMode === "Simplified"
+      ? "e-icons e-iara-logo-small"
+      : "e-icons e-iara-logo";
 
   const allItems = {
     logo: {
@@ -45,7 +49,7 @@ export const tabsConfig = (
           ? RibbonItemSize.Small
           : undefined,
       buttonSettings: {
-        iconCss: "e-icons e-iara-logo",
+        iconCss: iconClassIaraLogo,
         clicked: function () {
           window.open("https://iarahealth.com", "_blank");
         },

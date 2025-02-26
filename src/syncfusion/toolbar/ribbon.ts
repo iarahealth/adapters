@@ -119,6 +119,7 @@ displayMode: "Simplified"
 
   displayMode?: "Classic" | "Simplified";
   collections?: {
+    logo?: "logo"[][] | boolean;
     file?: ("open" | "undo" | "redo")[][] | boolean;
     insert?: ("image" | "table")[][] | boolean;
     clipboard?: ("copy" | "cut" | "paste")[][] | boolean;
@@ -162,6 +163,7 @@ export type RibbonCollection =
   | "documentReview";
 
 export type RibbonCustomItems =
+  | "logo"[][]
   | ("open" | "undo" | "redo")[][]
   | ("image" | "table")[][]
   | ("copy" | "cut" | "paste")[][]
