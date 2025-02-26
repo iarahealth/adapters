@@ -53,13 +53,6 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
         this._editor.documentHelper.authors.add(author, color);
       return color;
     };
-
-    const { startOffset, endOffset } = this._editor.selection;
-    this._editor.selection.selectAll();
-    this._editor.selection.characterFormat.fontFamily = font.fontFamily;
-    this._editor.selection.characterFormat.fontSize = font.fontSize;
-    this._editor.selection.characterFormat.fontColor = font.fontColor;
-    this._editor.selection.select(startOffset, endOffset);
   }
 
   setEditorFontColor(color: string): void {

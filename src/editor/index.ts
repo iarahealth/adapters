@@ -50,7 +50,7 @@ export abstract class EditorAdapter {
     { searchRichTranscript: true } as Config,
   ];
 
-  private _listeners = [
+  private readonly _speechListeners = [
     {
       key: "iaraSpeechRecognitionResult",
       callback: (event?: CustomEvent<IaraSpeechRecognitionDetail>) => {
@@ -265,14 +265,14 @@ export abstract class EditorAdapter {
   }
 
   private _initListeners(): void {
-    this._listeners.forEach(listener => {
+    this._speechListeners.forEach(listener => {
       this._recognition.addEventListener(listener.key, listener.callback);
     });
   }
 
   protected async _onEditorDestroyed(): Promise<void> {
     this._recognition.report["_key"] = "";
-    this._listeners.forEach(listener => {
+    this._speechListeners.forEach(listener => {
       this._recognition.removeEventListener(
         listener.key,
         listener.callback as EventListenerOrEventListenerObject
@@ -299,11 +299,16 @@ export abstract class EditorAdapter {
       if (this._recognition.ready) {
         this._recognition.report["_key"] = await this.beginReport();
       } else {
+        const readyCallback = async () => {
+          this._recognition.report["_key"] = await this.beginReport();
+          this._recognition.removeEventListener(
+            "iaraSpeechRecognitionReady",
+            readyCallback
+          );
+        };
         this._recognition.addEventListener(
           "iaraSpeechRecognitionReady",
-          async () => {
-            this._recognition.report["_key"] = await this.beginReport();
-          }
+          readyCallback
         );
       }
     }

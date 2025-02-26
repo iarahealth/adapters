@@ -193,7 +193,7 @@ export class IaraSyncfusionContentWriteManager {
       this._editor.editor.paste(sfdt.value);
     }
 
-    this._editor.selection.moveToDocumentStart();
+    this._editor.selection.moveToDocumentEnd();
 
     this._styleManager.setTheme(this._config.darkMode ? "dark" : "light");
 
@@ -205,7 +205,6 @@ export class IaraSyncfusionContentWriteManager {
     });
 
     this._navigationFieldManager.createBookmarks();
-    this._editor.selection.moveToDocumentEnd();
     if (this._navigationFieldManager.bookmarks.length)
       this._navigationFieldManager.nextField();
   }
