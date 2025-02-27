@@ -14,7 +14,10 @@ import {
 import debounce from "debounce";
 import { EditorAdapter } from "../editor";
 import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
-import { IaraSyncfusionAIAssistantManager } from "./assistant";
+import {
+  IaraSyncfusionAIAssistant,
+  IaraSyncfusionAIAssistantManager,
+} from "./assistant";
 import { IaraSyncfusionConfig } from "./config";
 import { IaraSFDT, IaraSyncfusionContentManager } from "./content";
 import { IaraSyncfusionContextMenuManager } from "./contextMenu";
@@ -582,6 +585,19 @@ export class IaraSyncfusionAdapter
       () => {
         this._onIaraCommand(this._locale.acceptAll);
         this._documentEditor.revisions.acceptAll();
+      },
+      ...this._defaultCommandArgs
+    );
+    this._recognition.commands.add(
+      this._locale.openAssistant,
+      () => {
+        this._onIaraCommand(this._locale.openAssistant);
+        new IaraSyncfusionAIAssistant(
+          this.documentEditor,
+          this._recognition,
+          this._contentManager,
+          this.config
+        );
       },
       ...this._defaultCommandArgs
     );
