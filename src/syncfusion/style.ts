@@ -17,6 +17,24 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   ) {
     super();
 
+    const styleNode = document.createElement("style");
+    document.getElementsByTagName("head")[0].appendChild(styleNode);
+    styleNode.sheet?.insertRule(
+      `.e-iara-logo {
+        background-image: url("https://downloads.iarahealth.com/assets/logo-iara-vertical.png") !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        width: 100% !important;
+      }`
+    );
+    styleNode.sheet?.insertRule(
+      `.e-iara-logo-small {
+          background-image: url("https://downloads.iarahealth.com/assets/logo-simple.png") !important;
+          height: 24px !important;
+          object-fit: contain !important;
+          width: 24px !important;
+        }`
+    );
     this.setTheme(this._config.darkMode ? "dark" : "light");
     this.setEditorDefaultFont();
     this.setZoomFactor(this._config.zoomFactor ?? "100%");
