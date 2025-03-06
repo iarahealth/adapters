@@ -6,18 +6,13 @@ import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 
 export class IaraSyncfusionAIAssistant {
-  private _isCreatingAssistant = false;
   constructor(
     private _editor: DocumentEditor,
     private _recognition: IaraSpeechRecognition,
     private _contentManager: IaraSyncfusionContentManager,
     private _config: IaraSyncfusionConfig
   ) {
-    if (
-      document.querySelector("iara-ai-assistant") ||
-      this._isCreatingAssistant
-    )
-      return;
+    if (document.querySelector("iara-ai-assistant")) return;
     this._createAssistantElement();
   }
 
@@ -33,7 +28,6 @@ export class IaraSyncfusionAIAssistant {
   private async _createAssistantElement(): Promise<
     HTMLElement & { recognition: IaraSpeechRecognition; report: string }
   > {
-    this._isCreatingAssistant = true;
     this._editor.isReadOnly = true;
 
     const firstPageBounds =
@@ -104,7 +98,6 @@ export class IaraSyncfusionAIAssistant {
         this._config.enableSpeechRecognition = enableSpeechRecognition;
         this._editor.isReadOnly = false;
         assistant.remove();
-        this._isCreatingAssistant = false;
       }
     });
 
