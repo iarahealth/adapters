@@ -50,9 +50,6 @@ export const tabsConfig = (
           : undefined,
       buttonSettings: {
         iconCss: iconClassIaraLogo,
-        clicked: function () {
-          window.open("https://iarahealth.com", "_blank");
-        },
       },
       ribbonTooltipSettings: {
         title: "Iara Health",
