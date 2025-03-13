@@ -85,6 +85,7 @@ export class IaraSyncfusionAdapter
       impression: {
         itemizedOutput: true,
       },
+      user_rules: { report: [] },
     },
     replaceToolbar: false,
     showBookmarks: false,
