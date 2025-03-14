@@ -15,6 +15,7 @@ export default {
     toggleNumberedList: "iara enumerar",
     toggleUnderline: "iara sublinhado",
     toggleUppercase: "iara maiúsculo",
+    openAssistant: "iara",
   },
   es: {
     acceptAll: "aceptar",
@@ -32,5 +33,6 @@ export default {
     toggleNumberedList: "iara enumerar",
     toggleUnderline: "iara subrayado",
     toggleUppercase: "iara mayúscula",
+    openAssistant: "iara",
   },
 };

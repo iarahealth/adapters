@@ -9,6 +9,7 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
     containerId: string;
     defaultPosition: { x: number; y: number };
     isDraggable: boolean;
+    user_rules: { report: string[] };
   };
   mouseButton: boolean;
   replaceToolbar: boolean;
