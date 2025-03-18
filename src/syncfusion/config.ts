@@ -6,6 +6,9 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
     impression: {
       itemizedOutput: boolean;
     };
+    containerId: string;
+    defaultPosition: { x: number; y: number };
+    isDraggable: boolean;
     user_rules: { report: string[] };
   };
   mouseButton: boolean;
