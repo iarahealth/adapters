@@ -88,7 +88,7 @@ export class IaraSyncfusionAdapter
       containerId: "",
       defaultPosition: { x: 30, y: 20 },
       isDraggable: false,
-      user_rules: { report: [] },
+      user_rules: { report: [], impression: [] },
     },
     replaceToolbar: false,
     showBookmarks: false,
