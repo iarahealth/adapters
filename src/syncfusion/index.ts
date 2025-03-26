@@ -331,9 +331,19 @@ export class IaraSyncfusionAdapter
       .replace(
         /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
-      );
+    );
 
     return html;
+  }
+
+  private _convertDefaultColorToNoColor() {
+    this._documentEditor.selection.selectAll();
+    if (this._documentEditor.selection.characterFormat.fontColor) { 
+      // This means that there is only one color on the document, simply change it to NoColor
+      this._documentEditor.selection.characterFormat.fontColor = "NoColor";
+    } else {
+      return;
+    }
   }
 
   async copyReport(): Promise<string[]> {
@@ -348,6 +358,10 @@ export class IaraSyncfusionAdapter
     this._documentEditor.selection.selectAll();
 
     try {
+      const sfdtContent = await this._contentManager.reader.fromEditor();
+      this._convertDefaultColorToNoColor();
+
+      this._documentEditor.selection.selectAll();
       const content = await this._contentManager.reader.getContent();
       const htmlContent = this._preprocessClipboardHtml(
         this._documentEditor.selection.getHtmlContent() || content[1]
@@ -358,7 +372,7 @@ export class IaraSyncfusionAdapter
         htmlContent,
         content[2]
       );
-      this._documentEditor.selection.moveNextPosition();
+      await this.insertTemplate(sfdtContent.value, true);
 
       return content.slice(0, 3);
     } catch (error) {
