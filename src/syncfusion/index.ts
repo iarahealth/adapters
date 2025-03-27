@@ -331,19 +331,101 @@ export class IaraSyncfusionAdapter
       .replace(
         /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
-    );
+      );
 
     return html;
   }
 
   private _convertDefaultColorToNoColor() {
     this._documentEditor.selection.selectAll();
-    if (this._documentEditor.selection.characterFormat.fontColor) { 
+    if (this._documentEditor.selection.characterFormat.fontColor) {
       // This means that there is only one color on the document, simply change it to NoColor
       this._documentEditor.selection.characterFormat.fontColor = "NoColor";
     } else {
-      return;
+      const numOfParagraphs = parseInt(
+        this._documentEditor.selection.endOffset.split(";")[1]
+      );
+      this._documentEditor.selection.moveToDocumentStart();
+      for (let i = 0; i <= numOfParagraphs; i++) {
+        const coloredTextOffsets = this._findColoredTextInCurrentParagraph();
+
+        this._documentEditor.selection.moveToParagraphStart();
+        let lastEndOffset = this._documentEditor.selection.startOffset;
+
+        for (let j = 0; j < coloredTextOffsets.length; j++) {
+          const [startOffset, endOffset] = coloredTextOffsets[j];
+          this._documentEditor.selection.select(lastEndOffset, startOffset);
+          const selectionColor =
+            this._documentEditor.selection.characterFormat.fontColor;
+
+          if (selectionColor === "#fff" || selectionColor === "#000") {
+            this._documentEditor.selection.characterFormat.fontColor =
+              "NoColor";
+          }
+
+          this._documentEditor.selection.characterFormat.fontColor = "NoColor";
+          lastEndOffset = endOffset;
+
+          if (j === coloredTextOffsets.length - 1) {
+            this._documentEditor.selection.select(endOffset, endOffset);
+            this._documentEditor.selection.extendToParagraphEnd();
+            this._documentEditor.selection.characterFormat.fontColor =
+              "NoColor";
+          }
+        }
+
+        if (i !== numOfParagraphs - 1) {
+          this._documentEditor.selection.moveToNextParagraph();
+        }
+      }
     }
+  }
+
+  private _findColoredTextInCurrentParagraph(): string[][] {
+    this._documentEditor.selection.moveToParagraphEnd();
+    const paragraphEnd = this._documentEditor.selection.endOffset;
+
+    this._documentEditor.selection.moveToParagraphStart();
+    const startingParagraph =
+      this._documentEditor.selection.startOffset.split(";")[1];
+
+    let currentParagraph = startingParagraph;
+    let coloredStartOffset;
+    const coloredTextOffsets = [];
+    while (
+      currentParagraph === startingParagraph &&
+      this._documentEditor.selection.endOffset !== paragraphEnd
+    ) {
+      const previousWordEndOffset = this._documentEditor.selection.endOffset;
+      this._documentEditor.selection.extendToWordEnd();
+      currentParagraph = this._documentEditor.selection.endOffset.split(";")[1];
+
+      const selectionColor =
+        this._documentEditor.selection.characterFormat.fontColor;
+
+      if (selectionColor === undefined) {
+        // We have found an edge of colored text (either start or end)
+        const wordEndOffset = this._documentEditor.selection.endOffset;
+        this._documentEditor.selection.select(wordEndOffset, wordEndOffset);
+        this._documentEditor.selection.movePreviousPosition();
+        this._documentEditor.selection.selectCurrentWord();
+        if (coloredStartOffset) {
+          coloredTextOffsets.push([coloredStartOffset, previousWordEndOffset]);
+          coloredStartOffset = undefined;
+        } else {
+          coloredStartOffset = this._documentEditor.selection.startOffset;
+        }
+      } else if (
+        selectionColor !== "#fff" &&
+        selectionColor !== "#000" &&
+        !coloredStartOffset
+      ) {
+        // We are entirely in colored text, if coloredStartOffset was not set, set it to the start of this selection
+        coloredStartOffset = this._documentEditor.selection.startOffset;
+      }
+    }
+
+    return coloredTextOffsets;
   }
 
   async copyReport(): Promise<string[]> {
@@ -355,24 +437,22 @@ export class IaraSyncfusionAdapter
     this._documentEditor.enableTrackChanges = false;
 
     const { startOffset, endOffset } = this._documentEditor.selection;
-    this._documentEditor.selection.selectAll();
-
     try {
-      const sfdtContent = await this._contentManager.reader.fromEditor();
+      // Convert default text color to NoColor to handle dark mode/light mode text color
+      this._documentEditor.editorHistory.beginUndoAction();
       this._convertDefaultColorToNoColor();
+      const sfdtContent = await this._contentManager.reader.getSfdtContent();
+      this._documentEditor.editorHistory.endUndoAction();
+      this._documentEditor.editorHistory.undo();
 
-      this._documentEditor.selection.selectAll();
-      const content = await this._contentManager.reader.getContent();
-      const htmlContent = this._preprocessClipboardHtml(
-        this._documentEditor.selection.getHtmlContent() || content[1]
-      );
+      const content = await this._contentManager.reader.getContent(sfdtContent);
+      const htmlContent = this._preprocessClipboardHtml(content[1]);
 
       this._recognition.automation.copyText(
         content[0],
         htmlContent,
         content[2]
       );
-      await this.insertTemplate(sfdtContent.value, true);
 
       return content.slice(0, 3);
     } catch (error) {
@@ -468,6 +548,8 @@ export class IaraSyncfusionAdapter
 
   hideSpinner(): void {
     hideSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this._documentEditor.editor.documentHelper.viewerContainer.style.filter =
+      "";
   }
 
   insertInference(inference: IaraSpeechRecognitionDetail): void {
@@ -559,6 +641,8 @@ export class IaraSyncfusionAdapter
 
   showSpinner(): void {
     showSpinner(this._documentEditor.editor.documentHelper.viewerContainer);
+    this._documentEditor.editor.documentHelper.viewerContainer.style.filter =
+      "blur(3px)";
   }
 
   private _setScrollClickHandler() {

@@ -262,8 +262,8 @@ export class IaraSyncfusionContentReadManager {
     return this._sfdt;
   }
 
-  async getContent(): Promise<[string, string, string, string]> {
-    const sfdt = await this._getSfdtContent();
+  async getContent(sfdt?: IaraSFDT): Promise<[string, string, string, string]> {
+    if (!sfdt) sfdt = await this._getSfdtContent();
     return Promise.all([
       sfdt.toPlainText(),
       sfdt.toHtml(),
