@@ -324,10 +324,15 @@ export class IaraSyncfusionAdapter
     // 1. Remove the meta tag that comes from the clipboard, it will be readded automatically.
     // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
     //    target editor. These tags are added by our bookmarks, and can be safely removed.
-    // 3. Replace empty paragraphs for a simpler paragraph with a line break
+    // 3. Remove empty paragraph at the end of the document (Syncfusion always adds one)
+    // 4. Replace empty paragraphs for a simpler paragraph with a line break
     html = html
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
+      .replace(
+        /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)<\/body>/giu,
+        "</body>"
+      )
       .replace(
         /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
