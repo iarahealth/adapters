@@ -6,6 +6,7 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
     impression: {
       itemizedOutput: boolean;
     };
+    group_rules: string | string[];
   };
   mouseButton: boolean;
   replaceToolbar: boolean;

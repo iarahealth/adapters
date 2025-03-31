@@ -77,6 +77,7 @@ export class IaraSyncfusionAdapter
       impression: {
         itemizedOutput: true,
       },
+      group_rules: "",
     },
     replaceToolbar: false,
     showBookmarks: false,
