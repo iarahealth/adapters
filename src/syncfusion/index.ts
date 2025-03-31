@@ -325,7 +325,8 @@ export class IaraSyncfusionAdapter
     // 2. Remove any `a` tags from the html, as they may be incorrectly handled as links on the
     //    target editor. These tags are added by our bookmarks, and can be safely removed.
     // 3. Replace empty paragraphs for a simpler paragraph with a line break
-    // 4. Pretend this html comes from tinymce (tiny won't play ball otherwise) by adding the <!-- x-tinymce/html --> comment.
+    // 4. Remove wrapping section div added by Syncfusion
+    // 5. Pretend this html comes from tinymce (tiny won't play ball otherwise) by adding the <!-- x-tinymce/html --> comment.
     html = html
       .replace(/<(meta|a) [^>]+>/giu, "")
       .replace(/<\/a>/giu, "")
@@ -333,6 +334,8 @@ export class IaraSyncfusionAdapter
         /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)<\/body>/giu,
         "</body>"
       )
+      .replace(/<div [^>]+>/giu, "")
+      .replace(/<\/div>/giu, "")
       .replace(
         /(<p [^>]+>)<span( [^>]+)?>\s*<\/span>(<\/p>)/giu,
         "$1&nbsp;</p>"
