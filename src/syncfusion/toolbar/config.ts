@@ -284,7 +284,7 @@ export const toolBarSettings = (
   navigationFields: IaraSyncfusionNavigationFieldManager,
   editorContainerLocale: IaraLanguages,
   config: IaraSyncfusionConfig
-): Ribbon => {
+): { ribbon: Ribbon; listener: () => void } => {
   const ribbonMethods = {
     ribbonFontMethods: () => ribbonFontMethods(editor),
     ribbonParagraphMethods: () => ribbonParagraphMethods(editor),
@@ -349,8 +349,9 @@ export const toolBarSettings = (
       enableDisableFontOptions(characterFormat);
     }
   };
-  addEventListener("SyncfusionOnSelectionChange", onSelectionChange.bind(this));
-  return ribbonConfig;
+  const listener = onSelectionChange.bind(this);
+  addEventListener("SyncfusionOnSelectionChange", listener);
+  return { ribbon: ribbonConfig, listener };
 };
 
 const getReportStyleConfig = (

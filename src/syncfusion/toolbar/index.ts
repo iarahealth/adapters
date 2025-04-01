@@ -7,6 +7,8 @@ import { IaraSyncfusionNavigationFieldManager } from "../navigationFields";
 import { toolBarSettings } from "./config";
 
 export class IaraSyncfusionToolbarManager {
+  private readonly _listeners: { key: string; callback: () => void }[] = [];
+
   constructor(
     private _editorContainer: DocumentEditorContainer,
     private _config: IaraSyncfusionConfig,
@@ -18,6 +20,12 @@ export class IaraSyncfusionToolbarManager {
     this._addRibbonToolbar();
     this._removePropertiesPane();
     this._setupTrackChangesTab();
+  }
+
+  public destroy(): void {
+    this._listeners.forEach(({ key, callback }) => {
+      removeEventListener(key, callback);
+    });
   }
 
   private _removePropertiesPane(): void {
@@ -33,12 +41,16 @@ export class IaraSyncfusionToolbarManager {
   }
 
   private _addRibbonToolbar(): void {
-    const toolbarRibbonItems = toolBarSettings(
+    const { ribbon: toolbarRibbonItems, listener } = toolBarSettings(
       this._editorContainer,
       this._navigationFieldManager,
       this._languageManager.languages,
       this._config
     );
+    this._listeners.push({
+      key: "SyncfusionOnSelectionChange",
+      callback: listener,
+    });
     const editorToolbarContainer = <HTMLElement>(
       document.querySelector(".e-de-ctnr-toolbar")
     );

@@ -12,12 +12,37 @@ export abstract class IaraEditorNavigationFieldManager {
     type?: "Field" | "Mandatory" | "Optional"
   ): void;
   abstract additiveBookmark: IaraAdditiveBookmark;
-  constructor(private _recognition: IaraSpeechRecognition) {
-    this._recognition.addEventListener("iaraSpeechMikeForwardButtonPress", () =>
-      this.nextField()
-    );
-    this._recognition.addEventListener("iaraSpeechMikeRewindButtonPress", () =>
-      this.previousField()
-    );
+
+  private readonly _recognitionListeners: {
+    key: string;
+    callback: () => void;
+  }[] = [
+    {
+      key: "iaraSpeechMikeForwardButtonPress",
+      callback: this.nextField.bind(this),
+    },
+    {
+      key: "iaraSpeechMikeRewindButtonPress",
+      callback: this.previousField.bind(this),
+    },
+  ];
+
+  constructor(private readonly _recognition: IaraSpeechRecognition) {
+    this._initListeners();
+  }
+
+  private _initListeners(): void {
+    this._recognitionListeners.forEach(listener => {
+      this._recognition.addEventListener(listener.key, listener.callback);
+    });
+  }
+
+  destroy(): void {
+    this._recognitionListeners.forEach(listener => {
+      this._recognition.removeEventListener(
+        listener.key,
+        listener.callback as EventListenerOrEventListenerObject
+      );
+    });
   }
 }
