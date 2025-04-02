@@ -82,6 +82,10 @@ export class IaraSyncfusionAdapter
       impression: {
         itemizedOutput: true,
       },
+      draggable: {
+        containerId: "",
+        defaultPosition: { x: 30, y: 20 },
+      },
     },
     replaceToolbar: false,
     showBookmarks: false,
