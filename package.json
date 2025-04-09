@@ -1,6 +1,6 @@
 {
   "name": "@iarahealth/adapters",
-  "version": "0.2.9",
+  "version": "0.3.2",
   "main": "./dist/adapters.umd.js",
   "module": "./dist/adapters.mjs",
   "types": "./dist/adapters.d.ts",
@@ -58,8 +58,16 @@
     "vitest": "^0.29.8"
   },
   "peerDependencies": {
+    "@syncfusion/ej2-base": ">=26",
+    "@syncfusion/ej2-buttons": ">=26",
+    "@syncfusion/ej2-data": ">=26",
     "@syncfusion/ej2-documenteditor": ">=26.2.11",
+    "@syncfusion/ej2-inputs": ">=26",
+    "@syncfusion/ej2-lists": ">=26",
     "@syncfusion/ej2-locale": ">=26.2",
+    "@syncfusion/ej2-navigations": ">=26",
+    "@syncfusion/ej2-pdf-export": ">=26",
+    "@syncfusion/ej2-popups": ">=26",
     "@syncfusion/ej2-ribbon": ">=26.2",
     "tinymce": ">=6.5"
   },

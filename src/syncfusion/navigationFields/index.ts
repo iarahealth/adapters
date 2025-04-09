@@ -50,11 +50,13 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
   previousBookmark: IaraNavigationBookmark = {} as IaraNavigationBookmark;
 
   private _previousBookmarksTitles: string[] = [];
+  private readonly _listeners: { key: string; callback: () => void }[] = [];
+
   constructor(
     public _documentEditor: DocumentEditor,
-    private _config: IaraSyncfusionConfig,
+    private readonly _config: IaraSyncfusionConfig,
     _recognition: IaraSpeechRecognition,
-    private _languageManager: IaraSyncfusionLanguageManager
+    private readonly _languageManager: IaraSyncfusionLanguageManager
   ) {
     super(_recognition);
 
@@ -76,10 +78,14 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
         end: "",
       },
     };
-    addEventListener(
-      "SyncfusionOnSelectionChange",
-      this.selectionChange.bind(this)
-    );
+
+    this._listeners.push({
+      key: "SyncfusionOnSelectionChange",
+      callback: this.selectionChange.bind(this),
+    });
+    this._listeners.forEach(({ key, callback }) => {
+      addEventListener(key, callback);
+    });
   }
 
   addAdditiveField() {
@@ -95,6 +101,12 @@ export class IaraSyncfusionNavigationFieldManager extends IaraEditorNavigationFi
     if (setColor) this.setColor();
 
     this._documentEditor.selection.clear();
+  }
+
+  destroy() {
+    this._listeners.forEach(({ key, callback }) => {
+      removeEventListener(key, callback);
+    });
   }
 
   insertAdditiveField(additive: IaraAdditiveBookmark) {
