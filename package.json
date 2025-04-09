@@ -58,13 +58,13 @@
     "vitest": "^0.29.8"
   },
   "peerDependencies": {
-    "@syncfusion/ej2-documenteditor": ">=26.2.11",
-    "@syncfusion/ej2-locale": ">=26.2",
     "@syncfusion/ej2-base": ">=26",
     "@syncfusion/ej2-buttons": ">=26",
     "@syncfusion/ej2-data": ">=26",
+    "@syncfusion/ej2-documenteditor": ">=26.2.11",
     "@syncfusion/ej2-inputs": ">=26",
     "@syncfusion/ej2-lists": ">=26",
+    "@syncfusion/ej2-locale": ">=26.2",
     "@syncfusion/ej2-navigations": ">=26",
     "@syncfusion/ej2-pdf-export": ">=26",
     "@syncfusion/ej2-popups": ">=26",
