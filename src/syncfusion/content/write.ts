@@ -198,11 +198,16 @@ export class IaraSyncfusionContentWriteManager {
     this._styleManager.setTheme(this._config.darkMode ? "dark" : "light");
 
     // Set the default editor format after inserting the template
+    const fontColor = this._config.darkMode ? "#fff" : "#000";
     this._styleManager.setEditorDefaultFont({
       fontFamily: this._editor.selection.characterFormat.fontFamily,
       fontSize: this._editor.selection.characterFormat.fontSize,
-      fontColor: this._config.darkMode ? "#fff" : "#000",
+      fontColor,
     });
+
+    this._editor.selection.selectAll();
+    this._editor.selection.characterFormat.fontColor = fontColor;
+    this._editor.selection.moveToDocumentStart();
 
     this._navigationFieldManager.createBookmarks();
     if (this._navigationFieldManager.bookmarks.length)
