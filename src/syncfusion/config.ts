@@ -10,7 +10,7 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
       containerId: string;
       defaultPosition: { x: number; y: number };
     };
-    group_rules: string | string[];
+    group_rules?: string | string[];
   };
   mouseButton: boolean;
   replaceToolbar: boolean;
