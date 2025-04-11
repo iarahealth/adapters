@@ -39,6 +39,7 @@ export class IaraSyncfusionAIAssistant {
 
     const container = document.createElement("div");
     container.style.position = "absolute";
+    container.style.width = "600px";
     container.style.top = `${Math.ceil(
       firstPageBounds.y +
         textPosition.y -
