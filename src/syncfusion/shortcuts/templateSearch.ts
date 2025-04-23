@@ -11,35 +11,48 @@ export class IaraSyncfusionTemplateSearch {
       category: string;
       content: string;
       id: number;
+      templateIara: boolean;
     }[],
     private _onTemplateSelected: (
       listViewInstance: ListView,
       dialogObj: Dialog
     ) => void
   ) {
+    const transformedData = this._dataSource.map(item => ({
+      ...item,
+      category: item.templateIara ? `${item.category} Iara` : item.category,
+    }));
+
     this._template = (data: {
       name: string;
     }) => `<div class="e-list-wrapper" style="padding-left:10px; overflow: auto; height: 120px;">
       <div class="e-list-wrappere-list-multi-line">
-        <span class="e-list-item-header">${data.name}</span>
+        <span class="e-list-content">${data.name}</span>
       </div>
     </div>`;
 
     const customGroupTemplate = (data: {
       items: { name: string; category: string; content: string; id: number }[];
     }) => {
-      return `<div>
-        <span class="category">${
-          data.items.length > 1
-            ? data.items[0].category + "s"
-            : data.items[0].category
-        }</span>
-        <span class="count"> ${data.items.length} Item(s)</span>
-      </div>`;
+      const rawCategory = data.items[0].category;
+      const count = data.items.length;
+      const category =
+        count > 1
+          ? rawCategory
+              .replace(/^Template$/, "Templates")
+              .replace(/^Frase$/, "Frases")
+              .replace(/^Template Iara$/, "Templates Iara")
+          : rawCategory;
+      return `
+        <div>
+          <span class="category">${category}</span>
+          <span class="count"> ${count} Item(s)</span>
+        </div>
+      `;
     };
 
     this._listviewInstance = new ListView({
-      dataSource: this._dataSource,
+      dataSource: transformedData,
       sortOrder: "None",
       fields: { text: "name", groupBy: "category" },
       template: this._template,
