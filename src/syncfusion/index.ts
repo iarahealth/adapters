@@ -593,19 +593,21 @@ export class IaraSyncfusionAdapter
       },
       ...this._defaultCommandArgs
     );
-    this._recognition.commands.add(
-      this._locale.openAssistant,
-      () => {
-        this._onIaraCommand(this._locale.openAssistant);
-        new IaraSyncfusionAIAssistant(
-          this.documentEditor,
-          this._recognition,
-          this._contentManager,
-          this.config
-        );
-      },
-      ...this._defaultCommandArgs
-    );
+    if (this.config.assistant.enabled) {
+      this._recognition.commands.add(
+        this._locale.openAssistant,
+        () => {
+          this._onIaraCommand(this._locale.openAssistant);
+          new IaraSyncfusionAIAssistant(
+            this.documentEditor,
+            this._recognition,
+            this._contentManager,
+            this.config
+          );
+        },
+        ...this._defaultCommandArgs
+      );
+    }
   }
 }
 
