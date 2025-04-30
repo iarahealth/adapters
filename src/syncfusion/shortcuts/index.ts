@@ -47,29 +47,30 @@ export class IaraSyncfusionShortcutsManager {
     const templates = [
       ...Object.values(this._recognition.richTranscriptTemplates.templates),
     ];
-
     const updateFormatTemplates = templates.map(template => {
       const metadata = template.metadata as {
         category: string;
         name: string;
         id: number;
+        templateIara: boolean;
       };
       return {
         name: metadata.name,
         category: metadata.category ? metadata.category : "",
         content: template.replaceText,
         id: metadata.id,
+        templateIara: metadata.templateIara,
       };
     });
 
-    const sortOrder = updateFormatTemplates.sort((oldTemplate, newTemplate) => {
-      // Compare based on the 'type' key
-      if (oldTemplate.category === newTemplate.category) {
-        // If types are the same, order by the 'value' key
-        return oldTemplate["name"].localeCompare(newTemplate["name"]);
+    const sortOrder = updateFormatTemplates.sort((a, b) => {
+      if (a.category === b.category) {
+        if (a.templateIara !== b.templateIara) {
+          return a.templateIara ? 1 : -1;
+        }
+        return a.name.localeCompare(b.name);
       } else {
-        // Order 'template' items first
-        return oldTemplate.category === "Template" ? -1 : 1;
+        return a.category === "Template" ? -1 : 1;
       }
     });
     new IaraSyncfusionTemplateSearch(sortOrder, this.onTemplateSelected);

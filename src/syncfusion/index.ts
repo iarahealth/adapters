@@ -514,8 +514,10 @@ export class IaraSyncfusionAdapter
             content: string;
             id: number;
           };
-
-          if (item.category === "Template") {
+          if (
+            item.category === "Template" ||
+            item.category === "Template Iara"
+          ) {
             if (this._contentManager.writer.preprocessAndInsertTemplate)
               this._contentManager.writer.preprocessAndInsertTemplate?.(
                 item.content,
