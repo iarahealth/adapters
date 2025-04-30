@@ -90,16 +90,26 @@ export class IaraSyncfusionAIAssistant {
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
-      const detail = (
+      const rawDetail = (
         event as CustomEvent<{
           impression: {
             itemizedOutput: boolean;
           };
           user_rules: {
             report: string[];
+            impression: string[];
           };
         }>
       ).detail;
+      const { user_rules, ...rest } = rawDetail;
+      const detail = {
+        ...rest,
+        userRules: user_rules,
+      };
+      this._config.assistant = {
+        ...this._config.assistant,
+        ...rawDetail,
+      };
       dispatchEvent(
         new CustomEvent("IaraAssistantDefinedSettings", { detail })
       );
@@ -152,7 +162,6 @@ export class IaraSyncfusionAIAssistant {
 
     container.appendChild(assistant);
     this._editor.documentHelper.viewerContainer.appendChild(container);
-
     return assistant;
   }
 
