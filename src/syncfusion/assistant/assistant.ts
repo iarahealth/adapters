@@ -82,9 +82,15 @@ export class IaraSyncfusionAIAssistant {
     });
     assistant.addEventListener("report", (event: Event) => {
       const detail = (
-        event as CustomEvent<{ report: string; input: Record<string, unknown> }>
+        event as CustomEvent<{
+          report: string;
+          input: Record<string, unknown>;
+          impression: string;
+        }>
       ).detail;
+
       this._insertReport(detail.report);
+      this._insertDiagnosticImpression(detail.impression);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
       this._recognition.start();
     });
