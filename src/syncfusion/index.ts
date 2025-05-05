@@ -600,6 +600,7 @@ export class IaraSyncfusionAdapter
     this._recognition.commands.add(
       this._locale.openAssistant,
       () => {
+        if (!this.config.assistant.enabled) return;
         this._onIaraCommand(this._locale.openAssistant);
         this._isEditorCommandBlocked.blocked = true;
         new IaraSyncfusionAIAssistant(
