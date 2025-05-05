@@ -32,6 +32,7 @@ export abstract class EditorAdapter {
   protected _locale: Record<string, string> = {};
   protected abstract _styleManager: IaraEditorStyleManager;
   protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
+  protected abstract _isEditorCommandBlocked: { blocked: boolean };
   protected static DefaultConfig: IaraEditorConfig = {
     darkMode: false,
     enableSpeechRecognition: true,
@@ -141,6 +142,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       this._locale.copyReport,
       async (detail, command) => {
+        if (this._isEditorCommandBlocked.blocked) return;
         if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
           this._onIaraCommand?.("required fields to copy");
@@ -155,6 +157,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       this._locale.finishReport,
       async (detail, command) => {
+        if (this._isEditorCommandBlocked.blocked) return;
         if (detail.transcript === command) this._handleRemovedNavigationField();
         if (this.hasEmptyRequiredFields()) {
           this._onIaraCommand?.("required fields to finish");
@@ -217,6 +220,7 @@ export abstract class EditorAdapter {
     this._recognition.commands.add(
       this._locale.print,
       () => {
+        if (this._isEditorCommandBlocked.blocked) return;
         this._onIaraCommand(this._locale.print);
         this.print();
       },

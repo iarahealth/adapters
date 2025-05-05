@@ -12,20 +12,29 @@ export class IaraSyncfusionAIAssistantManager {
     private readonly _editor: DocumentEditor,
     private readonly _recognition: IaraSpeechRecognition,
     private readonly _contentManager: IaraSyncfusionContentManager,
-    private readonly _config: IaraSyncfusionConfig
+    private readonly _config: IaraSyncfusionConfig,
+    private readonly _commandBlocker: { blocked: boolean }
   ) {
-    this._listeners.push({
-      key: "SyncfusionOnSelectionChange",
-      callback: () => {
-        if (!this._assistantButtonContainer) {
-          this._assistantButtonContainer = this._createAssistantContainer();
-        }
+    this._listeners.push(
+      {
+        key: "SyncfusionOnSelectionChange",
+        callback: () => {
+          if (!this._assistantButtonContainer) {
+            this._assistantButtonContainer = this._createAssistantContainer();
+          }
 
-        if (this._assistantButtonContainer) {
-          this._updateContainerPosition(this._assistantButtonContainer);
-        }
+          if (this._assistantButtonContainer) {
+            this._updateContainerPosition(this._assistantButtonContainer);
+          }
+        },
       },
-    });
+      {
+        key: "IaraAssistantClosed",
+        callback: () => {
+          this._commandBlocker.blocked = false;
+        },
+      }
+    );
 
     this._listeners.forEach(({ key, callback }) => {
       addEventListener(key, callback);
@@ -61,6 +70,7 @@ export class IaraSyncfusionAIAssistantManager {
     assistantButton.setAttribute("icon", "stars");
 
     assistantButton.onclick = () => {
+      this._commandBlocker.blocked = true;
       new IaraSyncfusionAIAssistant(
         this._editor,
         this._recognition,

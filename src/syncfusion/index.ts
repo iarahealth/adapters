@@ -78,6 +78,7 @@ export class IaraSyncfusionAdapter
   }[] = [];
 
   protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
+  protected _isEditorCommandBlocked = { blocked: false };
   protected static DefaultConfig: IaraSyncfusionConfig = {
     ...EditorAdapter.DefaultConfig,
     assistant: {
@@ -191,7 +192,8 @@ export class IaraSyncfusionAdapter
         this._documentEditor,
         this._recognition,
         this._contentManager,
-        this.config
+        this.config,
+        this._isEditorCommandBlocked
       );
     }
 
@@ -599,6 +601,7 @@ export class IaraSyncfusionAdapter
       this._locale.openAssistant,
       () => {
         this._onIaraCommand(this._locale.openAssistant);
+        this._isEditorCommandBlocked.blocked = true;
         new IaraSyncfusionAIAssistant(
           this.documentEditor,
           this._recognition,
