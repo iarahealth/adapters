@@ -92,7 +92,6 @@ export class IaraSyncfusionAIAssistant {
       this._insertReport(detail.report);
       this._insertDiagnosticImpression(detail.impression);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
-      this._recognition.start();
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
@@ -121,7 +120,6 @@ export class IaraSyncfusionAIAssistant {
       );
     });
 
-    this._config.enableSpeechRecognition = false;
     assistant.addEventListener("action", (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (detail.id == "close") {
