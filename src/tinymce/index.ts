@@ -11,6 +11,7 @@ import { IaraTinyMceNavigationFieldManager } from "./navigationFields";
 export class IaraTinyMCEAdapter extends EditorAdapter implements EditorAdapter {
   protected _styleManager: IaraTinyMceStyleManager;
   protected _navigationFieldManager: IaraTinyMceNavigationFieldManager;
+  protected _isEditorCommandBlocked = { blocked: false };
   private _initialUndoStackSize = 0;
 
   constructor(

@@ -128,6 +128,7 @@ export class IaraSyncfusionAIAssistant {
     assistant.addEventListener("action", (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (detail.id == "close") {
+        dispatchEvent(new CustomEvent("IaraAssistantClosed"));
         this._config.enableSpeechRecognition = enableSpeechRecognition;
         this._editor.isReadOnly = false;
         assistant.remove();
