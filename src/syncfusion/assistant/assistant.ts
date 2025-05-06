@@ -92,7 +92,6 @@ export class IaraSyncfusionAIAssistant {
       this._insertReport(detail.report);
       this._insertDiagnosticImpression(detail.impression);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
-      this._recognition.start();
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
@@ -121,15 +120,10 @@ export class IaraSyncfusionAIAssistant {
       );
     });
 
-    // Disable speech recognition while assistant is open,
-    // and re-enable it when the assistant is closed (if it was enabled before)
-    const enableSpeechRecognition = this._config.enableSpeechRecognition;
-    this._config.enableSpeechRecognition = false;
     assistant.addEventListener("action", (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (detail.id == "close") {
         dispatchEvent(new CustomEvent("IaraAssistantClosed"));
-        this._config.enableSpeechRecognition = enableSpeechRecognition;
         this._editor.isReadOnly = false;
         assistant.remove();
       }
