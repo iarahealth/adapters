@@ -121,15 +121,11 @@ export class IaraSyncfusionAIAssistant {
       );
     });
 
-    // Disable speech recognition while assistant is open,
-    // and re-enable it when the assistant is closed (if it was enabled before)
-    const enableSpeechRecognition = this._config.enableSpeechRecognition;
     this._config.enableSpeechRecognition = false;
     assistant.addEventListener("action", (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (detail.id == "close") {
         dispatchEvent(new CustomEvent("IaraAssistantClosed"));
-        this._config.enableSpeechRecognition = enableSpeechRecognition;
         this._editor.isReadOnly = false;
         assistant.remove();
       }
