@@ -458,7 +458,9 @@ export const tabsConfig = (
         label: "Line Spacing",
         popupWidth: "85px",
         width: "70px",
-        value: editor.documentEditor.selection.paragraphFormat.lineSpacing
+        value: config.paragraphlineSpacing
+          ? String(config.paragraphlineSpacing)
+          : editor.documentEditor.selection.paragraphFormat.lineSpacing
           ? editor.documentEditor.selection.paragraphFormat.lineSpacing + ""
           : editor.documentEditor.documentHelper.paragraphFormat.lineSpacing +
             "",

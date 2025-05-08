@@ -18,6 +18,7 @@ export interface IaraEditorConfig {
     family: string;
     size: number;
   };
+  paragraphlineSpacing?: number;
   saveReport: boolean;
   language: "pt-BR" | "es";
   zoomFactor: string;
@@ -36,6 +37,7 @@ export abstract class EditorAdapter {
     enableSpeechRecognition: true,
     saveReport: true,
     zoomFactor: "100%",
+    paragraphlineSpacing: 1,
     language: "pt-BR",
     highlightInference: true,
     mouseButton: false,

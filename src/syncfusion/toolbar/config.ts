@@ -344,7 +344,7 @@ export const toolBarSettings = (
       const characterFormat = editor.documentEditor.selection.characterFormat;
       ribbonParagraphToggleConfigs(editor);
 
-      getReportStyleConfig(ribbonConfig, editor);
+      getReportStyleConfig(ribbonConfig, editor, config);
 
       enableDisableFontOptions(characterFormat);
     }
@@ -354,10 +354,19 @@ export const toolBarSettings = (
   return { ribbon: ribbonConfig, listener };
 };
 
+let hasSetLineSpacing = false;
+
 const getReportStyleConfig = (
   ribbon: Ribbon,
-  editor: DocumentEditorContainer
+  editor: DocumentEditorContainer,
+  config: IaraSyncfusionConfig
 ) => {
+  if (!hasSetLineSpacing && config.paragraphlineSpacing) {
+    editor.documentEditor.selection.paragraphFormat.lineSpacing =
+      config.paragraphlineSpacing;
+
+    hasSetLineSpacing = true;
+  }
   const paragraphFormat = editor.documentEditor.selection.paragraphFormat;
   const characterFormat = editor.documentEditor.selection.characterFormat;
 
@@ -376,7 +385,9 @@ const getReportStyleConfig = (
     ribbon
   );
   ribbonParagraphMethods(editor).changeLineSpacing(
-    { value: paragraphFormat.lineSpacing },
+    {
+      value: paragraphFormat.lineSpacing,
+    },
     ribbon
   );
 };
