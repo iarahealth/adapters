@@ -361,10 +361,9 @@ const getReportStyleConfig = (
   editor: DocumentEditorContainer,
   config: IaraSyncfusionConfig
 ) => {
-  if (!hasSetLineSpacing && config.paragraphlineSpacing) {
-    editor.documentEditor.selection.paragraphFormat.lineSpacing =
-      config.paragraphlineSpacing;
-
+  if (!hasSetLineSpacing && config.contextualParagraphSpacing) {
+    editor.documentEditor.selection.paragraphFormat.contextualSpacing =
+      config.contextualParagraphSpacing;
     hasSetLineSpacing = true;
   }
   const paragraphFormat = editor.documentEditor.selection.paragraphFormat;
