@@ -167,24 +167,28 @@ export class IaraSyncfusionAIAssistant {
   }
 
   private _ensureParagraphsForDiagnosticInsertion() {
-    this._editor.selection.extendToLineStart();
-    this._editor.selection.select(
-      this._editor.selection.startOffset,
-      this._editor.selection.endOffset
-    );
-    let lineContent = this._editor.selection.text;
+    const selection = this._editor.selection;
+
+    selection.extendToLineStart();
+    selection.select(selection.startOffset, selection.endOffset);
+
+    let lineContent = selection.text;
+
     //charCode 13 line break
-    while (
-      lineContent.charCodeAt(0) === 13 ||
-      lineContent === "" ||
-      lineContent.startsWith(" ")
-    ) {
-      this._editor.selection.moveToPreviousLine();
-      this._editor.selection.extendToLineEnd();
-      lineContent = this._editor.selection.text;
-      continue;
+    const isLineIgnorable = (text: string) =>
+      text.trim() === "" || text.charCodeAt(0) === 13;
+
+    let lastOffset = selection.startOffset;
+
+    while (isLineIgnorable(lineContent)) {
+      selection.moveToPreviousLine();
+      selection.extendToLineEnd();
+      lineContent = selection.text;
+      if (selection.startOffset === lastOffset) break;
+      lastOffset = selection.startOffset;
     }
-    this._editor.selection.moveToLineEnd();
+
+    selection.moveToLineEnd();
     this._contentManager.writer.insertParagraph();
     this._contentManager.writer.insertParagraph();
   }
