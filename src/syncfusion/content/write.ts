@@ -207,8 +207,13 @@ export class IaraSyncfusionContentWriteManager {
       fontColor,
     });
     this._editor.selection.selectAll();
-    this._editor.selection.paragraphFormat.contextualSpacing =
-      !!this._config.contextualParagraphSpacing;
+
+    if (this._config.paragraphSpacing) {
+      this._styleManager.setSelectionParagraphSpacingFormat(
+        this._config.paragraphSpacing
+      );
+    }
+
     this._editor.selection.characterFormat.fontColor = fontColor;
     this._editor.selection.moveToDocumentStart();
 

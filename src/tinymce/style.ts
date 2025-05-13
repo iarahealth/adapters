@@ -7,6 +7,12 @@ export class IaraTinyMceStyleManager extends IaraEditorStyleManager {
   setSelectionFontSize(_fontSize: number): void {
     throw new Error("Method not implemented.");
   }
+  setSelectionParagraphSpacingFormat(paragraphSpacing: {
+    after: number;
+    before: number;
+  }): void {
+    throw new Error("Method not implemented.");
+  }
   setEditorFontColor(_fontColor: string): void {
     throw new Error("Method not implemented.");
   }

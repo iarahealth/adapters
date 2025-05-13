@@ -12,6 +12,11 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
     };
     group_rules?: string | string[];
   };
+  lineSpacing?: number;
+  paragraphSpacing?: {
+    after: number;
+    before: number;
+  };
   mouseButton: boolean;
   replaceToolbar: boolean;
   showBookmarks: boolean;
