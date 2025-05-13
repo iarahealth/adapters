@@ -19,6 +19,11 @@ export interface IaraEditorConfig {
     size: number;
   };
   saveReport: boolean;
+  lineSpacing?: number;
+  paragraphSpacing?: {
+    after: number;
+    before: number;
+  };
   language: "pt-BR" | "es";
   zoomFactor: string;
   highlightInference: boolean;
