@@ -186,6 +186,7 @@ export class IaraSyncfusionContentWriteManager {
     content: string,
     replaceAllContent: boolean
   ): Promise<void> {
+    this._editor.selection.paragraphFormat.contextualSpacing = true;
     const sfdt = await this._readManager.fromContent(content);
     if (replaceAllContent || this._editor.isDocumentEmpty) {
       this._editor.open(sfdt.value);
@@ -199,13 +200,20 @@ export class IaraSyncfusionContentWriteManager {
 
     // Set the default editor format after inserting the template
     const fontColor = this._config.darkMode ? "#fff" : "#000";
+
     this._styleManager.setEditorDefaultFont({
       fontFamily: this._editor.selection.characterFormat.fontFamily,
       fontSize: this._editor.selection.characterFormat.fontSize,
       fontColor,
     });
-
     this._editor.selection.selectAll();
+
+    if (this._config.paragraphSpacing) {
+      this._styleManager.setSelectionParagraphSpacingFormat(
+        this._config.paragraphSpacing
+      );
+    }
+
     this._editor.selection.characterFormat.fontColor = fontColor;
     this._editor.selection.moveToDocumentStart();
 
