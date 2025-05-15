@@ -90,8 +90,11 @@ export class IaraSyncfusionAIAssistant {
       ).detail;
 
       this._insertReport(detail.report);
-      this._insertDiagnosticImpression(detail.impression);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
+
+      if (detail.impression) {
+        this._insertDiagnosticImpression(detail.impression);
+      }
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
