@@ -603,6 +603,7 @@ export class IaraSyncfusionAdapter
         if (!this.config.assistant.enabled) return;
         this._onIaraCommand(this._locale.openAssistant);
         this._isEditorCommandBlocked.blocked = true;
+        this._recognition.stop();
         new IaraSyncfusionAIAssistant(
           this.documentEditor,
           this._recognition,
