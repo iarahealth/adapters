@@ -261,18 +261,24 @@ export class IaraSyncfusionAIAssistant {
   private async _insertReport(report: string): Promise<void> {
     const previousContent =
       await this._contentManager.reader.getPlainTextContent();
+    const wasEditorEmpty = previousContent.trim() === "";
 
     this._editor.isReadOnly = false;
     this._contentManager.writer.clear();
 
-    const diff = diffWords(previousContent, report);
-    for (const change of diff) {
-      this._editor.selection.moveToDocumentEnd();
-      if (change.added) {
-        this._addBookmark(change.value);
-      } else if (!change.removed) {
-        this._editor.selection.characterFormat.highlightColor = "NoColor";
-        this._contentManager.writer.insertText(change.value);
+    // Ignore the diff if the editor was empty, as it would be shown as a full report
+    if (wasEditorEmpty) {
+      this._contentManager.writer.insertText(report);
+    } else {
+      const diff = diffWords(previousContent, report);
+      for (const change of diff) {
+        this._editor.selection.moveToDocumentEnd();
+        if (change.added) {
+          this._addBookmark(change.value);
+        } else if (!change.removed) {
+          this._editor.selection.characterFormat.highlightColor = "NoColor";
+          this._contentManager.writer.insertText(change.value);
+        }
       }
     }
 
