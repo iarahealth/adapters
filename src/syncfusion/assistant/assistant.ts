@@ -5,6 +5,13 @@ import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 
+interface IaraAssistantReportEventDetail {
+  report: string;
+  input: Record<string, unknown>;
+  impression: string;
+  template: string;
+}
+
 export class IaraSyncfusionAIAssistant {
   constructor(
     private _editor: DocumentEditor,
@@ -81,15 +88,10 @@ export class IaraSyncfusionAIAssistant {
       );
     });
     assistant.addEventListener("report", (event: Event) => {
-      const detail = (
-        event as CustomEvent<{
-          report: string;
-          input: Record<string, unknown>;
-          impression: string;
-        }>
-      ).detail;
+      const detail = (event as CustomEvent<IaraAssistantReportEventDetail>)
+        .detail;
 
-      this._insertReport(detail.report);
+      this._insertReport(detail);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
 
       if (detail.impression) {
@@ -258,19 +260,19 @@ export class IaraSyncfusionAIAssistant {
     this._contentManager.writer.insertText(diagnosticImpression);
   }
 
-  private async _insertReport(report: string): Promise<void> {
-    const previousContent =
-      await this._contentManager.reader.getPlainTextContent();
-    const wasEditorEmpty = previousContent.trim() === "";
+  private async _insertReport(
+    detail: IaraAssistantReportEventDetail
+  ): Promise<void> {
+    const { template, report } = detail;
 
     this._editor.isReadOnly = false;
     this._contentManager.writer.clear();
 
-    // Ignore the diff if the editor was empty, as it would be shown as a full report
-    if (wasEditorEmpty) {
-      this._contentManager.writer.insertText(report);
+    // Ignore the diff if the was empty, as it would be shown as a full report
+    if (template.trim() === "") {
+      this._contentManager.writer.insertText(detail.report);
     } else {
-      const diff = diffWords(previousContent, report);
+      const diff = diffWords(template, report);
       for (const change of diff) {
         this._editor.selection.moveToDocumentEnd();
         if (change.added) {
