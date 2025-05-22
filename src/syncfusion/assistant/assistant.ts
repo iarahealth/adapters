@@ -93,10 +93,6 @@ export class IaraSyncfusionAIAssistant {
 
       this._insertReport(detail);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
-
-      if (detail.impression) {
-        this._insertDiagnosticImpression(detail.impression);
-      }
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
@@ -263,14 +259,15 @@ export class IaraSyncfusionAIAssistant {
   private async _insertReport(
     detail: IaraAssistantReportEventDetail
   ): Promise<void> {
-    const { template, report } = detail;
+    const { template, report, impression } = detail;
 
     this._editor.isReadOnly = false;
     this._contentManager.writer.clear();
 
     // Ignore the diff if the was empty, as it would be shown as a full report
     if (template.trim() === "") {
-      this._contentManager.writer.insertText(detail.report);
+      this._contentManager.writer.insertText(report);
+      if (impression) this._insertDiagnosticImpression(detail.impression);
     } else {
       const diff = diffWords(template, report);
       for (const change of diff) {
@@ -281,6 +278,14 @@ export class IaraSyncfusionAIAssistant {
           this._editor.selection.characterFormat.highlightColor = "NoColor";
           this._contentManager.writer.insertText(change.value);
         }
+      }
+
+      if (impression) {
+        const bookmarkId = `assistantId_${uuidv4()}`;
+        this._editor.editor.insertBookmark(bookmarkId);
+        this._editor.selection.selectBookmark(bookmarkId);
+        this._highlightSelection();
+        this._insertDiagnosticImpression(detail.impression);
       }
     }
 
