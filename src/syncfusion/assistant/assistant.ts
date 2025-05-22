@@ -5,6 +5,13 @@ import { IaraSpeechRecognition } from "../../speech";
 import { IaraSyncfusionConfig } from "../config";
 import { IaraSyncfusionContentManager } from "../content";
 
+interface IaraAssistantReportEventDetail {
+  report: string;
+  input: Record<string, unknown>;
+  impression: string;
+  template: string;
+}
+
 export class IaraSyncfusionAIAssistant {
   constructor(
     private _editor: DocumentEditor,
@@ -81,20 +88,11 @@ export class IaraSyncfusionAIAssistant {
       );
     });
     assistant.addEventListener("report", (event: Event) => {
-      const detail = (
-        event as CustomEvent<{
-          report: string;
-          input: Record<string, unknown>;
-          impression: string;
-        }>
-      ).detail;
+      const detail = (event as CustomEvent<IaraAssistantReportEventDetail>)
+        .detail;
 
-      this._insertReport(detail.report);
+      this._insertReport(detail);
       dispatchEvent(new CustomEvent("IaraAssistantReport", { detail }));
-
-      if (detail.impression) {
-        this._insertDiagnosticImpression(detail.impression);
-      }
     });
 
     assistant.addEventListener("definedSettings", (event: Event) => {
@@ -258,21 +256,36 @@ export class IaraSyncfusionAIAssistant {
     this._contentManager.writer.insertText(diagnosticImpression);
   }
 
-  private async _insertReport(report: string): Promise<void> {
-    const previousContent =
-      await this._contentManager.reader.getPlainTextContent();
+  private async _insertReport(
+    detail: IaraAssistantReportEventDetail
+  ): Promise<void> {
+    const { template, report, impression } = detail;
 
     this._editor.isReadOnly = false;
     this._contentManager.writer.clear();
 
-    const diff = diffWords(previousContent, report);
-    for (const change of diff) {
-      this._editor.selection.moveToDocumentEnd();
-      if (change.added) {
-        this._addBookmark(change.value);
-      } else if (!change.removed) {
-        this._editor.selection.characterFormat.highlightColor = "NoColor";
-        this._contentManager.writer.insertText(change.value);
+    // Ignore the diff if the was empty, as it would be shown as a full report
+    if (template.trim() === "") {
+      this._contentManager.writer.insertText(report);
+      if (impression) this._insertDiagnosticImpression(detail.impression);
+    } else {
+      const diff = diffWords(template, report);
+      for (const change of diff) {
+        this._editor.selection.moveToDocumentEnd();
+        if (change.added) {
+          this._addBookmark(change.value);
+        } else if (!change.removed) {
+          this._editor.selection.characterFormat.highlightColor = "NoColor";
+          this._contentManager.writer.insertText(change.value);
+        }
+      }
+
+      if (impression) {
+        const bookmarkId = `assistantId_${uuidv4()}`;
+        this._editor.editor.insertBookmark(bookmarkId);
+        this._editor.selection.selectBookmark(bookmarkId);
+        this._highlightSelection();
+        this._insertDiagnosticImpression(detail.impression);
       }
     }
 
