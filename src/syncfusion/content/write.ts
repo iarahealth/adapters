@@ -186,6 +186,7 @@ export class IaraSyncfusionContentWriteManager {
     content: string,
     replaceAllContent: boolean
   ): Promise<void> {
+    this._editor.selection.paragraphFormat.contextualSpacing = true;
     const sfdt = await this._readManager.fromContent(content);
     if (replaceAllContent || this._editor.isDocumentEmpty) {
       this._editor.open(sfdt.value);
@@ -204,6 +205,16 @@ export class IaraSyncfusionContentWriteManager {
       fontSize: this._editor.selection.characterFormat.fontSize,
       fontColor,
     });
+    this._editor.selection.selectAll();
+
+    if (this._config.paragraphSpacing) {
+      this._styleManager.setSelectionParagraphSpacingFormat(
+        this._config.paragraphSpacing
+      );
+    }
+
+    this._editor.selection.characterFormat.fontColor = fontColor;
+    this._editor.selection.moveToDocumentStart();
 
     this._editor.selection.selectAll();
     this._editor.selection.characterFormat.fontColor = fontColor;
