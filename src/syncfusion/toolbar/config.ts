@@ -421,7 +421,9 @@ const getReportStyleConfig = (
     ribbon
   );
   ribbonParagraphMethods(editor).changeLineSpacing(
-    { value: paragraphFormat.lineSpacing },
+    {
+      value: paragraphFormat.lineSpacing,
+    },
     ribbon
   );
 };

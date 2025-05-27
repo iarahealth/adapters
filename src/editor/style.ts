@@ -7,5 +7,9 @@ export abstract class IaraEditorStyleManager {
   abstract toggleUppercase(): void;
   abstract setSelectionFontFamily(fontName: string): void;
   abstract setSelectionFontSize(fontSize: number): void;
+  abstract setSelectionParagraphSpacingFormat(paragraphSpacing: {
+    after: number;
+    before: number;
+  }): void;
   abstract setEditorFontColor(fontColor: string): void;
 }
