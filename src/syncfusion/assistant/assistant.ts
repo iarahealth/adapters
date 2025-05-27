@@ -9,6 +9,7 @@ interface IaraAssistantReportEventDetail {
   report: string;
   input: Record<string, unknown>;
   impression: string;
+  selected_chain: string;
   template: string;
 }
 
@@ -256,37 +257,50 @@ export class IaraSyncfusionAIAssistant {
     this._contentManager.writer.insertText(diagnosticImpression);
   }
 
+  private _insertReportWithTemplateDiff(
+    template: string,
+    report: string,
+    impression: string
+  ): void {
+    const diff = diffWords(template, report);
+    for (const change of diff) {
+      this._editor.selection.moveToDocumentEnd();
+      if (change.added) {
+        this._addBookmark(change.value);
+      } else if (!change.removed) {
+        this._editor.selection.characterFormat.highlightColor = "NoColor";
+        this._contentManager.writer.insertText(change.value);
+      }
+    }
+
+    if (impression) {
+      const bookmarkId = `assistantId_${uuidv4()}`;
+      this._editor.editor.insertBookmark(bookmarkId);
+      this._editor.selection.selectBookmark(bookmarkId);
+      this._highlightSelection();
+      this._insertDiagnosticImpression(impression);
+    }
+  }
+
   private async _insertReport(
     detail: IaraAssistantReportEventDetail
   ): Promise<void> {
-    const { template, report, impression } = detail;
-
     this._editor.isReadOnly = false;
+
+    const { report, impression, selected_chain, template } = detail;
+    const plainText = await this._contentManager.reader.getPlainTextContent();
+
     this._contentManager.writer.clear();
 
-    // Ignore the diff if the was empty, as it would be shown as a full report
-    if (template.trim() === "") {
+    if (selected_chain === "modify_report_chain") {
+      this._insertReportWithTemplateDiff(plainText, report, impression);
+    } else if (template === undefined || template.trim() === "") {
+      // Ignore the diff if the was empty, as it would be shown as a full report
       this._contentManager.writer.insertText(report);
       if (impression) this._insertDiagnosticImpression(detail.impression);
     } else {
-      const diff = diffWords(template, report);
-      for (const change of diff) {
-        this._editor.selection.moveToDocumentEnd();
-        if (change.added) {
-          this._addBookmark(change.value);
-        } else if (!change.removed) {
-          this._editor.selection.characterFormat.highlightColor = "NoColor";
-          this._contentManager.writer.insertText(change.value);
-        }
-      }
-
-      if (impression) {
-        const bookmarkId = `assistantId_${uuidv4()}`;
-        this._editor.editor.insertBookmark(bookmarkId);
-        this._editor.selection.selectBookmark(bookmarkId);
-        this._highlightSelection();
-        this._insertDiagnosticImpression(detail.impression);
-      }
+      // For the regular report generation chain with a template, show the diff
+      this._insertReportWithTemplateDiff(template, report, impression);
     }
 
     this._contentManager.writer.formatSectionTitles();
