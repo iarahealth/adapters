@@ -17,8 +17,27 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
   ) {
     super();
 
+    const styleNode = document.createElement("style");
+    document.getElementsByTagName("head")[0].appendChild(styleNode);
+    styleNode.sheet?.insertRule(
+      `.e-iara-logo {
+        background-image: url("https://downloads.iarahealth.com/assets/logo-iara-vertical.png") !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        width: 100% !important;
+      }`
+    );
+    styleNode.sheet?.insertRule(
+      `.e-iara-logo-small {
+          background-image: url("https://downloads.iarahealth.com/assets/logo-simple.png") !important;
+          height: 24px !important;
+          object-fit: contain !important;
+          width: 24px !important;
+        }`
+    );
     this.setTheme(this._config.darkMode ? "dark" : "light");
     this.setEditorDefaultFont();
+    this.setEditorDefaultLineSpacing();
     this.setZoomFactor(this._config.zoomFactor ?? "100%");
   }
 
@@ -55,6 +74,14 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     };
   }
 
+  setEditorDefaultLineSpacing(): void {
+    if (this._config.lineSpacing) {
+      this._editor.selection.paragraphFormat.lineSpacing =
+        this._config.lineSpacing;
+      this._editor.focusIn();
+    }
+  }
+
   setEditorFontColor(color: string): void {
     this._editor.setDefaultCharacterFormat({ fontColor: color });
   }
@@ -66,6 +93,18 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
+
+  setSelectionParagraphSpacingFormat = (paragraphSpacing: {
+    after: number;
+    before: number;
+  }) => {
+    this._editor.selection.paragraphFormat.spaceAfterAuto = false;
+    this._editor.selection.paragraphFormat.spaceBeforeAuto = false;
+    this._editor.selection.paragraphFormat.afterSpacing =
+      paragraphSpacing.after;
+    this._editor.selection.paragraphFormat.beforeSpacing =
+      paragraphSpacing.before;
+  };
 
   setTheme(theme: "light" | "dark") {
     if (theme === "light") return;

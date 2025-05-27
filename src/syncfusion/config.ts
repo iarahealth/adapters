@@ -2,13 +2,13 @@ import { IaraEditorConfig } from "../editor";
 
 export interface IaraSyncfusionConfig extends IaraEditorConfig {
   assistant: {
+    draggable?: {
+      containerId: string;
+      defaultPosition: { x: number; y: number };
+    };
     enabled: boolean;
     impression: {
       itemizedOutput: boolean;
-    };
-    draggable: {
-      containerId: string;
-      defaultPosition: { x: number; y: number };
     };
     user_rules: { report: string[]; impression: string[] };
   };
