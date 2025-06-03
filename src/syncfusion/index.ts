@@ -406,12 +406,14 @@ export class IaraSyncfusionAdapter
 
     let currentParagraph = startingParagraph;
     let coloredStartOffset;
+    let previousWordEndOffset;
     const coloredTextOffsets = [];
     while (
       currentParagraph === startingParagraph &&
-      this._documentEditor.selection.endOffset !== paragraphEnd
+      this._documentEditor.selection.endOffset !== paragraphEnd &&
+      this._documentEditor.selection.endOffset !== previousWordEndOffset
     ) {
-      const previousWordEndOffset = this._documentEditor.selection.endOffset;
+      previousWordEndOffset = this._documentEditor.selection.endOffset;
       this._documentEditor.selection.extendToWordEnd();
       currentParagraph = this._documentEditor.selection.endOffset.split(";")[1];
 
