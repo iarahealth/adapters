@@ -13,7 +13,11 @@ import {
 } from "@syncfusion/ej2-popups";
 import debounce from "debounce";
 import { EditorAdapter } from "../editor";
-import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
+import {
+  Config,
+  IaraSpeechRecognition,
+  IaraSpeechRecognitionDetail,
+} from "../speech";
 import {
   IaraSyncfusionAIAssistant,
   IaraSyncfusionAIAssistantManager,
@@ -705,8 +709,9 @@ export class IaraSyncfusionAdapter
       },
       ...this._defaultCommandArgs
     );
+
     this._recognition.commands.add(
-      this._locale.openAssistant,
+      `^<div>${this._locale.openAssistant}</div>$`,
       () => {
         if (!this.config.assistant.enabled) return;
         this._onIaraCommand(this._locale.openAssistant);
