@@ -13,11 +13,7 @@ import {
 } from "@syncfusion/ej2-popups";
 import debounce from "debounce";
 import { EditorAdapter } from "../editor";
-import {
-  Config,
-  IaraSpeechRecognition,
-  IaraSpeechRecognitionDetail,
-} from "../speech";
+import { IaraSpeechRecognition, IaraSpeechRecognitionDetail } from "../speech";
 import {
   IaraSyncfusionAIAssistant,
   IaraSyncfusionAIAssistantManager,
