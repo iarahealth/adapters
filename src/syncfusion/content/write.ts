@@ -216,10 +216,6 @@ export class IaraSyncfusionContentWriteManager {
     this._editor.selection.characterFormat.fontColor = fontColor;
     this._editor.selection.moveToDocumentStart();
 
-    this._editor.selection.selectAll();
-    this._editor.selection.characterFormat.fontColor = fontColor;
-    this._editor.selection.moveToDocumentStart();
-
     this._navigationFieldManager.createBookmarks();
     if (this._navigationFieldManager.bookmarks.length)
       this._navigationFieldManager.nextField();
