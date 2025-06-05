@@ -199,7 +199,7 @@ export class IaraSyncfusionAdapter
 
     this._listeners.push({
       key: "IaraAssistantReport",
-      callback: (event?: Event) => {
+      callback: async (event?: Event) => {
         if (!event) return;
         this._currentAssistantGeneratedReport = (
           event as CustomEvent<{
@@ -207,6 +207,16 @@ export class IaraSyncfusionAdapter
             input: Record<string, unknown>;
           }>
         ).detail;
+
+        const metadata = {
+          template: this._currentTemplatePlainText,
+          transcriptions: Object.values(
+            this._inferenceBookmarksManager.bookmarks
+          ),
+          generatedReport: this._currentAssistantGeneratedReport,
+        };
+        const content = await this.getEditorContent();
+        this.updateReport(content[0], content[1], metadata);
       },
     });
 
@@ -554,11 +564,12 @@ export class IaraSyncfusionAdapter
         });
       }
     );
-    const content = await super.finishReport({
+    const metadata = {
       template: this._currentTemplatePlainText,
       transcriptions: Object.values(this._inferenceBookmarksManager.bookmarks),
       generatedReport: this._currentAssistantGeneratedReport,
-    });
+    };
+    const content = await super.finishReport(metadata);
 
     this._currentAssistantGeneratedReport = undefined;
     this._currentTemplatePlainText = undefined;
@@ -599,7 +610,7 @@ export class IaraSyncfusionAdapter
 
       if (contentDate !== this._contentDate) return;
 
-      await this._updateReport(content[0], content[1]);
+      await this.updateReport(content[0], content[1]);
       this._footerBarManager.updateSavingReportStatus("success");
       dispatchEvent(new CustomEvent("IaraOnSaveReport", { detail: content }));
     } catch {
