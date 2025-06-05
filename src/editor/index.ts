@@ -293,14 +293,23 @@ export abstract class EditorAdapter {
     this.onIaraCommand?.(command);
   }
 
-  protected _updateReport(
+  public updateReport(
     plainContent: string,
-    richContent: string
+    richContent: string,
+    metadata?: Record<string, unknown>
   ): Promise<string> {
-    if (this._recognition.report["_key"]) {
+    if (!this._recognition.report["_key"]) {
+      throw new Error("Need a report key to update.");
+    }
+    if (metadata) {
+      return this._recognition.report.change(
+        plainContent,
+        richContent,
+        metadata
+      );
+    } else {
       return this._recognition.report.change(plainContent, richContent);
     }
-    throw new Error("Need a report key to update.");
   }
 
   protected async _beginReport(): Promise<void> {
