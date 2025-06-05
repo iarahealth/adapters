@@ -707,8 +707,9 @@ export class IaraSyncfusionAdapter
       },
       ...this._defaultCommandArgs
     );
+
     this._recognition.commands.add(
-      this._locale.openAssistant,
+      `^<div>${this._locale.openAssistant}</div>$`,
       () => {
         if (!this.config.assistant.enabled) return;
         this._onIaraCommand(this._locale.openAssistant);
