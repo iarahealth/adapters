@@ -187,7 +187,7 @@ export class IaraSyncfusionContentWriteManager {
     replaceAllContent: boolean
   ): Promise<void> {
     this._editor.selection.paragraphFormat.contextualSpacing = true;
-    const sfdt = await this._readManager.fromContent(content);
+    const sfdt = await this._readManager.fromContent(content, this._config);
     if (replaceAllContent || this._editor.isDocumentEmpty) {
       this._editor.open(sfdt.value);
     } else {
