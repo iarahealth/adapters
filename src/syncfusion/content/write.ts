@@ -207,10 +207,14 @@ export class IaraSyncfusionContentWriteManager {
     });
     this._editor.selection.selectAll();
 
-    if (this._config.paragraphSpacing) {
-      this._styleManager.setSelectionParagraphSpacingFormat(
-        this._config.paragraphSpacing
-      );
+    if (this._config.forceTypographyStyles) {
+      const { font, paragraphSpacing, lineSpacing } = this._config;
+      if (paragraphSpacing)
+        this._styleManager.setSelectionParagraphSpacingFormat(paragraphSpacing);
+      if (font?.family) this._styleManager.setSelectionFontFamily(font.family);
+      if (font?.size) this._styleManager.setSelectionFontSize(font.size);
+      if (lineSpacing)
+        this._styleManager.setSelectionLineSpacingFormat(lineSpacing);
     }
 
     this._editor.selection.characterFormat.fontColor = fontColor;
