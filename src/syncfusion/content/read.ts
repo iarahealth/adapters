@@ -91,7 +91,9 @@ export class IaraSFDT {
 
   static injectStyleIfMissing(html: string, config: IaraEditorConfig): string {
     const hasStyleTag = /<style[\s\S]*?>[\s\S]*?<\/style>/i.test(html);
-    if (hasStyleTag) return html;
+    const hasInlineStyle = /<[^>]+style\s*=\s*["'][^"']*["']/i.test(html);
+
+    if (hasStyleTag || hasInlineStyle) return html;
 
     const fontFamily = config?.font?.family;
     const fontSize = config?.font?.size;
