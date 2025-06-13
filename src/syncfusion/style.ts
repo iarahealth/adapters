@@ -93,7 +93,11 @@ export class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     this._editor.selection.characterFormat.fontSize = fontSize;
     this._editor.focusIn();
   }
-
+  setSelectionLineSpacingFormat = (lineSpacing: number) => {
+    this._editor.selection.paragraphFormat.lineSpacing = lineSpacing;
+    this._editor.selection.paragraphFormat.lineSpacingType = "Multiple";
+    this._editor.focusIn();
+  };
   setSelectionParagraphSpacingFormat = (paragraphSpacing: {
     after: number;
     before: number;

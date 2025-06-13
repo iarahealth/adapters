@@ -20,6 +20,7 @@ export interface IaraEditorConfig {
   };
   saveReport: boolean;
   lineSpacing?: number;
+  forceTypographyStyles?: boolean;
   paragraphSpacing?: {
     after: number;
     before: number;
