@@ -9,6 +9,7 @@ import {
 } from "@syncfusion/ej2-pdf-export";
 import debounce from "debounce";
 import { IaraSyncfusionConfig } from "..";
+import { IaraEditorConfig } from "../../editor";
 
 export enum IaraSyncfusionContentTypes {
   SFDT = "sfdt",
@@ -33,11 +34,15 @@ export class IaraSFDT {
     else return IaraSyncfusionContentTypes.PLAIN_TEXT;
   }
 
-  static async fromContent(content: string, editor: DocumentEditor) {
+  static async fromContent(
+    content: string,
+    editor: DocumentEditor,
+    config: IaraEditorConfig
+  ) {
     const contentType = IaraSFDT.detectContentType(content);
     if (contentType === IaraSyncfusionContentTypes.SFDT)
       return new IaraSFDT(content, editor);
-    else return IaraSFDT.import(content, editor, contentType);
+    else return IaraSFDT.import(content, editor, config, contentType);
   }
 
   static async fromEditor(editor: DocumentEditor) {
@@ -50,11 +55,14 @@ export class IaraSFDT {
   static async import(
     content: string,
     editor: DocumentEditor,
+    config: IaraEditorConfig,
     contentType?: IaraSyncfusionContentTypes
   ) {
     if (!contentType) contentType = IaraSFDT.detectContentType(content);
-    if (contentType === IaraSyncfusionContentTypes.HTML)
-      content = content.replace(/<br>/g, "<br/>");
+    if (contentType === IaraSyncfusionContentTypes.HTML) {
+      const rawHtml = content.replace(/<br>/g, "<br/>");
+      content = IaraSFDT.injectStyleIfMissing(rawHtml, config);
+    }
     const mimeType =
       contentType === IaraSyncfusionContentTypes.SFDT
         ? "application/json"
@@ -79,6 +87,31 @@ export class IaraSFDT {
     }
 
     return new IaraSFDT(responseText, editor);
+  }
+
+  static injectStyleIfMissing(html: string, config: IaraEditorConfig): string {
+    const hasStyleTag = /<style[\s\S]*?>[\s\S]*?<\/style>/i.test(html);
+    const hasInlineStyle = /<[^>]+style\s*=\s*["'][^"']*["']/i.test(html);
+
+    if (hasStyleTag || hasInlineStyle) return html;
+
+    const fontFamily = config?.font?.family;
+    const fontSize = config?.font?.size;
+    const lineSpacing = config?.lineSpacing;
+    const color = config?.darkMode ? "#fff" : "#000";
+    const bgColor = config?.darkMode ? "#000" : "#fff";
+
+    const styleInline = `
+      font-family: ${fontFamily};
+      font-size: ${fontSize}pt;
+      line-height: ${lineSpacing}pt;
+      color: ${color};
+      background-color: ${bgColor};
+    `
+      .trim()
+      .replace(/\s+/g, " ");
+
+    return `<div style="${styleInline}">\n${html}\n</div>`;
   }
 
   static async toHtml(content: string): Promise<string> {
@@ -251,8 +284,8 @@ export class IaraSyncfusionContentReadManager {
     };
   }
 
-  async fromContent(content: string) {
-    this._sfdt = await IaraSFDT.fromContent(content, this._editor);
+  async fromContent(content: string, config: IaraEditorConfig) {
+    this._sfdt = await IaraSFDT.fromContent(content, this._editor, config);
     return this._sfdt;
   }
 
@@ -291,8 +324,12 @@ export class IaraSyncfusionContentReadManager {
     return this._getSfdtContent();
   }
 
-  import(content: string, contentType?: IaraSyncfusionContentTypes) {
-    return IaraSFDT.import(content, this._editor, contentType);
+  import(
+    content: string,
+    config: IaraEditorConfig,
+    contentType?: IaraSyncfusionContentTypes
+  ) {
+    return IaraSFDT.import(content, this._editor, config, contentType);
   }
 
   private async _getSfdtContent(): Promise<IaraSFDT> {
