@@ -89,29 +89,31 @@ export class IaraSFDT {
     return new IaraSFDT(responseText, editor);
   }
 
-  static injectStyleIfMissing(html: string, config: IaraEditorConfig): string {
-    const hasStyleTag = /<style[\s\S]*?>[\s\S]*?<\/style>/i.test(html);
-    const hasInlineStyle = /<[^>]+style\s*=\s*["'][^"']*["']/i.test(html);
+  static injectStyleIfMissing(html: string, config?: IaraEditorConfig): string {
+    const marginTop = config?.paragraphSpacing?.before ?? 0;
+    const marginBottom = config?.paragraphSpacing?.after ?? 0;
 
-    if (hasStyleTag || hasInlineStyle) return html;
+    return html.replace(/<p\b([^>]*)>/gi, (match, attrs) => {
+      const hasStyle = /style="/i.test(attrs);
+      let style = "";
 
-    const fontFamily = config?.font?.family;
-    const fontSize = config?.font?.size;
-    const lineSpacing = config?.lineSpacing;
-    const color = config?.darkMode ? "#fff" : "#000";
-    const bgColor = config?.darkMode ? "#000" : "#fff";
+      if (hasStyle) {
+        // Extraí o style atual
+        const styleMatch = attrs.match(/style="([^"]*)"/i);
+        style = styleMatch?.[1] ?? "";
+        const hasMarginTop = /margin-top:/i.test(style);
+        const hasMarginBottom = /margin-bottom:/i.test(style);
 
-    const styleInline = `
-      font-family: ${fontFamily};
-      font-size: ${fontSize}pt;
-      line-height: ${lineSpacing}pt;
-      color: ${color};
-      background-color: ${bgColor};
-    `
-      .trim()
-      .replace(/\s+/g, " ");
+        const newStyle =
+          style +
+          (!hasMarginTop ? `;margin-top:${marginTop}pt` : "") +
+          (!hasMarginBottom ? `;margin-bottom:${marginBottom}pt` : "");
 
-    return `<div style="${styleInline}">\n${html}\n</div>`;
+        return match.replace(/style="[^"]*"/i, `style="${newStyle.trim()}"`);
+      } else {
+        return `<p${attrs} style="margin-top:${marginTop}pt;margin-bottom:${marginBottom}pt">`;
+      }
+    });
   }
 
   static async toHtml(content: string): Promise<string> {
