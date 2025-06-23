@@ -80,6 +80,9 @@ export declare abstract class EditorAdapter {
     protected _locale: Record<string, string>;
     protected abstract _styleManager: IaraEditorStyleManager;
     protected abstract _navigationFieldManager: IaraEditorNavigationFieldManager;
+    protected abstract _isEditorCommandBlocked: {
+        blocked: boolean;
+    };
     protected static DefaultConfig: IaraEditorConfig;
     protected _inferenceFormatter: IaraEditorInferenceFormatter;
     protected _currentLanguage: {
@@ -562,6 +565,7 @@ export declare interface IaraEditorConfig {
     };
     saveReport: boolean;
     lineSpacing?: number;
+    forceTypographyStyles?: boolean;
     paragraphSpacing?: {
         after: number;
         before: number;
@@ -570,6 +574,7 @@ export declare interface IaraEditorConfig {
     zoomFactor: string;
     highlightInference: boolean;
     ribbon?: Ribbon;
+    navigateAdditiveMode?: "registry" | "use";
     mouseButton: boolean;
 }
 
@@ -1347,6 +1352,13 @@ declare interface IaraLanguages {
                 trackchanges: string;
                 header: string;
             };
+            changeCases: {
+                sentence: string;
+                upper: string;
+                lower: string;
+                capitalize: string;
+                toggle: string;
+            };
             saveMessage: {
                 success: string;
                 error: string;
@@ -1722,9 +1734,10 @@ export declare class IaraSFDT {
     rtf: string | undefined;
     constructor(value: string, _editor: DocumentEditor);
     static detectContentType(content: string): IaraSyncfusionContentTypes;
-    static fromContent(content: string, editor: DocumentEditor): Promise<IaraSFDT>;
+    static fromContent(content: string, editor: DocumentEditor, config: IaraEditorConfig): Promise<IaraSFDT>;
     static fromEditor(editor: DocumentEditor): Promise<IaraSFDT>;
-    static import(content: string, editor: DocumentEditor, contentType?: IaraSyncfusionContentTypes): Promise<IaraSFDT>;
+    static import(content: string, editor: DocumentEditor, config: IaraEditorConfig, contentType?: IaraSyncfusionContentTypes): Promise<IaraSFDT>;
+    static injectStyleIfMissing(html: string, config?: IaraEditorConfig): string;
     static toHtml(content: string): Promise<string>;
     static toRtf(content: string): Promise<string>;
     static toPdf(content: any, config?: IaraSyncfusionConfig): void;
@@ -2602,6 +2615,9 @@ export declare class IaraSyncfusionAdapter extends EditorAdapter implements Edit
     private readonly _footerBarManager;
     private readonly _listeners;
     protected _navigationFieldManager: IaraSyncfusionNavigationFieldManager;
+    protected _isEditorCommandBlocked: {
+        blocked: boolean;
+    };
     protected static DefaultConfig: IaraSyncfusionConfig;
     protected _styleManager: IaraSyncfusionStyleManager;
     defaultFormat: CharacterFormatProperties;
@@ -2638,9 +2654,10 @@ export declare class IaraSyncfusionAdapter extends EditorAdapter implements Edit
 
 declare class IaraSyncfusionAdditiveList {
     private _instance;
+    private _config;
     private _list;
     private _fieldsSelected;
-    constructor(_instance: IaraSyncfusionNavigationFieldManager);
+    constructor(_instance: IaraSyncfusionNavigationFieldManager, _config: IaraSyncfusionConfig);
     create: (additiveField: IaraAdditiveBookmark, additiveId: string) => void;
     addContent: (fieldSelected: string[], additiveField: IaraAdditiveBookmark) => void;
     customStyle: () => void;
@@ -2663,10 +2680,6 @@ declare class IaraSyncfusionAdditiveList {
 
 export declare interface IaraSyncfusionConfig extends IaraEditorConfig {
     assistant: {
-        enabled: boolean;
-        impression: {
-            itemizedOutput: boolean;
-        };
         draggable?: {
             containerId: string;
             defaultPosition: {
@@ -2674,7 +2687,14 @@ export declare interface IaraSyncfusionConfig extends IaraEditorConfig {
                 y: number;
             };
         };
-        group_rules?: string | string[];
+        enabled: boolean;
+        impression: {
+            itemizedOutput: boolean;
+        };
+        user_rules: {
+            report: string[];
+            impression: string[];
+        };
     };
     mouseButton: boolean;
     replaceToolbar: boolean;
@@ -2693,14 +2713,14 @@ export declare class IaraSyncfusionContentReadManager {
     private _isDirty;
     private _sfdt;
     constructor(_editor: DocumentEditor);
-    fromContent(content: string): Promise<IaraSFDT>;
+    fromContent(content: string, config: IaraEditorConfig): Promise<IaraSFDT>;
     fromEditor(): Promise<IaraSFDT>;
     getContent(sfdt?: IaraSFDT): Promise<[string, string, string, string]>;
     getHtmlContent(): Promise<string>;
     getPlainTextContent(): Promise<string>;
     getRtfContent(): Promise<string>;
     getSfdtContent(): Promise<IaraSFDT>;
-    import(content: string, contentType?: IaraSyncfusionContentTypes): Promise<IaraSFDT>;
+    import(content: string, config: IaraEditorConfig, contentType?: IaraSyncfusionContentTypes): Promise<IaraSFDT>;
     private _getSfdtContent;
 }
 
@@ -2788,7 +2808,7 @@ export declare class IaraSyncfusionNavigationFieldManager extends IaraEditorNavi
     _documentEditor: DocumentEditor;
     private readonly _config;
     private readonly _languageManager;
-    additiveListIntance: IaraSyncfusionAdditiveList | null;
+    additiveListInstance: IaraSyncfusionAdditiveList | null;
     additiveIdList: string[];
     additiveBookmark: IaraAdditiveBookmark;
     blockSelectionInBookmarkCreate: boolean;
@@ -2799,13 +2819,17 @@ export declare class IaraSyncfusionNavigationFieldManager extends IaraEditorNavi
     };
     insertedBookmark: IaraNavigationBookmark;
     isFirstNextNavigation: boolean;
+    isFirstSelection: boolean;
     isFirstPreviousNavigation: boolean;
     nextBookmark: IaraNavigationBookmark;
     previousBookmark: IaraNavigationBookmark;
     private _previousBookmarksTitles;
     private readonly _listeners;
     constructor(_documentEditor: DocumentEditor, _config: IaraSyncfusionConfig, _recognition: IaraSpeechRecognition, _languageManager: IaraSyncfusionLanguageManager);
-    addAdditiveField(): void;
+    addAdditiveField(additiveField?: IaraNavigationBookmark): void;
+    additiveFieldDetails: (additiveField: IaraNavigationBookmark) => void;
+    additiveFieldInRegistryMode: (additiveField: IaraNavigationBookmark) => void;
+    additiveFieldInUseMode: (additiveField: IaraNavigationBookmark) => void;
     createBookmarks(setColor?: boolean): void;
     destroy(): void;
     insertAdditiveField(additive: IaraAdditiveBookmark): void;
@@ -2823,6 +2847,7 @@ export declare class IaraSyncfusionNavigationFieldManager extends IaraEditorNavi
     popAndUpdate(bookmarkName: string, content: string, title: string): void;
     setColor(): void;
     updateBookmark(editorBookmarks: string[]): void;
+    updateAdditiveField(additiveBookmark: IaraNavigationBookmark): void;
     removeEmptyField(editorBookmarks: string[]): void;
     getPreviousAndNext(currentOffset: {
         start: string;
@@ -2838,7 +2863,7 @@ export declare class IaraSyncfusionNavigationFieldManager extends IaraEditorNavi
     checkIsSelectedAndUpdatePrevious(previousIndex: number): IaraNavigationBookmark;
     clearReportToCopyContent(): void;
     hasEmptyRequiredFields(): boolean;
-    sectionAdditiveField: () => void;
+    selectAdditiveField: () => void;
     selectBookmark(bookmarkId: string, excludeBookmarkStartEnd?: boolean): void;
     selectionChange: () => void;
     showAdditiveList(): void;
@@ -2891,6 +2916,7 @@ export declare class IaraSyncfusionStyleManager extends IaraEditorStyleManager {
     setEditorFontColor(color: string): void;
     setSelectionFontFamily(fontFamily: string): void;
     setSelectionFontSize(fontSize: number): void;
+    setSelectionLineSpacingFormat: (lineSpacing: number) => void;
     setSelectionParagraphSpacingFormat: (paragraphSpacing: {
         after: number;
         before: number;
@@ -2989,6 +3015,9 @@ export declare class IaraTinyMCEAdapter extends EditorAdapter implements EditorA
     config: IaraEditorConfig;
     protected _styleManager: IaraTinyMceStyleManager;
     protected _navigationFieldManager: IaraTinyMceNavigationFieldManager;
+    protected _isEditorCommandBlocked: {
+        blocked: boolean;
+    };
     private _initialUndoStackSize;
     constructor(_editor: Editor, _recognition: IaraSpeechRecognition, config: IaraEditorConfig);
     protected _handleRemovedNavigationField(): void;
@@ -3225,7 +3254,7 @@ export declare type Ribbon = {
 
 export declare type RibbonCollection = "logo" | "file" | "insert" | "clipboard" | "font" | "paragraph" | "navigation" | "export" | "documentReview";
 
-export declare type RibbonCustomItems = "logo"[][] | ("open" | "undo" | "redo")[][] | ("image" | "table")[][] | ("copy" | "cut" | "paste")[][] | ("fontFamily" | "fontSize" | "fontColor" | "bold" | "italic" | "underline" | "strikeThrough")[][] | ("decreaseIdent" | "increaseIdent" | "lineSpacing" | "bullets" | "numbering" | "paragraphMark" | "alignment")[][] | "navigationField"[][] | "trackchanges"[][] | "exportPdf"[][];
+export declare type RibbonCustomItems = "logo"[][] | ("open" | "undo" | "redo")[][] | ("image" | "table")[][] | ("copy" | "cut" | "paste")[][] | ("fontFamily" | "fontSize" | "fontColor" | "bold" | "changeCase" | "italic" | "underline" | "strikeThrough")[][] | ("decreaseIdent" | "increaseIdent" | "lineSpacing" | "bullets" | "numbering" | "paragraphMark" | "alignment")[][] | "navigationField"[][] | "trackchanges"[][] | "exportPdf"[][];
 
 export declare interface RibbonFontMethods {
     changeFontFamily: (args: {
@@ -3334,7 +3363,7 @@ declare enum StateTypes {
 export declare const tabsConfig: (editor: DocumentEditorContainer, toolbarOpenFile: (arg: string, editor: DocumentEditorContainer) => void, toolbarButtonClick: (arg: string, editor: DocumentEditorContainer, config?: IaraSyncfusionConfig, navigationFields?: IaraSyncfusionNavigationFieldManager) => void, editorContainerLocale: IaraLanguages, config: IaraSyncfusionConfig, ribbonMethods: {
     ribbonFontMethods: (editor: DocumentEditorContainer) => RibbonFontMethods;
     ribbonParagraphMethods: (editor: DocumentEditorContainer) => RibbonParagraphMethods;
-}, navigationFunc: (funcId: string) => void) => RibbonTabModel[];
+}, navigationFunc: (funcId: string) => void, changeCaseFunc: (name: string, editor: DocumentEditorContainer) => void) => RibbonTabModel[];
 
 export declare interface Template {
     key: string;
