@@ -103,7 +103,7 @@ export class IaraSFDT {
     const marginTop = config?.paragraphSpacing?.before;
     const marginBottom = config?.paragraphSpacing?.after;
 
-    return html.replace(/<p\b([^>]*)>/gi, (match, attrs) => {
+    return html.replace(/<p\b([^>]*)>/gi, (_, attrs) => {
       const inlineStyle = [
         `font-family: ${fontFamily}`,
         `font-size: ${fontSize}pt`,
