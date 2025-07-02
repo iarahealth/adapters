@@ -64,6 +64,8 @@ export class IaraSyncfusionAdapter
   private _contentDate?: Date;
   private _currentTemplatePlainText?: string;
   private _currentAssistantGeneratedReport?: Record<string, unknown>;
+  private _currentAssistantGeneratedReportHistory: Record<string, unknown>[] =
+    [];
   private _cursorSelection?: { startOffset: string; endOffset: string };
   private readonly _debouncedSaveReport: () => void;
   private readonly _documentEditor: DocumentEditor;
@@ -201,12 +203,21 @@ export class IaraSyncfusionAdapter
       key: "IaraAssistantReport",
       callback: (event?: Event) => {
         if (!event) return;
+
+        const previousGeneratedReport = this._currentAssistantGeneratedReport;
+
         this._currentAssistantGeneratedReport = (
           event as CustomEvent<{
             report: string;
             input: Record<string, unknown>;
           }>
         ).detail;
+
+        if (previousGeneratedReport) {
+          this._currentAssistantGeneratedReportHistory.push({
+            ...previousGeneratedReport,
+          });
+        }
       },
     });
 
@@ -558,10 +569,12 @@ export class IaraSyncfusionAdapter
       template: this._currentTemplatePlainText,
       transcriptions: Object.values(this._inferenceBookmarksManager.bookmarks),
       generatedReport: this._currentAssistantGeneratedReport,
+      generatedReportHistory: this._currentAssistantGeneratedReportHistory,
     });
 
     this._currentAssistantGeneratedReport = undefined;
     this._currentTemplatePlainText = undefined;
+    this._currentAssistantGeneratedReportHistory = [];
     this._inferenceBookmarksManager.clearBookmarks();
 
     dispatchEvent(new CustomEvent("IaraOnFinishReport", { detail: content }));
@@ -599,7 +612,16 @@ export class IaraSyncfusionAdapter
 
       if (contentDate !== this._contentDate) return;
 
-      await this._updateReport(content[0], content[1]);
+      const metadata = {
+        template: this._currentTemplatePlainText,
+        transcriptions: Object.values(
+          this._inferenceBookmarksManager.bookmarks
+        ),
+        generatedReport: this._currentAssistantGeneratedReport,
+        generatedReportHistory: this._currentAssistantGeneratedReportHistory,
+      };
+
+      await this._updateReport(content[0], content[1], metadata);
       this._footerBarManager.updateSavingReportStatus("success");
       dispatchEvent(new CustomEvent("IaraOnSaveReport", { detail: content }));
     } catch {

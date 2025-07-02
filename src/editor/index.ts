@@ -296,10 +296,15 @@ export abstract class EditorAdapter {
 
   protected _updateReport(
     plainContent: string,
-    richContent: string
+    richContent: string,
+    metadata: Record<string, unknown>
   ): Promise<string> {
     if (this._recognition.report["_key"]) {
-      return this._recognition.report.change(plainContent, richContent);
+      return this._recognition.report.change(
+        plainContent,
+        richContent,
+        metadata
+      );
     }
     throw new Error("Need a report key to update.");
   }
