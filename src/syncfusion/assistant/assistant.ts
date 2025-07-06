@@ -74,6 +74,7 @@ export class IaraSyncfusionAIAssistant {
       reportContent = "";
     assistant.report = reportContent;
     assistant.recognition = this._recognition;
+    console.log(this._config.assistant, "CONGIS");
     assistant.settings = this._config.assistant;
     assistant.style.zIndex = "1000";
     assistant.addEventListener("diagnosticImpression", (event: Event) => {
