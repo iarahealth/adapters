@@ -10,6 +10,7 @@ export interface IaraSyncfusionConfig extends IaraEditorConfig {
     impression: {
       itemizedOutput: boolean;
     };
+    useUserTemplates: boolean;
     user_rules: { report: string[]; impression: string[] };
   };
   mouseButton: boolean;

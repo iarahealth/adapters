@@ -92,6 +92,7 @@ export class IaraSyncfusionAdapter
         containerId: "",
         defaultPosition: { x: 30, y: 20 },
       },
+      useUserTemplates: true,
       user_rules: { report: [], impression: [] },
     },
     replaceToolbar: false,
